@@ -1,94 +1,34 @@
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Project setup
+## Getting Started
 
-1. Replace `app-name` with your real app name
+First, run the development server:
 
-1. Install NodeJS (above the 12.6.0 version is recommended, edit .nvmrc and package.json if yoy want to use different version)
-   https://nodejs.org/en/download/package-manager/
-    ```bash
-    nvm install 12.6.0
-    nvm use
-    ```
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-1. Open terminal in a current directory and put commands here
-    ```bash
-    npm install -g yarn
-    yarn install
-    yarn start
-    ```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-1. Clean-up *modules*, *folders* and *comments* what you not needed, verify the app is still running without the errors, execute `yarn && git add yarn.lock` and commit the changes you made.
+You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-## Development
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-### Code verification
-Choose your NodeJS version and enable ESlint and Prettier support in your IDE.
+## Learn More
 
-### Performance optimization
-Mark `node_modules` and `build` folders as excluded in your IDE to prevent unnecessary indexing.
+To learn more about Next.js, take a look at the following resources:
 
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## Available Scripts
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-### Development
+## Deploy on Vercel
 
-In the project directory, you can run:
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-#### `yarn start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-#### `yarn locales:extract`
-Extracting texts to be translated.
-
-#### `yarn lint`
-Verify code style with ES-Lint.
-
-#### `yarn lint:fix`
-Verify code style with autofixing.\
-Also will be runned automatically on every commit.
-
-#### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-#### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
