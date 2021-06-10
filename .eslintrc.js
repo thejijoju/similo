@@ -53,5 +53,6 @@ module.exports = {
     'max-depth': [2, { max: 10 }],
     'no-underscore-dangle': 0,
     'prettier/prettier': 'error',
+    'import/no-unresolved': 'off',
   },
 };
