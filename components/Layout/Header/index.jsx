@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-// import { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 import axios from 'axios';
 
 import SearchSuggestions from './SearchSuggestions';
 
 import classes from './styles.module.scss';
-import { API_URL } from '../../../constants';
+import { API_URL, COMPANIES_PER_PAGE } from '../../../constants';
 import useOnClickOutside from '../../../helpers/useOnClickOutside';
 
 let timer;
@@ -20,7 +20,13 @@ export default function Header() {
 
   const searchContainerRef = useRef();
 
-  // const router = useRouter();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.query.term) {
+      setSearchTerm(router.query.term);
+    }
+  }, []);
 
   const showSearchSuggestions = () => {
     setIsSearchSuggestionVisible(true);
@@ -29,6 +35,26 @@ export default function Header() {
   const hideSearchSuggestions = () => {
     setIsSearchSuggestionVisible(false);
   };
+
+  const search = (event) => {
+    event.preventDefault();
+    if (searchTerm.trim() === '') {
+      return;
+    }
+    hideSearchSuggestions();
+    clearTimeout(timer);
+    router.push(
+      `/?term=${encodeURIComponent(
+        searchTerm
+      )}&page=0&perPage=${COMPANIES_PER_PAGE}`
+    );
+  };
+
+  useEffect(() => {
+    if (!searchSuggestions.length) {
+      hideSearchSuggestions();
+    }
+  }, [searchSuggestions]);
 
   const clearSearch = () => {
     setSearchTerm('');
@@ -43,10 +69,14 @@ export default function Header() {
 
   useOnClickOutside(searchContainerRef, hideSearchSuggestions);
 
-  // eslint-disable-next-line consistent-return
-  const getSearchSuggestions = () => {
+  const getSearchSuggestions = (event) => {
+    if (event.key === 'Enter') {
+      return;
+    }
     clearTimeout(timer);
+
     if (searchTerm === '') {
+      // eslint-disable-next-line consistent-return
       return setSearchSuggestions([]);
     }
     timer = setTimeout(() => {
@@ -65,18 +95,22 @@ export default function Header() {
         <Image src="/images/Logo1.svg" width={191} height={79} />
       </div>
       <div className={classes.searchContainer} ref={searchContainerRef}>
-        <input
-          type="text"
-          placeholder="What company or brand do you want to compare?"
-          className={classes.searchBar}
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          onKeyUp={getSearchSuggestions}
-        />
+        <form onSubmit={search}>
+          <input
+            type="text"
+            placeholder="What company or brand do you want to compare?"
+            className={classes.searchBar}
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            onKeyUp={getSearchSuggestions}
+          />
+        </form>
         <div className={classes.searchSuggestionsContainer}>
           <SearchSuggestions
             searchSuggestions={searchSuggestions}
             show={isSearchSuggestionVisible}
+            onHide={hideSearchSuggestions}
+            setSearchTerm={setSearchTerm}
           />
         </div>
         <i className={classes.closeIcon} onClick={clearSearch}>

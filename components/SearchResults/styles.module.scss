@@ -1,0 +1,53 @@
+.SearchResults {
+  flex: 1;
+  padding-top: 49px;
+  padding-left: 47px;
+  padding-right: 202px;
+  .noResults {
+    font-size: 16px;
+    line-height: 19px;
+    color: #1e1c1c;
+  }
+  .header {
+    margin-bottom: 9px;
+    font-size: 12px;
+    line-height: 14px;
+    color: #7a7c7f;
+    span {
+      &:first-child {
+        margin-right: 21px;
+      }
+      &.openAllCards {
+        cursor: pointer;
+      }
+      i {
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        margin-right: 5px;
+        font-size: 0;
+        background-color: #7a7c7f;
+        border-radius: 50%;
+      }
+    }
+  }
+  .displayMore {
+    display: flex;
+    justify-content: center;
+    margin-top: 54px;
+    margin-bottom: 44px;
+    button {
+      width: 380px;
+      height: 37px;
+      font-size: 16px;
+      line-height: 19px;
+      letter-spacing: 0.333333px;
+      color: #14a2b8;
+      background-color: transparent;
+      border: 1px solid #0f7c91;
+      box-sizing: border-box;
+      border-radius: 18.5px;
+      cursor: pointer;
+    }
+  }
+}
