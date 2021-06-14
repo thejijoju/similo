@@ -40,10 +40,10 @@ module.exports = {
         type: Sequelize.STRING,
       },
       employeesCount: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       revenue: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.STRING,
       },
       yearOfFoundation: {
         type: Sequelize.INTEGER,
@@ -56,7 +56,7 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.INTEGER,
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
