@@ -21,6 +21,12 @@ module.exports = {
       HQLocation: {
         type: Sequelize.STRING,
       },
+      locations: {
+        type: Sequelize.STRING,
+      },
+      country: {
+        type: Sequelize.STRING,
+      },
       parentCompany: {
         type: Sequelize.STRING,
       },

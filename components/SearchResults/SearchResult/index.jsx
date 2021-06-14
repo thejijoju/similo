@@ -79,23 +79,29 @@ export default function SearchResult({ company }) {
             <div className={classes.mainDetails}>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Website</span>
-                <span className={classes.content}>expample.com</span>
+                <span className={classes.content}>
+                  <a href={`https://${company.websiteUrl}`}>
+                    {company.websiteUrl}
+                  </a>
+                </span>
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Headquarters</span>
-                <span className={classes.content}>Paris, France</span>
+                <span className={classes.content}>{company.HQLocation}</span>
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Parent Organization</span>
-                <span className={classes.content}>LVMH</span>
+                <span className={classes.content}>{company.parentCompany}</span>
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Founder</span>
-                <span className={classes.content}>Louis Vuitton</span>
+                <span className={classes.content}>{company.founder}</span>
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Founded</span>
-                <span className={classes.content}>1854</span>
+                <span className={classes.content}>
+                  {company.yearOfFoundation}
+                </span>
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Revenue</span>

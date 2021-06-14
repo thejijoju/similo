@@ -33,6 +33,12 @@ module.exports = (sequelize, DataTypes) => {
       HQLocation: {
         type: DataTypes.STRING,
       },
+      locations: {
+        type: DataTypes.STRING,
+      },
+      country: {
+        type: DataTypes.STRING,
+      },
       parentCompany: {
         type: DataTypes.STRING,
       },
