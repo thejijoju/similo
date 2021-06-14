@@ -36,5 +36,10 @@
       border-radius: 25px;
       outline: none;
     }
+    .searchSuggestionsContainer {
+      position: absolute;
+      left: 15px;
+      width: calc(100% + 30px);
+    }
   }
 }
