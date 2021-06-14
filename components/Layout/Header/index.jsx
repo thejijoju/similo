@@ -30,6 +30,11 @@ export default function Header() {
     setIsSearchSuggestionVisible(false);
   };
 
+  const clearSearch = () => {
+    setSearchTerm('');
+    hideSearchSuggestions();
+  };
+
   useEffect(() => {
     if (searchSuggestions.length) {
       showSearchSuggestions();
@@ -74,6 +79,9 @@ export default function Header() {
             show={isSearchSuggestionVisible}
           />
         </div>
+        <i className={classes.closeIcon} onClick={clearSearch}>
+          Close
+        </i>
       </div>
     </header>
   );
