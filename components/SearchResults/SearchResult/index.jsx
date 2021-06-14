@@ -105,7 +105,7 @@ export default function SearchResult({ company }) {
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Revenue</span>
-                <span className={classes.content}>€14 billion (2020)</span>
+                <span className={classes.content}>{company.revenue}</span>
               </div>
             </div>
             <div className={classes.divider} />
@@ -119,7 +119,7 @@ export default function SearchResult({ company }) {
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Number of employees</span>
-                <span className={classes.content}>121,289 (2014)</span>
+                <span className={classes.content}>{company.revenue}</span>
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Area served</span>
