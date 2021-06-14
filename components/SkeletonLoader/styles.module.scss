@@ -1,0 +1,105 @@
+.SkeletonLoader {
+  .searchResult {
+    position: relative;
+    display: flex;
+    //min-width: 924px;
+    box-sizing: border-box;
+    min-height: 97px;
+    margin-bottom: 21px;
+    padding-right: 89px;
+    border: 1px solid rgba(193, 80, 80, 0.2);
+    box-sizing: border-box;
+    box-shadow: inset 0 2px 12px rgba(193, 80, 80, 0.06);
+    border-radius: 4px;
+    .logo {
+      margin-left: 26px;
+      margin-top: 21px;
+      margin-bottom: 15px;
+      margin-right: 32px;
+      width: 58px;
+      height: 52px;
+      border-radius: 21.5px;
+    }
+    .companyInfo {
+      width: 100%;
+      flex-direction: row;
+      .title {
+        display: block;
+        width: 114px;
+        height: 15px;
+        margin-top: 20px;
+        border-radius: 2px;
+      }
+
+      .tags {
+        position: absolute;
+        bottom: 13px;
+        .tag {
+          display: inline-block;
+          width: 76px;
+          height: 14px;
+          margin-right: 3px;
+          border-radius: 16px;
+        }
+      }
+    }
+  }
+
+  .shine {
+    background: #f5f5f7;
+    background-image: linear-gradient(
+      to right,
+      #f5f5f7 0%,
+      #edeef1 20%,
+      #f5f5f7 40%,
+      #f5f5f7 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 800px 104px;
+    display: inline-block;
+    position: relative;
+
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeholderShimmer;
+    -webkit-animation-timing-function: linear;
+  }
+
+  /*  box {
+    width: 58px;
+    height: 52px;
+    border-radius: 21.5px;
+  }
+
+  div {
+    display: inline-flex;
+    flex-direction: column;
+    margin-left: 25px;
+    margin-top: 15px;
+    vertical-align: top;
+  }
+
+  lines {
+    height: 10px;
+    margin-top: 10px;
+    width: 200px;
+  }
+
+  photo {
+    display: block !important;
+    width: 325px;
+    height: 100px;
+    margin-top: 15px;
+  }
+ */
+  @-webkit-keyframes placeholderShimmer {
+    0% {
+      background-position: -468px 0;
+    }
+
+    100% {
+      background-position: 468px 0;
+    }
+  }
+}

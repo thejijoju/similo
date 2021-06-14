@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 
 import { COMPANIES_PER_PAGE, API_URL } from 'constants/index';
+import SkeletonLoader from '@/components/SkeletonLoader';
 import SearchResult from './SearchResult';
 
 import classes from './styles.module.scss';
@@ -14,6 +15,7 @@ export default function SearchResults({ searchResults }) {
   const [innerSearchResults, setInnerSearchResults] = useState({
     ...searchResults,
   });
+  const [isSearchResultsLoading, setIsSearchResultsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -25,22 +27,23 @@ export default function SearchResults({ searchResults }) {
     useContext(SearchResultsContext);
 
   const getMoreSearchResults = async () => {
-    console.log(router.query);
-
+    setIsSearchResultsLoading(true);
     try {
       const response = await axios.get(`${API_URL}/companies/search`, {
         params: { ...router.query, page: currentPage + 1 },
       });
       setCurrentPage((prevState) => prevState + 1);
       const updatedResults = { ...innerSearchResults };
-      console.log(updatedResults);
+
       updatedResults.data.companies = [
         ...updatedResults.data.companies,
         ...response.data.data.companies,
       ];
       setInnerSearchResults(updatedResults);
+      setIsSearchResultsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsSearchResultsLoading(false);
     }
   };
 
@@ -63,6 +66,12 @@ export default function SearchResults({ searchResults }) {
     );
   }
 
+  console.log(currentPage);
+  console.log(
+    COMPANIES_PER_PAGE * (currentPage + 1),
+    innerSearchResults.totalCount
+  );
+
   return (
     <div className={classes.SearchResults}>
       <div className={classes.header}>
@@ -82,14 +91,16 @@ export default function SearchResults({ searchResults }) {
           return <SearchResult company={company} key={company.id} />;
         })}
       </div>
+      {isSearchResultsLoading && <SkeletonLoader elementsCount={8} />}
       {COMPANIES_PER_PAGE * (currentPage + 1) <
-        +innerSearchResults.totalCount && (
-        <div className={classes.displayMore}>
-          <button type="button" onClick={getMoreSearchResults}>
-            Display more results
-          </button>
-        </div>
-      )}
+        +innerSearchResults.totalCount &&
+        !isSearchResultsLoading && (
+          <div className={classes.displayMore}>
+            <button type="button" onClick={getMoreSearchResults}>
+              Display more results
+            </button>
+          </div>
+        )}
     </div>
   );
 }

@@ -46,7 +46,9 @@ export default function Header() {
     router.push(
       `/?term=${encodeURIComponent(
         searchTerm
-      )}&page=0&perPage=${COMPANIES_PER_PAGE}`
+      )}&page=0&perPage=${COMPANIES_PER_PAGE}` /* ,
+      undefined,
+      { shallow: true } */
     );
   };
 
