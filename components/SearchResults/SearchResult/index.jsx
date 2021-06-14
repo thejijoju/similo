@@ -1,12 +1,62 @@
-import React from 'react';
-// import Image from 'next/image';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+
+import classnames from 'classnames';
 
 import classes from './styles.module.scss';
+import { SearchResultsContext } from '../../../context/index';
 
 export default function SearchResult({ company }) {
+  const [isCompanyCardExpanded, setIsCompanyCardExpanded] = useState(false);
+  const [companyCardHeight, setCompanyCardHeight] = useState('');
+  const [isExpandCardButtonRotated, setIsExpandCardButtonRotated] =
+    useState(false);
+
+  const companyCardRef = useRef();
+  const companyCardInitialHeight = useRef();
+
+  const { areCompanyCardsExpanded } = useContext(SearchResultsContext);
+
+  const expandCompanyCard = () => {
+    setIsExpandCardButtonRotated(true);
+    setIsCompanyCardExpanded(true);
+  };
+
+  const collapseCompanyCard = () => {
+    setIsExpandCardButtonRotated(false);
+    setTimeout(() => {
+      setIsCompanyCardExpanded(false);
+    }, 200);
+    setCompanyCardHeight(companyCardInitialHeight.current);
+  };
+
+  useEffect(() => {
+    if (companyCardRef.current) {
+      setCompanyCardHeight(companyCardRef.current.offsetHeight);
+      companyCardInitialHeight.current = companyCardRef.current.offsetHeight;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isCompanyCardExpanded) {
+      console.log(companyCardRef.current.scrollHeight);
+      setCompanyCardHeight(companyCardRef.current.scrollHeight + 42);
+    }
+  }, [isCompanyCardExpanded]);
+
+  useEffect(() => {
+    if (areCompanyCardsExpanded) {
+      expandCompanyCard();
+    } else {
+      collapseCompanyCard();
+    }
+  }, [areCompanyCardsExpanded]);
+
   return (
-    <div className={classes.SearchResult}>
-      <div className={classes.shadow} />
+    <div
+      className={classes.SearchResult}
+      ref={companyCardRef}
+      style={{ height: companyCardHeight }}
+    >
       <div
         className={classes.logo}
         style={{
@@ -24,8 +74,70 @@ export default function SearchResult({ company }) {
               </span>
             ))}
         </div>
+        {isCompanyCardExpanded && (
+          <div className={classes.details}>
+            <div className={classes.mainDetails}>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Website</span>
+                <span className={classes.content}>expample.com</span>
+              </div>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Headquarters</span>
+                <span className={classes.content}>Paris, France</span>
+              </div>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Parent Organization</span>
+                <span className={classes.content}>LVMH</span>
+              </div>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Founder</span>
+                <span className={classes.content}>Louis Vuitton</span>
+              </div>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Founded</span>
+                <span className={classes.content}>1854</span>
+              </div>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Revenue</span>
+                <span className={classes.content}>€14 billion (2020)</span>
+              </div>
+            </div>
+            <div className={classes.divider} />
+            <div className={classes.additionalDetails}>
+              <div className={classes.keyPeople}>
+                <span className={classes.title}>Key people</span>
+                <span className={classes.content}>
+                  Michael Burke (Chairman & CEO), Nicolas Ghesquière, Virgil
+                  Abloh (Creative directors)
+                </span>
+              </div>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Number of employees</span>
+                <span className={classes.content}>121,289 (2014)</span>
+              </div>
+              <div className={classes.infoBlock}>
+                <span className={classes.title}>Area served</span>
+                <span className={classes.content}>Worldwide</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      <i className={classes.expandCard}>Expand card</i>
+      <i
+        className={classnames(
+          classes.expandCard,
+          isExpandCardButtonRotated && classes.rotate
+        )}
+        onClick={() => {
+          if (isCompanyCardExpanded) {
+            collapseCompanyCard();
+          } else {
+            expandCompanyCard();
+          }
+        }}
+      >
+        Expand card
+      </i>
     </div>
   );
 }

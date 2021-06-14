@@ -1,14 +1,17 @@
 .SearchResult {
+  position: relative;
   display: flex;
   //min-width: 924px;
   box-sizing: border-box;
   min-height: 97px;
   margin-bottom: 21px;
-  padding-right: 59px;
+  padding-right: 89px;
   border: 1px solid rgba(193, 80, 80, 0.2);
   box-sizing: border-box;
   box-shadow: inset 0 2px 12px rgba(193, 80, 80, 0.06);
   border-radius: 4px;
+  overflow: hidden;
+  transition: height ease-in-out 0.2s;
   .logo {
     min-width: 75px;
     max-width: 75px;
@@ -22,6 +25,7 @@
     background-position: center;
   }
   .companyInfo {
+    width: 100%;
     h1 {
       margin-top: 14px;
       margin-bottom: 6px;
@@ -53,6 +57,9 @@
     }
   }
   .expandCard {
+    position: absolute;
+    top: 44px;
+    right: 92px;
     display: block;
     width: 17px;
     height: 17px;
@@ -64,5 +71,115 @@
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
+    transition: all ease-in-out 0.2s;
+    &.rotate {
+      transform: rotate(180deg);
+    }
+  }
+  .details {
+    .mainDetails {
+      display: flex;
+      flex-wrap: wrap;
+      .infoBlock {
+        padding-right: 67px;
+        margin-bottom: 23px;
+        display: flex;
+        justify-content: space-between;
+        width: 50%;
+        &:nth-child(2n) {
+          padding-right: 0;
+          padding-left: 67px;
+        }
+        .title {
+          font-size: 15px;
+          line-height: 18px;
+          letter-spacing: 0.221429px;
+          font-weight: bold;
+          color: #090909;
+        }
+        .content {
+          font-size: 15px;
+          line-height: 18px;
+          letter-spacing: 0.3px;
+          color: #090909;
+        }
+      }
+    }
+    .divider {
+      width: 100%;
+      height: 1px;
+      margin-bottom: 28px;
+      background-color: #f3dede;
+    }
+    .additionalDetails {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 42px;
+      .infoBlock {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+        padding-right: 67px;
+        &:nth-child(3) {
+          padding-right: 0;
+          padding-left: 67px;
+        }
+        .title {
+          font-size: 15px;
+          line-height: 18px;
+          letter-spacing: 0.221429px;
+          font-weight: bold;
+          color: #090909;
+        }
+        .content {
+          font-size: 15px;
+          line-height: 18px;
+          letter-spacing: 0.3px;
+          color: #090909;
+        }
+      }
+      .keyPeople {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 38px;
+        .title {
+          font-size: 15px;
+          font-weight: bold;
+          line-height: 18px;
+          letter-spacing: 0.3px;
+          color: #090909;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1367px) {
+  .SearchResult {
+    .details {
+      .mainDetails {
+        .infoBlock {
+          padding-right: 25px;
+          &:nth-child(2n) {
+            padding-right: 0;
+            padding-left: 25px;
+          }
+        }
+      }
+      .additionalDetails {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        .infoBlock {
+          padding-right: 25px;
+          &:nth-child(3) {
+            padding-right: 0;
+            padding-left: 25px;
+          }
+        }
+      }
+    }
   }
 }

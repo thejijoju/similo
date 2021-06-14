@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { COMPANIES_PER_PAGE } from 'constants/index';
 import SearchResult from './SearchResult';
 
 import classes from './styles.module.scss';
+import { SearchResultsContext } from '../../context/index';
 
 export default function SearchResults({ searchResults }) {
+  const { setAreCompanyCardsExpanded, areCompanyCardsExpanded } =
+    useContext(SearchResultsContext);
   if (!searchResults) {
     return null;
   }
@@ -23,8 +26,14 @@ export default function SearchResults({ searchResults }) {
     <div className={classes.SearchResults}>
       <div className={classes.header}>
         <span>{searchResults.totalCount} Total results</span>
-        <span className={classes.openAllCards}>
-          <i>dot</i>Open all cards
+        <span
+          className={classes.openAllCards}
+          onClick={() => {
+            setAreCompanyCardsExpanded((prevState) => !prevState);
+          }}
+        >
+          <i>dot</i>
+          {areCompanyCardsExpanded ? 'Close all cards' : 'Open all cards'}
         </span>
       </div>
       <div className={classes.resultsContainer}>
