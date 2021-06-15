@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next build && next start -p 3026",
     "prod:start": "pm2 start yarn --name \"similo\" --interpreter bash -- start",
-    "prod:migrate": "NODE_ENV=production npx sequelize db:migrate && npx sequelize db:seed:all",
+    "prod:migrate": "NODE_ENV=production npx sequelize db:migrate",
     "lint": "eslint ./ --ext js,jsx",
     "lint:fix": "eslint ./ --ext js,jsx --fix",
     "migrate": "npx sequelize db:migrate && npx sequelize db:seed:all",
