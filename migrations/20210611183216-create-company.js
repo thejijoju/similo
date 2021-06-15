@@ -37,7 +37,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       employeesCount: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       revenue: {
         type: Sequelize.BIGINT,

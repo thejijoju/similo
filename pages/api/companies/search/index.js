@@ -1,4 +1,5 @@
-import convertStringRangesToNumberRanges from '../../../../helpers/convertStringRangesToNumberRanges';
+import convertRevenueRanges from '@/helpers/convertRevenueRanges';
+import convertSizeRanges from '@/helpers/convertSizeRanges';
 
 const { QueryTypes } = require('sequelize');
 // const { Company } = require('../../../../models');
@@ -18,6 +19,7 @@ export default async function handler(req, res) {
 
   let companySize = req.query.companySize || '';
   companySize = companySize.split(',|');
+  const sizeRanges = convertSizeRanges(companySize);
 
   let expertise = req.query.expertise || '';
   expertise = expertise.split(',');
@@ -27,11 +29,10 @@ export default async function handler(req, res) {
 
   let revenue = req.query.revenue || '';
   revenue = revenue.split(',|');
+  const revenueRanges = convertRevenueRanges(revenue);
 
-  const revenueRange = convertStringRangesToNumberRanges(revenue);
-
-  let companySizeQuery = '';
-  if (companySize[0] !== '') {
+  /* const companySizeQuery = '';
+     if (companySize[0] !== '') {
     companySizeQuery = `AND \n(`;
     companySize.forEach((size, index) => {
       if (index !== companySize.length - 1) {
@@ -41,7 +42,7 @@ export default async function handler(req, res) {
       }
     });
   }
-
+ */
   let expertiseQuery = '';
   if (expertise[0] !== '') {
     expertiseQuery = `AND \n(`;
@@ -67,13 +68,25 @@ export default async function handler(req, res) {
   }
 
   let companyRevenueQuery = '';
-  if (revenueRange) {
+  if (revenueRanges) {
     companyRevenueQuery = `AND \n(`;
-    revenueRange.forEach((range, index) => {
-      if (index !== revenueRange.length - 1) {
+    revenueRanges.forEach((range, index) => {
+      if (index !== revenueRanges.length - 1) {
         companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} OR`;
       } else {
         companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} )`;
+      }
+    });
+  }
+
+  let companySizeQuery = '';
+  if (sizeRanges) {
+    companySizeQuery = `AND \n(`;
+    sizeRanges.forEach((range, index) => {
+      if (index !== sizeRanges.length - 1) {
+        companySizeQuery += ` "employeesCount" BETWEEN ${range[0]} AND ${range[1]} OR`;
+      } else {
+        companySizeQuery += ` "employeesCount" BETWEEN ${range[0]} AND ${range[1]} )`;
       }
     });
   }

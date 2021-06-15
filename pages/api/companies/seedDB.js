@@ -37,6 +37,9 @@ export default function handler() {
       if (key === 'revenue' && companyData[key] !== null) {
         companyData[key] = convertRevenueToNumber(companyData[key]);
       }
+      if (key === 'employeesCount' && companyData[key] !== null) {
+        companyData[key] = parseInt(companyData[key].replace(/,/g, ''), 10);
+      }
     }
     Company.create(companyData);
   });

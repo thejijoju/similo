@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       employeesCount: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
       },
       revenue: {
         type: DataTypes.BIGINT,
