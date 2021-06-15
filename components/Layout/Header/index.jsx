@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
@@ -9,6 +9,7 @@ import SearchSuggestions from './SearchSuggestions';
 import classes from './styles.module.scss';
 import { API_URL, COMPANIES_PER_PAGE } from '../../../constants';
 import useOnClickOutside from '../../../helpers/useOnClickOutside';
+import { SearchResultsContext } from '../../../context/index';
 
 let timer;
 
@@ -17,6 +18,8 @@ export default function Header() {
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [isSearchSuggestionVisible, setIsSearchSuggestionVisible] =
     useState(false);
+
+  const { setCurrentPage } = useContext(SearchResultsContext);
 
   const searchContainerRef = useRef();
 
@@ -41,6 +44,7 @@ export default function Header() {
     if (searchTerm.trim() === '') {
       return;
     }
+    setCurrentPage(0);
     hideSearchSuggestions();
     clearTimeout(timer);
     router.push(

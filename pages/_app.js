@@ -7,10 +7,16 @@ import '@/styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
   const [areCompanyCardsExpanded, setAreCompanyCardsExpanded] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
   return (
     <SearchResultsContext.Provider
-      value={{ areCompanyCardsExpanded, setAreCompanyCardsExpanded }}
+      value={{
+        areCompanyCardsExpanded,
+        setAreCompanyCardsExpanded,
+        currentPage,
+        setCurrentPage,
+      }}
     >
       <Layout>
         <Component {...pageProps} />

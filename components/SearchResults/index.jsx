@@ -11,7 +11,6 @@ import classes from './styles.module.scss';
 import { SearchResultsContext } from '../../context/index';
 
 export default function SearchResults({ searchResults }) {
-  const [currentPage, setCurrentPage] = useState(0);
   const [innerSearchResults, setInnerSearchResults] = useState({
     ...searchResults,
   });
@@ -23,8 +22,12 @@ export default function SearchResults({ searchResults }) {
     setInnerSearchResults(searchResults);
   }, [searchResults]);
 
-  const { setAreCompanyCardsExpanded, areCompanyCardsExpanded } =
-    useContext(SearchResultsContext);
+  const {
+    setAreCompanyCardsExpanded,
+    areCompanyCardsExpanded,
+    currentPage,
+    setCurrentPage,
+  } = useContext(SearchResultsContext);
 
   const getMoreSearchResults = async () => {
     setIsSearchResultsLoading(true);
@@ -47,10 +50,6 @@ export default function SearchResults({ searchResults }) {
     }
   };
 
-  useEffect(() => {
-    console.log(currentPage);
-  }, [currentPage]);
-
   if (!innerSearchResults || !innerSearchResults.data) {
     return null;
   }
@@ -66,16 +65,10 @@ export default function SearchResults({ searchResults }) {
     );
   }
 
-  console.log(currentPage);
-  console.log(
-    COMPANIES_PER_PAGE * (currentPage + 1),
-    innerSearchResults.totalCount
-  );
-
   return (
     <div className={classes.SearchResults}>
       <div className={classes.header}>
-        <span>{innerSearchResults.totalCount}Total results</span>
+        <span>{innerSearchResults.totalCount} Total results</span>
         <span
           className={classes.openAllCards}
           onClick={() => {
@@ -91,7 +84,9 @@ export default function SearchResults({ searchResults }) {
           return <SearchResult company={company} key={company.id} />;
         })}
       </div>
-      {isSearchResultsLoading && <SkeletonLoader elementsCount={8} />}
+      {isSearchResultsLoading && (
+        <SkeletonLoader totalCount={innerSearchResults.totalCount} />
+      )}
       {COMPANIES_PER_PAGE * (currentPage + 1) <
         +innerSearchResults.totalCount &&
         !isSearchResultsLoading && (
