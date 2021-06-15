@@ -1,25 +1,19 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
-import axios from 'axios';
-
 import SearchSuggestions from './SearchSuggestions';
+import Search from './Search';
 
 import classes from './styles.module.scss';
-import { API_URL, COMPANIES_PER_PAGE } from '../../../constants';
-import useOnClickOutside from '../../../helpers/useOnClickOutside';
-import { SearchResultsContext } from '../../../context/index';
 
-let timer;
+import useOnClickOutside from '../../../helpers/useOnClickOutside';
 
 export default function Header() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [isSearchSuggestionVisible, setIsSearchSuggestionVisible] =
     useState(false);
-
-  const { setCurrentPage } = useContext(SearchResultsContext);
 
   const searchContainerRef = useRef();
 
@@ -37,23 +31,6 @@ export default function Header() {
 
   const hideSearchSuggestions = () => {
     setIsSearchSuggestionVisible(false);
-  };
-
-  const search = (event) => {
-    event.preventDefault();
-    if (searchTerm.trim() === '') {
-      return;
-    }
-    setCurrentPage(0);
-    hideSearchSuggestions();
-    clearTimeout(timer);
-    router.push(
-      `/?term=${encodeURIComponent(
-        searchTerm
-      )}&page=0&perPage=${COMPANIES_PER_PAGE}` /* ,
-      undefined,
-      { shallow: true } */
-    );
   };
 
   useEffect(() => {
@@ -75,42 +52,18 @@ export default function Header() {
 
   useOnClickOutside(searchContainerRef, hideSearchSuggestions);
 
-  const getSearchSuggestions = (event) => {
-    if (event.key === 'Enter') {
-      return;
-    }
-    clearTimeout(timer);
-
-    if (searchTerm === '') {
-      // eslint-disable-next-line consistent-return
-      return setSearchSuggestions([]);
-    }
-    timer = setTimeout(() => {
-      axios
-        .get(`${API_URL}/companies/search/suggestions?term=${searchTerm}`)
-        .then((response) => {
-          setSearchSuggestions(response.data.data.companies);
-        })
-        .catch((error) => console.log(error));
-    }, 1000);
-  };
-
   return (
     <header className={classes.Header}>
       <div className={classes.logo}>
         <Image src="/images/Logo1.svg" width={191} height={79} />
       </div>
       <div className={classes.searchContainer} ref={searchContainerRef}>
-        <form onSubmit={search}>
-          <input
-            type="text"
-            placeholder="What company or brand do you want to compare?"
-            className={classes.searchBar}
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            onKeyUp={getSearchSuggestions}
-          />
-        </form>
+        <Search
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          setSearchSuggestions={setSearchSuggestions}
+          hideSearchSuggestions={hideSearchSuggestions}
+        />
         <div className={classes.searchSuggestionsContainer}>
           <SearchSuggestions
             searchSuggestions={searchSuggestions}

@@ -7,7 +7,14 @@ import classes from './styles.module.scss';
 
 const CHECKBOX_HEIGHT = 27;
 
-export default function index({ title, search, defaultSize = 3, values = [] }) {
+export default function index({
+  title,
+  search,
+  defaultSize = 3,
+  values = [],
+  state = [],
+  setState,
+}) {
   const [filterHeight, setFilterHeight] = useState('auto');
   const [isListExpanded, setIsListExpanded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -118,7 +125,25 @@ export default function index({ title, search, defaultSize = 3, values = [] }) {
         {values.map((value) => {
           return (
             <label className={classes.container} key={value}>
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                value={state.includes(value)}
+                onChange={() => {
+                  const indexOfValue = state.indexOf(value);
+                  if (indexOfValue === -1) {
+                    setState((prevState) => {
+                      const newState = [...prevState, value];
+                      return newState;
+                    });
+                  } else {
+                    setState((prevState) => {
+                      const newState = [...prevState];
+                      newState.splice(indexOfValue, 1);
+                      return newState;
+                    });
+                  }
+                }}
+              />
               <span className={classes.checkmark} />
               {value}
             </label>

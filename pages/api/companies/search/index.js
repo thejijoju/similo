@@ -1,5 +1,6 @@
-const { Op } = require('sequelize');
-const { Company } = require('../../../../models');
+const { QueryTypes } = require('sequelize');
+// const { Company } = require('../../../../models');
+const sequelize = require('../../../../config/db');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,8 +13,41 @@ export default async function handler(req, res) {
   const searchTerm = req.query.term;
   const { page } = req.query || 0;
   const { perPage } = req.query || 8;
+  const companySize = req.query.companySize.split(',|');
 
-  const totalCompaniesCount = await Company.count({
+  console.log(companySize.length);
+
+  let companySizeQuery = '';
+  if (companySize[0] !== '') {
+    companySizeQuery = `AND \n`;
+    companySize.forEach((size, index) => {
+      if (index !== companySize.length - 1) {
+        companySizeQuery += ` "size" LIKE '%${size}%' OR`;
+      } else {
+        companySizeQuery += ` "size" LIKE '%${size}%'`;
+      }
+    });
+  }
+
+  const query = `SELECT * FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
+  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') OR LOWER("country") LIKE LOWER('%${searchTerm}%')
+  OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
+  ${companySizeQuery}
+  LIMIT ${perPage} OFFSET ${page * perPage}`;
+
+  const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
+  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') OR LOWER("country") LIKE LOWER('%${searchTerm}%')
+  OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
+  ${companySizeQuery}`;
+
+  const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
+  const totalCompaniesCount = await sequelize.query(countQuery, {
+    type: QueryTypes.SELECT,
+  });
+
+  console.log(totalCompaniesCount[0]);
+
+  /* const totalCompaniesCount = await Company.count({
     where: {
       [Op.or]: [
         { name: { [Op.iLike]: `%${searchTerm}%` } },
@@ -39,11 +73,11 @@ export default async function handler(req, res) {
     },
     limit: perPage,
     offset: page * perPage,
-  });
+  }); */
   return res.json({
     status: 'success',
-    count: companies.length,
-    totalCount: totalCompaniesCount,
-    data: { companies },
+    count: rows.length,
+    totalCount: +totalCompaniesCount[0].count,
+    data: { companies: rows },
   });
 }

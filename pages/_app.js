@@ -8,6 +8,11 @@ import '@/styles/globals.css';
 function MyApp({ Component, pageProps }) {
   const [areCompanyCardsExpanded, setAreCompanyCardsExpanded] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+  const [companySizeFilter, setCompanySizeFilter] = useState([]);
+  const [companyLocationFilter, setCompanyLocationFilter] = useState([]);
+  const [companyExpertiseFilter, setCompanyExpertiseFilter] = useState([]);
+  const [companyRevenueFilter, setCompanyRevenueFilter] = useState([]);
+  const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
 
   return (
     <SearchResultsContext.Provider
@@ -16,6 +21,16 @@ function MyApp({ Component, pageProps }) {
         setAreCompanyCardsExpanded,
         currentPage,
         setCurrentPage,
+        companySizeFilter,
+        setCompanySizeFilter,
+        companyLocationFilter,
+        setCompanyLocationFilter,
+        companyExpertiseFilter,
+        setCompanyExpertiseFilter,
+        companyRevenueFilter,
+        setCompanyRevenueFilter,
+        companyTypeFilter,
+        setCompanyTypeFilter,
       }}
     >
       <Layout>

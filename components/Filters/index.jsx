@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
+import { SearchResultsContext } from '@/context/index';
 import Filter from './Filter';
 
 import classes from './styles.module.scss';
@@ -20,7 +21,7 @@ const COMPANY_SIZES = [
   '501-1,000',
   '1,001-5,000',
   '5,001-10,000',
-  '10,000+',
+  '10,001+',
 ];
 
 const EXPERTISE = [
@@ -45,6 +46,18 @@ const REVENUE = [
 const COMPANY_TYPES = ['Public', 'Private', 'Subsidiary'];
 
 export default function Filters() {
+  const {
+    companySizeFilter,
+    setCompanySizeFilter,
+    companyLocationFilter,
+    setCompanyLocationFilter,
+    companyExpertiseFilter,
+    setCompanyExpertiseFilter,
+    companyRevenueFilter,
+    setCompanyRevenueFilter,
+    companyTypeFilter,
+    setCompanyTypeFilter,
+  } = useContext(SearchResultsContext);
   return (
     <div className={classes.Filters}>
       <div className={classes.buttons}>
@@ -55,11 +68,42 @@ export default function Filters() {
           Most relevant <i>arrow down</i>
         </button>
       </div>
-      <Filter title="Location" values={COUNTRIES} defaultSize={3} search />
-      <Filter values={COMPANY_SIZES} defaultSize={4} title="Company size" />
-      <Filter values={EXPERTISE} defaultSize={4} title="Expertise" />
-      <Filter title="Revenue" values={REVENUE} defaultSize={3} />
-      <Filter title="Company Type" values={COMPANY_TYPES} defaultSize={3} />
+      <Filter
+        title="Location"
+        values={COUNTRIES}
+        defaultSize={3}
+        search
+        state={companyLocationFilter}
+        setState={setCompanyLocationFilter}
+      />
+      <Filter
+        values={COMPANY_SIZES}
+        defaultSize={4}
+        title="Company size"
+        setState={setCompanySizeFilter}
+        state={companySizeFilter}
+      />
+      <Filter
+        values={EXPERTISE}
+        defaultSize={4}
+        title="Expertise"
+        state={companyExpertiseFilter}
+        setState={setCompanyExpertiseFilter}
+      />
+      <Filter
+        title="Revenue"
+        values={REVENUE}
+        defaultSize={3}
+        state={companyRevenueFilter}
+        setState={setCompanyRevenueFilter}
+      />
+      <Filter
+        title="Company Type"
+        values={COMPANY_TYPES}
+        defaultSize={3}
+        state={companyTypeFilter}
+        setState={setCompanyTypeFilter}
+      />
     </div>
   );
 }

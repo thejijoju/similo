@@ -3,6 +3,7 @@
   "/_document": "pages/_document.js",
   "/_error": "pages/_error.js",
   "/": "pages/index.js",
+  "/api/companies/search/suggestions": "pages/api/companies/search/suggestions.js",
   "/api/companies/search": "pages/api/companies/search.js",
   "/next/dist/pages/_error": "pages/next/dist/pages/_error.js"
 }
