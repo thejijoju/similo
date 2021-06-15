@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       logoPath: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(2048),
       },
       websiteUrl: {
         type: DataTypes.STRING,
@@ -34,10 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       locations: {
-        type: DataTypes.STRING,
-      },
-      country: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(2048),
       },
       parentCompany: {
         type: DataTypes.STRING,
@@ -64,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       expertise: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(2048),
       },
     },
     {

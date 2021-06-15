@@ -13,16 +13,17 @@
   overflow: hidden;
   transition: height ease-in-out 0.2s;
   .logo {
+    width: 75px;
     min-width: 75px;
-    max-width: 75px;
+    height: 61px;
     min-height: 61px;
-    max-height: 61px;
     margin-left: 26px;
     margin-top: 21px;
     margin-bottom: 15px;
     margin-right: 32px;
-    background-size: cover;
-    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    //background-position: center;
   }
   .companyInfo {
     width: 100%;

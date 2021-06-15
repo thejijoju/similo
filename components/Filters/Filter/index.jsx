@@ -127,7 +127,7 @@ export default function index({
             <label className={classes.container} key={value}>
               <input
                 type="checkbox"
-                value={state.includes(value)}
+                checked={state.includes(value)}
                 onChange={() => {
                   const indexOfValue = state.indexOf(value);
                   if (indexOfValue === -1) {

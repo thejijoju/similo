@@ -13,7 +13,7 @@ module.exports = {
         unique: true,
       },
       logoPath: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(2048),
       },
       websiteUrl: {
         type: Sequelize.STRING,
@@ -22,10 +22,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       locations: {
-        type: Sequelize.STRING,
-      },
-      country: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(2048),
       },
       parentCompany: {
         type: Sequelize.STRING,
@@ -52,7 +49,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       expertise: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(2048),
       },
       createdAt: {
         allowNull: false,

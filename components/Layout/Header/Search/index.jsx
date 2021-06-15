@@ -16,7 +16,7 @@ export default function Search({
   setSearchSuggestions,
   hideSearchSuggestions,
 }) {
-  const { setCurrentPage, companySizeFilter } =
+  const { setCurrentPage, companySizeFilter, companyExpertiseFilter } =
     useContext(SearchResultsContext);
   const router = useRouter();
 
@@ -53,6 +53,7 @@ export default function Search({
       page: 0,
       perPage: COMPANIES_PER_PAGE,
       companySize: companySizeFilter.join(',|'),
+      expertise: companyExpertiseFilter.join(','),
     };
     const queryString = qs.stringify(queryObject);
 
@@ -71,7 +72,7 @@ export default function Search({
 
   useEffect(() => {
     search();
-  }, [companySizeFilter]);
+  }, [companySizeFilter, companyExpertiseFilter]);
 
   return (
     <form onSubmit={search} className={classes.Search}>

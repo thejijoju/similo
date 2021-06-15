@@ -13,39 +13,55 @@ export default async function handler(req, res) {
   const searchTerm = req.query.term;
   const { page } = req.query || 0;
   const { perPage } = req.query || 8;
-  const companySize = req.query.companySize.split(',|');
 
-  console.log(companySize.length);
+  let companySize = req.query.companySize || '';
+  companySize = companySize.split(',|');
+  let expertise = req.query.expertise || '';
+  expertise = expertise.split(',');
 
   let companySizeQuery = '';
   if (companySize[0] !== '') {
-    companySizeQuery = `AND \n`;
+    companySizeQuery = `AND \n(`;
     companySize.forEach((size, index) => {
       if (index !== companySize.length - 1) {
         companySizeQuery += ` "size" LIKE '%${size}%' OR`;
       } else {
-        companySizeQuery += ` "size" LIKE '%${size}%'`;
+        companySizeQuery += ` "size" LIKE '%${size}%' )`;
       }
     });
   }
 
+  let expertiseQuery = '';
+  if (expertise[0] !== '') {
+    expertiseQuery = `AND \n(`;
+    expertise.forEach((size, index) => {
+      if (index !== expertise.length - 1) {
+        expertiseQuery += ` "expertise" LIKE '%${size}%' OR`;
+      } else {
+        expertiseQuery += ` "expertise" LIKE '%${size}%' )`;
+      }
+    });
+  }
+
+  // console.log(expertiseQuery);
+
   const query = `SELECT * FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
-  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') OR LOWER("country") LIKE LOWER('%${searchTerm}%')
+  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') 
   OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
   ${companySizeQuery}
+  ${expertiseQuery}
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
   const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
-  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') OR LOWER("country") LIKE LOWER('%${searchTerm}%')
+  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') 
   OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
-  ${companySizeQuery}`;
+  ${companySizeQuery}
+  ${expertiseQuery}`;
 
   const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
   });
-
-  console.log(totalCompaniesCount[0]);
 
   /* const totalCompaniesCount = await Company.count({
     where: {

@@ -24,13 +24,13 @@ const COMPANY_SIZES = [
   '10,001+',
 ];
 
-const EXPERTISE = [
+/* const EXPERTISE = [
   'Hide All',
   'Ready to wear',
   'Accessories',
   'Footwear',
   'Something else',
-];
+]; */
 
 const REVENUE = [
   '0-1 million',
@@ -45,7 +45,7 @@ const REVENUE = [
 
 const COMPANY_TYPES = ['Public', 'Private', 'Subsidiary'];
 
-export default function Filters() {
+export default function Filters({ expertise }) {
   const {
     companySizeFilter,
     setCompanySizeFilter,
@@ -58,6 +58,7 @@ export default function Filters() {
     companyTypeFilter,
     setCompanyTypeFilter,
   } = useContext(SearchResultsContext);
+
   return (
     <div className={classes.Filters}>
       <div className={classes.buttons}>
@@ -84,7 +85,15 @@ export default function Filters() {
         state={companySizeFilter}
       />
       <Filter
-        values={EXPERTISE}
+        values={expertise.sort((a, b) => {
+          if (a < b) {
+            return -1;
+          }
+          if (a > b) {
+            return 1;
+          }
+          return 0;
+        })}
         defaultSize={4}
         title="Expertise"
         state={companyExpertiseFilter}
