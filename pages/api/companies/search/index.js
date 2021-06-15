@@ -18,6 +18,8 @@ export default async function handler(req, res) {
   companySize = companySize.split(',|');
   let expertise = req.query.expertise || '';
   expertise = expertise.split(',');
+  let companyType = req.query.companyType || '';
+  companyType = companyType.split(',');
 
   let companySizeQuery = '';
   if (companySize[0] !== '') {
@@ -34,11 +36,23 @@ export default async function handler(req, res) {
   let expertiseQuery = '';
   if (expertise[0] !== '') {
     expertiseQuery = `AND \n(`;
-    expertise.forEach((size, index) => {
+    expertise.forEach((tag, index) => {
       if (index !== expertise.length - 1) {
-        expertiseQuery += ` "expertise" LIKE '%${size}%' OR`;
+        expertiseQuery += ` "expertise" LIKE '%${tag}%' OR`;
       } else {
-        expertiseQuery += ` "expertise" LIKE '%${size}%' )`;
+        expertiseQuery += ` "expertise" LIKE '%${tag}%' )`;
+      }
+    });
+  }
+
+  let companyTypeQuery = '';
+  if (companyType[0] !== '') {
+    companyTypeQuery = `AND \n(`;
+    companyType.forEach((type, index) => {
+      if (index !== companyType.length - 1) {
+        companyTypeQuery += ` "type" LIKE '%${type}%' OR`;
+      } else {
+        companyTypeQuery += ` "type" LIKE '%${type}%' )`;
       }
     });
   }
@@ -50,13 +64,15 @@ export default async function handler(req, res) {
   OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
   ${companySizeQuery}
   ${expertiseQuery}
+  ${companyTypeQuery}
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
   const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
   OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') 
   OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
   ${companySizeQuery}
-  ${expertiseQuery}`;
+  ${expertiseQuery}
+  ${companyTypeQuery}`;
 
   const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
   const totalCompaniesCount = await sequelize.query(countQuery, {

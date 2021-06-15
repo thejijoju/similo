@@ -43,7 +43,7 @@ const REVENUE = [
   '50+ billion',
 ];
 
-const COMPANY_TYPES = ['Public', 'Private', 'Subsidiary'];
+const COMPANY_TYPES = ['Public', 'Private', 'Subsidary'];
 
 export default function Filters({ expertise }) {
   const {
