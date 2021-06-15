@@ -5,6 +5,16 @@ import classnames from 'classnames';
 import classes from './styles.module.scss';
 import { SearchResultsContext } from '../../../context/index';
 
+function convertNumberToString(number) {
+  if (!number) {
+    return null;
+  }
+  const parsedNumber = parseInt(number, 10);
+  return `€${parsedNumber.toLocaleString('en-US', {
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 export default function SearchResult({ company }) {
   const [isCompanyCardExpanded, setIsCompanyCardExpanded] = useState(false);
   const [companyCardHeight, setCompanyCardHeight] = useState('');
@@ -105,7 +115,9 @@ export default function SearchResult({ company }) {
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Revenue</span>
-                <span className={classes.content}>{company.revenue}</span>
+                <span className={classes.content}>
+                  {convertNumberToString(company.revenue)}
+                </span>
               </div>
             </div>
             <div className={classes.divider} />
@@ -119,7 +131,9 @@ export default function SearchResult({ company }) {
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Number of employees</span>
-                <span className={classes.content}>{company.revenue}</span>
+                <span className={classes.content}>
+                  {company.employeesCount}
+                </span>
               </div>
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Area served</span>

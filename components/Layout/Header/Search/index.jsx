@@ -21,6 +21,7 @@ export default function Search({
     companySizeFilter,
     companyExpertiseFilter,
     companyTypeFilter,
+    companyRevenueFilter,
   } = useContext(SearchResultsContext);
   const router = useRouter();
 
@@ -59,6 +60,7 @@ export default function Search({
       companySize: companySizeFilter.join(',|'),
       expertise: companyExpertiseFilter.join(','),
       companyType: companyTypeFilter.join(','),
+      revenue: companyRevenueFilter.join(',|'),
     };
     const queryString = qs.stringify(queryObject);
 
@@ -77,7 +79,12 @@ export default function Search({
 
   useEffect(() => {
     search();
-  }, [companySizeFilter, companyExpertiseFilter, companyTypeFilter]);
+  }, [
+    companySizeFilter,
+    companyExpertiseFilter,
+    companyTypeFilter,
+    companyRevenueFilter,
+  ]);
 
   return (
     <form onSubmit={search} className={classes.Search}>

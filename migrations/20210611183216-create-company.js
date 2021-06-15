@@ -40,7 +40,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       revenue: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
       },
       yearOfFoundation: {
         type: Sequelize.INTEGER,

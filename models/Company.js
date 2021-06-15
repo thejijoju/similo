@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       revenue: {
-        type: DataTypes.STRING,
+        type: DataTypes.BIGINT,
       },
       yearOfFoundation: {
         type: DataTypes.INTEGER,

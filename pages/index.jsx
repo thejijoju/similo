@@ -15,8 +15,12 @@ import { API_URL } from '../constants/index';
 export default function HomePage({ searchResults, expertise }) {
   const router = useRouter();
 
-  const { setCompanyExpertiseFilter, setCompanySizeFilter } =
-    useContext(SearchResultsContext);
+  const {
+    setCompanyExpertiseFilter,
+    setCompanySizeFilter,
+    setCompanyRevenueFilter,
+    setCompanyTypeFilter,
+  } = useContext(SearchResultsContext);
 
   useEffect(() => {
     const expertiseFilters = router.query.expertise
@@ -24,10 +28,20 @@ export default function HomePage({ searchResults, expertise }) {
       : [];
     setCompanyExpertiseFilter(expertiseFilters);
 
+    const typeFilters = router.query.companyType
+      ? router.query.companyType.split(',')
+      : [];
+    setCompanyTypeFilter(typeFilters);
+
     const sizeFilters = router.query.companySize
       ? router.query.companySize.split(',|')
       : [];
     setCompanySizeFilter(sizeFilters);
+
+    const revenueFilters = router.query.revenue
+      ? router.query.revenue.split(',|')
+      : [];
+    setCompanyRevenueFilter(revenueFilters);
   }, []);
 
   return (

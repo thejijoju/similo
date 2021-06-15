@@ -1,3 +1,5 @@
+import convertStringRangesToNumberRanges from '../../../../helpers/convertStringRangesToNumberRanges';
+
 const { QueryTypes } = require('sequelize');
 // const { Company } = require('../../../../models');
 const sequelize = require('../../../../config/db');
@@ -16,10 +18,17 @@ export default async function handler(req, res) {
 
   let companySize = req.query.companySize || '';
   companySize = companySize.split(',|');
+
   let expertise = req.query.expertise || '';
   expertise = expertise.split(',');
+
   let companyType = req.query.companyType || '';
   companyType = companyType.split(',');
+
+  let revenue = req.query.revenue || '';
+  revenue = revenue.split(',|');
+
+  const revenueRange = convertStringRangesToNumberRanges(revenue);
 
   let companySizeQuery = '';
   if (companySize[0] !== '') {
@@ -57,6 +66,18 @@ export default async function handler(req, res) {
     });
   }
 
+  let companyRevenueQuery = '';
+  if (revenueRange) {
+    companyRevenueQuery = `AND \n(`;
+    revenueRange.forEach((range, index) => {
+      if (index !== revenueRange.length - 1) {
+        companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} OR`;
+      } else {
+        companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} )`;
+      }
+    });
+  }
+
   // console.log(expertiseQuery);
 
   const query = `SELECT * FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
@@ -65,6 +86,7 @@ export default async function handler(req, res) {
   ${companySizeQuery}
   ${expertiseQuery}
   ${companyTypeQuery}
+  ${companyRevenueQuery}
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
   const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
@@ -72,7 +94,8 @@ export default async function handler(req, res) {
   OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
   ${companySizeQuery}
   ${expertiseQuery}
-  ${companyTypeQuery}`;
+  ${companyTypeQuery}
+  ${companyRevenueQuery}`;
 
   const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
   const totalCompaniesCount = await sequelize.query(countQuery, {
@@ -112,4 +135,11 @@ export default async function handler(req, res) {
     totalCount: +totalCompaniesCount[0].count,
     data: { companies: rows },
   });
+
+  /*   return res.json({
+    status: 'success',
+    count: 0,
+    totalCount: 0,
+    data: { companies: [] },
+  }); */
 }
