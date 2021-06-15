@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next build && next start -p 3026",
+    "prod:start": "pm2 start yarn --name \"similo\" --interpreter bash -- start",
     "lint": "eslint ./ --ext js,jsx",
     "lint:fix": "eslint ./ --ext js,jsx --fix",
     "migrate": "npx sequelize db:migrate && npx sequelize db:seed:all",
