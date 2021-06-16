@@ -1,7 +1,10 @@
+/* eslint-disable consistent-return */
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 const fs = require('fs');
+const { QueryTypes } = require('sequelize');
 const { Company } = require('../../../models');
+const sequelize = require('../../../config/db');
 
 function convertRevenueToNumber(revenue) {
   let multiplier = 1000;
@@ -19,7 +22,24 @@ function convertRevenueToNumber(revenue) {
   return value * multiplier;
 }
 
-export default function handler() {
+export default function handler(req, res) {
+  if (req.query.addVector) {
+    return sequelize
+      .query(
+        `UPDATE "Companies" SET "searchVector" = to_tsvector(name || ' ' || coalesce("HQLocation", '') 
+    || ' ' || coalesce(locations, '') || ' ' 
+    || coalesce(expertise, '') || ' ' || coalesce(industry, ''))`,
+        { type: QueryTypes.UPDATE }
+      )
+      .then(() => {
+        res.json({ status: 'success' });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.json({ status: 'fail', message: error.message });
+      });
+  }
+  const promises = [];
   const data = JSON.parse(
     fs.readFileSync(`${process.cwd()}/pages/api/companies/output.json`, 'utf8')
   );
@@ -41,6 +61,14 @@ export default function handler() {
         companyData[key] = parseInt(companyData[key].replace(/,/g, ''), 10);
       }
     }
-    Company.create(companyData);
+    promises.push(Company.create(companyData));
   });
+  Promise.all(promises)
+    .then(() => {
+      res.json({ status: 'success' });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.json({ status: 'fail', message: error.message });
+    });
 }

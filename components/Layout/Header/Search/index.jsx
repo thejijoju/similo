@@ -22,6 +22,7 @@ export default function Search({
     companyExpertiseFilter,
     companyTypeFilter,
     companyRevenueFilter,
+    companyLocationFilter,
   } = useContext(SearchResultsContext);
   const router = useRouter();
 
@@ -79,6 +80,10 @@ export default function Search({
       queryObject.revenue = companyRevenueFilter.join(',|');
     }
 
+    if (companyLocationFilter.length) {
+      queryObject.locations = companyLocationFilter.join(',');
+    }
+
     const queryString = qs.stringify(queryObject);
 
     setCurrentPage(0);
@@ -101,6 +106,7 @@ export default function Search({
     companyExpertiseFilter,
     companyTypeFilter,
     companyRevenueFilter,
+    companyLocationFilter,
   ]);
 
   return (

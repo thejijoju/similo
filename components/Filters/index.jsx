@@ -5,7 +5,7 @@ import Filter from './Filter';
 
 import classes from './styles.module.scss';
 
-const COUNTRIES = [
+/* const COUNTRIES = [
   'Germany',
   'France',
   'United Kingdom',
@@ -13,7 +13,7 @@ const COUNTRIES = [
   'Spain',
   'Italy',
   'Norway',
-];
+]; */
 
 const COMPANY_SIZES = [
   '0-200',
@@ -45,7 +45,7 @@ const REVENUE = [
 
 const COMPANY_TYPES = ['Public', 'Private', 'Subsidary'];
 
-export default function Filters({ expertise }) {
+export default function Filters({ expertise, locations }) {
   const {
     companySizeFilter,
     setCompanySizeFilter,
@@ -98,7 +98,7 @@ export default function Filters({ expertise }) {
       </div>
       <Filter
         title="Location"
-        values={COUNTRIES}
+        values={locations}
         defaultSize={3}
         search
         state={companyLocationFilter}

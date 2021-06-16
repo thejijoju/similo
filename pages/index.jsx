@@ -12,7 +12,7 @@ import { SearchResultsContext } from '@/context/index';
 import classes from './styles.module.scss';
 import { API_URL } from '../constants/index';
 
-export default function HomePage({ searchResults, expertise }) {
+export default function HomePage({ searchResults, expertise, locations }) {
   const router = useRouter();
 
   const {
@@ -50,7 +50,7 @@ export default function HomePage({ searchResults, expertise }) {
         <title>Similo</title>
       </Head>
       <main className={classes.main}>
-        <Filters expertise={expertise} />
+        <Filters expertise={expertise} locations={locations} />
         <SearchResults searchResults={searchResults} />
       </main>
     </div>
@@ -73,11 +73,23 @@ export async function getServerSideProps(context) {
   }
 
   const expertise = await axios.get(`${API_URL}/companies/expertise`);
+  const locations = await axios.get(`${API_URL}/companies/locations`);
+
+  const sortedLocations = [...locations.data.data.locations].sort((a, b) => {
+    if (a < b) {
+      return -1;
+    }
+    if (a > b) {
+      return 1;
+    }
+    return 0;
+  });
 
   return {
     props: {
       searchResults,
       expertise: expertise.data.data.expertise,
+      locations: sortedLocations,
     },
   };
 }

@@ -63,10 +63,19 @@ module.exports = (sequelize, DataTypes) => {
       expertise: {
         type: DataTypes.STRING(2048),
       },
+      searchVector: {
+        type: DataTypes.TSVECTOR,
+      },
     },
     {
       sequelize,
       modelName: 'Company',
+      indexes: [
+        {
+          fields: ['searchVector'],
+          using: 'gin',
+        },
+      ],
     }
   );
   return Company;

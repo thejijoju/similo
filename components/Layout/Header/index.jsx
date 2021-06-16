@@ -21,7 +21,7 @@ export default function Header() {
 
   useEffect(() => {
     if (router.query.term) {
-      setSearchTerm(router.query.term);
+      setSearchTerm(decodeURI(router.query.term));
     }
   }, []);
 

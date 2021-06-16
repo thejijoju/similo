@@ -13,36 +13,32 @@ export default async function handler(req, res) {
       .json({ message: `Method ${req.method} not allowed` });
   }
 
-  const searchTerm = req.query.term;
+  let searchTerm = req.query.term || '';
+  let searchTermArray = decodeURI(searchTerm).split(' ');
+  searchTermArray = searchTermArray.map((term) => {
+    return `${term}:*`;
+  });
+  if (searchTermArray.length === 1) {
+    searchTerm = searchTermArray.join('');
+  } else {
+    searchTerm = searchTermArray.join(' | ');
+  }
+
   const { page } = req.query || 0;
   const { perPage } = req.query || 8;
 
-  let companySize = req.query.companySize || '';
-  companySize = companySize.split(',|');
+  const companySize = (req.query.companySize || '').split(',|');
   const sizeRanges = convertSizeRanges(companySize);
 
-  let expertise = req.query.expertise || '';
-  expertise = expertise.split(',');
+  const expertise = (req.query.expertise || '').split(',');
 
-  let companyType = req.query.companyType || '';
-  companyType = companyType.split(',');
+  const companyType = (req.query.companyType || '').split(',');
 
-  let revenue = req.query.revenue || '';
-  revenue = revenue.split(',|');
+  const revenue = (req.query.revenue || '').split(',|');
   const revenueRanges = convertRevenueRanges(revenue);
 
-  /* const companySizeQuery = '';
-     if (companySize[0] !== '') {
-    companySizeQuery = `AND \n(`;
-    companySize.forEach((size, index) => {
-      if (index !== companySize.length - 1) {
-        companySizeQuery += ` "size" LIKE '%${size}%' OR`;
-      } else {
-        companySizeQuery += ` "size" LIKE '%${size}%' )`;
-      }
-    });
-  }
- */
+  const locations = (req.query.locations || '').split(',');
+
   let expertiseQuery = '';
   if (expertise[0] !== '') {
     expertiseQuery = `AND \n(`;
@@ -91,68 +87,62 @@ export default async function handler(req, res) {
     });
   }
 
-  // console.log(expertiseQuery);
+  let locationsQuery = '';
+  if (locations[0] !== '') {
+    locationsQuery = `AND \n(`;
+    locations.forEach((location, index) => {
+      if (index !== locations.length - 1) {
+        locationsQuery += ` "locations" LIKE '%${location}%' OR`;
+      } else {
+        locationsQuery += ` "locations" LIKE '%${location}%' )`;
+      }
+    });
+  }
 
-  const query = `SELECT * FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
-  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') 
-  OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
+  /* const query = `SELECT * FROM "Companies" WHERE to_tsvector(name || ' ' || coalesce("HQLocation", '') || ' ' || coalesce(locations, '') || ' ' 
+  || coalesce(expertise, '') || ' ' || coalesce(industry, '')) @@ to_tsquery('english', '${searchTerm}')
   ${companySizeQuery}
   ${expertiseQuery}
   ${companyTypeQuery}
   ${companyRevenueQuery}
+  ${locationsQuery}
+  ORDER BY ts_rank(to_tsvector(name || ' ' || coalesce("HQLocation", '') || ' ' || coalesce(locations, '') || ' ' 
+  || coalesce(expertise, '') || ' ' || coalesce(industry, '')), to_tsquery('english', '${searchTerm}')) DESC
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
-  const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (LOWER("name") LIKE LOWER('%${searchTerm}%') 
-  OR LOWER("HQLocation") LIKE LOWER('%${searchTerm}%') OR LOWER("locations") LIKE LOWER('%${searchTerm}%') 
-  OR LOWER("expertise") LIKE LOWER('%${searchTerm}%') OR LOWER("industry") LIKE LOWER('%${searchTerm}%'))
+  const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE to_tsvector(name || ' ' || coalesce("HQLocation", '') || ' ' || coalesce(locations, '') || ' ' 
+  || coalesce(expertise, '') || ' ' || coalesce(industry, '')) @@ to_tsquery('english', '${searchTerm}')
   ${companySizeQuery}
   ${expertiseQuery}
   ${companyTypeQuery}
-  ${companyRevenueQuery}`;
+  ${companyRevenueQuery}
+  ${locationsQuery}`; */
+
+  const query = `SELECT * FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
+  ${companySizeQuery}
+  ${expertiseQuery}
+  ${companyTypeQuery}
+  ${companyRevenueQuery}
+  ${locationsQuery}
+  ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, id
+  LIMIT ${perPage} OFFSET ${page * perPage}`;
+
+  const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
+  ${companySizeQuery}
+  ${expertiseQuery}
+  ${companyTypeQuery}
+  ${companyRevenueQuery}
+  ${locationsQuery}`;
 
   const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
   });
 
-  /* const totalCompaniesCount = await Company.count({
-    where: {
-      [Op.or]: [
-        { name: { [Op.iLike]: `%${searchTerm}%` } },
-        { HQLocation: { [Op.iLike]: `%${searchTerm}%` } },
-        { locations: { [Op.iLike]: `%${searchTerm}%` } },
-        { country: { [Op.iLike]: `%${searchTerm}%` } },
-        { expertise: { [Op.iLike]: `%${searchTerm}%` } },
-        { industry: { [Op.iLike]: `%${searchTerm}%` } },
-      ],
-    },
-  });
-
-  const companies = await Company.findAll({
-    where: {
-      [Op.or]: [
-        { name: { [Op.iLike]: `%${searchTerm}%` } },
-        { HQLocation: { [Op.iLike]: `%${searchTerm}%` } },
-        { locations: { [Op.iLike]: `%${searchTerm}%` } },
-        { country: { [Op.iLike]: `%${searchTerm}%` } },
-        { expertise: { [Op.iLike]: `%${searchTerm}%` } },
-        { industry: { [Op.iLike]: `%${searchTerm}%` } },
-      ],
-    },
-    limit: perPage,
-    offset: page * perPage,
-  }); */
   return res.json({
     status: 'success',
     count: rows.length,
     totalCount: +totalCompaniesCount[0].count,
     data: { companies: rows },
   });
-
-  /*   return res.json({
-    status: 'success',
-    count: 0,
-    totalCount: 0,
-    data: { companies: [] },
-  }); */
 }
