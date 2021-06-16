@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 3026",
     "prod:start": "NODE_ENV=production pm2 start yarn --name \"similo-next\" --interpreter bash -- start",
-    "prod:restart": "NODE_ENV=production yarn build && pm2 delete \"similo-next\" && yarn prod:start",
+    "prod:restart": "yarn build && pm2 restart \"similo-next\"",
     "prod:migrate": "npx sequelize db:migrate",
     "lint": "eslint ./ --ext js,jsx",
     "lint:fix": "eslint ./ --ext js,jsx --fix",
