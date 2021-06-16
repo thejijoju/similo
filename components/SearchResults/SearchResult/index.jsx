@@ -132,9 +132,11 @@ export default function SearchResult({ company }) {
               <div className={classes.infoBlock}>
                 <span className={classes.title}>Number of employees</span>
                 <span className={classes.content}>
-                  {company.employeesCount.toLocaleString('en-US', {
-                    maximumFractionDigits: 2,
-                  })}
+                  {company.employeesCount
+                    ? company.employeesCount.toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      })
+                    : null}
                 </span>
               </div>
               <div className={classes.infoBlock}>
