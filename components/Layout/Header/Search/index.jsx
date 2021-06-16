@@ -57,11 +57,28 @@ export default function Search({
       term: encodeURIComponent(searchTerm),
       page: 0,
       perPage: COMPANIES_PER_PAGE,
-      companySize: companySizeFilter.join(',|'),
+      /*    companySize: companySizeFilter.join(',|'),
       expertise: companyExpertiseFilter.join(','),
       companyType: companyTypeFilter.join(','),
-      revenue: companyRevenueFilter.join(',|'),
+      revenue: companyRevenueFilter.join(',|'), */
     };
+
+    if (companySizeFilter.length) {
+      queryObject.companySize = companySizeFilter.join(',|');
+    }
+
+    if (companyExpertiseFilter.length) {
+      queryObject.expertise = companyExpertiseFilter.join(',');
+    }
+
+    if (companyTypeFilter.length) {
+      queryObject.companyType = companyTypeFilter.join(',');
+    }
+
+    if (companyRevenueFilter.length) {
+      queryObject.revenue = companyRevenueFilter.join(',|');
+    }
+
     const queryString = qs.stringify(queryObject);
 
     setCurrentPage(0);

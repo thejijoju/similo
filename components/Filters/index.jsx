@@ -59,6 +59,24 @@ export default function Filters({ expertise }) {
     setCompanyTypeFilter,
   } = useContext(SearchResultsContext);
 
+  const isFilterActive = () => {
+    return (
+      !!companySizeFilter.length ||
+      !!companyLocationFilter.length ||
+      !!companyExpertiseFilter.length ||
+      !!companyRevenueFilter.length ||
+      !!companyTypeFilter.length
+    );
+  };
+
+  const resetFilters = () => {
+    setCompanySizeFilter([]);
+    setCompanyLocationFilter([]);
+    setCompanyExpertiseFilter([]);
+    setCompanyRevenueFilter([]);
+    setCompanyTypeFilter([]);
+  };
+
   return (
     <div className={classes.Filters}>
       <div className={classes.buttons}>
@@ -68,6 +86,15 @@ export default function Filters({ expertise }) {
         <button type="button" className={classes.mostRelevantButton}>
           Most relevant <i>arrow down</i>
         </button>
+        {isFilterActive() && (
+          <button
+            type="button"
+            className={classes.resetFiltersButton}
+            onClick={resetFilters}
+          >
+            Reset all filters
+          </button>
+        )}
       </div>
       <Filter
         title="Location"
