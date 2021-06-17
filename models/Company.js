@@ -66,6 +66,9 @@ module.exports = (sequelize, DataTypes) => {
       searchVector: {
         type: DataTypes.TSVECTOR,
       },
+      subsidiaries: {
+        type: DataTypes.STRING(2048),
+      },
     },
     {
       sequelize,

@@ -1,7 +1,15 @@
 .Filters {
   width: 266px;
   padding-top: 36px;
-
+  .filtersContainer {
+    display: block;
+    .content {
+      display: none;
+      &.visible {
+        display: block;
+      }
+    }
+  }
   .buttons {
     position: relative;
     display: flex;

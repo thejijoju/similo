@@ -122,9 +122,20 @@
       margin-bottom: 42px;
       .infoBlock {
         display: flex;
-        flex: 1;
         justify-content: space-between;
+        align-items: center;
+        width: 50%;
         padding-right: 67px;
+        &.subsidiaries {
+          margin-top: 29px;
+          .content {
+            font-size: 14px;
+            line-height: 16px;
+            letter-spacing: 0.2px;
+            color: #73c9cb;
+            cursor: pointer;
+          }
+        }
         &:nth-child(3) {
           padding-right: 0;
           padding-left: 67px;
@@ -149,6 +160,7 @@
         justify-content: space-between;
         margin-bottom: 38px;
         .title {
+          min-width: calc(50% + 67px);
           font-size: 15px;
           font-weight: bold;
           line-height: 18px;
@@ -176,6 +188,11 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+        .keyPeople {
+          .title {
+            min-width: calc(50% + 25px);
+          }
+        }
         .infoBlock {
           padding-right: 25px;
           &:nth-child(3) {

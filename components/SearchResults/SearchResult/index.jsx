@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 
 import classnames from 'classnames';
 
+import Subsidiaries from './Subsidiaries';
+
 import classes from './styles.module.scss';
 import { SearchResultsContext } from '../../../context/index';
 
@@ -20,6 +22,8 @@ export default function SearchResult({ company }) {
   const [companyCardHeight, setCompanyCardHeight] = useState('');
   const [isExpandCardButtonRotated, setIsExpandCardButtonRotated] =
     useState(false);
+  const [isSubsidiariesComponentVisible, setIsSubsidiariesComponentVisible] =
+    useState(false);
 
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
@@ -37,6 +41,14 @@ export default function SearchResult({ company }) {
       setIsCompanyCardExpanded(false);
     }, 200);
     setCompanyCardHeight(companyCardInitialHeight.current);
+  };
+
+  const showSubsidiaries = () => {
+    setIsSubsidiariesComponentVisible(true);
+  };
+
+  const hideSubsidiaries = () => {
+    setIsSubsidiariesComponentVisible(false);
   };
 
   useEffect(() => {
@@ -143,6 +155,20 @@ export default function SearchResult({ company }) {
                 <span className={classes.title}>Area served</span>
                 <span className={classes.content}>Worldwide</span>
               </div>
+              {company.subsidiaries && (
+                <div
+                  className={classnames(
+                    classes.infoBlock,
+                    classes.subsidiaries
+                  )}
+                >
+                  <span className={classes.title}>Subsidiaries</span>
+                  <span className={classes.content} onClick={showSubsidiaries}>
+                    List of subsidiaries (
+                    {company.subsidiaries.split(',').length})
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -162,6 +188,13 @@ export default function SearchResult({ company }) {
       >
         Expand card
       </i>
+      {company.subsidiaries && (
+        <Subsidiaries
+          show={isSubsidiariesComponentVisible}
+          onHide={hideSubsidiaries}
+          subsidiaries={company.subsidiaries.split(',')}
+        />
+      )}
     </div>
   );
 }

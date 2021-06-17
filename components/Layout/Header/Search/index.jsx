@@ -84,6 +84,10 @@ export default function Search({
       queryObject.locations = companyLocationFilter.join(',');
     }
 
+    if (router.query.fromSuggestions && !event) {
+      queryObject.fromSuggestions = 'true';
+    }
+
     const queryString = qs.stringify(queryObject);
 
     setCurrentPage(0);

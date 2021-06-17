@@ -16,7 +16,9 @@ export default function SearchSuggestions({
     setSearchTerm(term);
     onHide();
     router.push(
-      `/?term=${encodeURIComponent(term)}&page=0&perPage=${COMPANIES_PER_PAGE}`
+      `/?term=${encodeURIComponent(
+        term
+      )}&page=0&perPage=${COMPANIES_PER_PAGE}&fromSuggestions=true`
     );
   };
 

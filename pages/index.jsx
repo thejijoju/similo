@@ -23,6 +23,7 @@ export default function HomePage({ searchResults, expertise, locations }) {
   } = useContext(SearchResultsContext);
 
   useEffect(() => {
+    console.log(router.query);
     const expertiseFilters = router.query.expertise
       ? router.query.expertise.split(',')
       : [];
@@ -61,13 +62,14 @@ export async function getServerSideProps(context) {
   const { term } = context.query;
 
   let searchResults;
+  const url = context.query.fromSuggestions
+    ? `${API_URL}/companies/search/searchFromSuggestions`
+    : `${API_URL}/companies/search`;
 
   if (!term) {
     searchResults = null;
   } else {
-    const response = await axios.get(
-      `${API_URL}/companies/search?${qs.stringify(context.query)}`
-    );
+    const response = await axios.get(`${url}?${qs.stringify(context.query)}`);
 
     searchResults = response.data;
   }
