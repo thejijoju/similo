@@ -215,21 +215,7 @@ export default function SearchResult({ company }) {
           Expand card
         </i>
       </div>
-      <i
-        className={classnames(
-          classes.expandCard,
-          isExpandCardButtonRotated && classes.rotate
-        )}
-        onClick={() => {
-          if (isCompanyCardExpanded) {
-            collapseCompanyCard();
-          } else {
-            expandCompanyCard();
-          }
-        }}
-      >
-        Expand card
-      </i>
+
       {company.subsidiaries && (
         <Subsidiaries
           show={isSubsidiariesComponentVisible}
