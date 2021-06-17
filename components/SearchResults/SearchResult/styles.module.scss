@@ -172,6 +172,18 @@
   }
 }
 
+.feedbackContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: -16px;
+  margin-bottom: 23px;
+  font-size: 12px;
+  line-height: 14px;
+  color: #81868B;
+  cursor: pointer;
+}
+
 @media (max-width: 1367px) {
   .SearchResult {
     .details {

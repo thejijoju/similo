@@ -1,0 +1,55 @@
+.Wrapper {
+  color: #181719;
+  .title {
+    font-size: 25px;
+    line-height: 29px;
+    color: #181719;
+  }
+  .subTitle {
+    font-size: 18px;
+    line-height: 21px;
+    margin-top: 17px;
+  }
+  .textarea {
+    margin-top: 37px;
+    border: 1px solid #E5E2E2;
+    box-sizing: border-box;
+    border-radius: 13px;
+    outline: none;
+    width: 458px;
+    height: 261px;
+    resize: none;
+    padding: 14px 10px;
+  }
+  .description {
+    font-size: 12px;
+    line-height: 14px;
+  }
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 21px;
+    .btn {
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 21px;
+    }
+    .btn + .btn {
+      margin-left: 18px;
+    }
+    .btnCancel {
+      color: #181719;
+      background-color: transparent;
+      border: none;
+    }
+
+    .btnSend {
+      background: #D8D8D8;
+      mix-blend-mode: normal;
+      opacity: 0.56;
+      border: 1px solid #E5E2E2;
+      box-sizing: border-box;
+      border-radius: 13px;
+    }
+  }
+}
