@@ -24,7 +24,10 @@ export default async function handler(req, res) {
     searchTerm = searchTermArray.join(' | ');
   }
 
-  const { page } = req.query || 0;
+  let { page } = req.query;
+  if (!page) {
+    page = 0;
+  }
   const { perPage } = req.query || 8;
 
   const companySize = (req.query.companySize || '').split(',|');
@@ -99,32 +102,13 @@ export default async function handler(req, res) {
     });
   }
 
-  /* const query = `SELECT * FROM "Companies" WHERE to_tsvector(name || ' ' || coalesce("HQLocation", '') || ' ' || coalesce(locations, '') || ' ' 
-  || coalesce(expertise, '') || ' ' || coalesce(industry, '')) @@ to_tsquery('english', '${searchTerm}')
-  ${companySizeQuery}
-  ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${locationsQuery}
-  ORDER BY ts_rank(to_tsvector(name || ' ' || coalesce("HQLocation", '') || ' ' || coalesce(locations, '') || ' ' 
-  || coalesce(expertise, '') || ' ' || coalesce(industry, '')), to_tsquery('english', '${searchTerm}')) DESC
-  LIMIT ${perPage} OFFSET ${page * perPage}`;
-
-  const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE to_tsvector(name || ' ' || coalesce("HQLocation", '') || ' ' || coalesce(locations, '') || ' ' 
-  || coalesce(expertise, '') || ' ' || coalesce(industry, '')) @@ to_tsquery('english', '${searchTerm}')
-  ${companySizeQuery}
-  ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${locationsQuery}`; */
-
   const query = `SELECT * FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
   ${companySizeQuery}
   ${expertiseQuery}
   ${companyTypeQuery}
   ${companyRevenueQuery}
   ${locationsQuery}
-  ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, id
+  ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
   const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
@@ -143,6 +127,7 @@ export default async function handler(req, res) {
     status: 'success',
     count: rows.length,
     totalCount: +totalCompaniesCount[0].count,
+    page,
     data: { companies: rows },
   });
 }

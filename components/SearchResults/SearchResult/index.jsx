@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
+import { useRouter } from 'next/router';
 
 import classnames from 'classnames';
 
@@ -36,6 +37,7 @@ export default function SearchResult({ company }) {
   const openModal = () => {
     setIsOpenModal(true);
   };
+  const router = useRouter();
 
   const expandCompanyCard = () => {
     setIsExpandCardButtonRotated(true);
@@ -67,7 +69,6 @@ export default function SearchResult({ company }) {
 
   useEffect(() => {
     if (isCompanyCardExpanded) {
-      console.log(companyCardRef.current.scrollHeight);
       setCompanyCardHeight(companyCardRef.current.scrollHeight + 42);
     }
   }, [isCompanyCardExpanded]);
@@ -79,6 +80,21 @@ export default function SearchResult({ company }) {
       collapseCompanyCard();
     }
   }, [areCompanyCardsExpanded]);
+
+  useEffect(() => {
+    if (
+      router.query.fromSuggestions &&
+      decodeURI(router.query.term) === company.name
+    ) {
+      console.log('SADSADAS');
+      setTimeout(() => {
+        companyCardRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+      setTimeout(() => {
+        expandCompanyCard();
+      }, 600);
+    }
+  }, []);
 
   return (
     <>

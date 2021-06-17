@@ -13,11 +13,9 @@ export default async function handler(req, res) {
       .json({ message: `Method ${req.method} not allowed` });
   }
 
-  console.log('SEARCH FROM SUGGESTIONS');
+  const searchTerm = decodeURI(req.query.term) || '';
 
-  const searchTerm = req.query.term || '';
-
-  const { page } = req.query || 0;
+  let { page } = req.query;
   const { perPage } = req.query || 8;
 
   const companySize = (req.query.companySize || '').split(',|');
@@ -39,28 +37,35 @@ export default async function handler(req, res) {
   } catch (error) {
     return res
       .status(400)
-      .json({ status: 'fail', message: 'No such comapny exists' });
+      .json({ status: 'fail', message: 'No such company exists' });
+  }
+
+  if (!company) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'No such company exists',
+    });
   }
 
   if (!company.industry) {
     return res.json({
       status: 'success',
-      count: 1,
-      totalCount: 1,
       data: { companies: company },
     });
   }
 
-  const companyRowNumber = await sequelize.query(
-    `SELECT rnum FROM 
-  (SELECT *, row_number() OVER () as rnum FROM "Companies" WHERE industry='${company.industry}') a
+  if (!page) {
+    const companyRowNumber = await sequelize.query(
+      `SELECT rnum FROM 
+  (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry='${company.industry}') a
   WHERE a.name='${company.name}'`,
-    {
-      type: QueryTypes.SELECT,
-    }
-  );
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
 
-  console.log(companyRowNumber);
+    page = Math.floor((companyRowNumber[0].rnum - 0.1) / perPage);
+  }
 
   let expertiseQuery = '';
   if (expertise[0] !== '') {
@@ -130,6 +135,7 @@ export default async function handler(req, res) {
   ${companyTypeQuery}
   ${companyRevenueQuery}
   ${locationsQuery}
+  ORDER by name
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
   const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${company.industry}')
@@ -144,9 +150,12 @@ export default async function handler(req, res) {
     type: QueryTypes.SELECT,
   });
 
+  console.log(page);
+
   return res.json({
     status: 'success',
     count: rows.length,
+    page,
     totalCount: +totalCompaniesCount[0].count,
     data: { companies: rows },
   });

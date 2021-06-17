@@ -56,7 +56,6 @@ export default function Search({
 
     const queryObject = {
       term: encodeURIComponent(searchTerm),
-      page: 0,
       perPage: COMPANIES_PER_PAGE,
       /*    companySize: companySizeFilter.join(',|'),
       expertise: companyExpertiseFilter.join(','),

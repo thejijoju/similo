@@ -23,7 +23,6 @@ export default function HomePage({ searchResults, expertise, locations }) {
   } = useContext(SearchResultsContext);
 
   useEffect(() => {
-    console.log(router.query);
     const expertiseFilters = router.query.expertise
       ? router.query.expertise.split(',')
       : [];

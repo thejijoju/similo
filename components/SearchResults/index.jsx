@@ -15,12 +15,12 @@ export default function SearchResults({ searchResults }) {
     ...searchResults,
   });
   const [isSearchResultsLoading, setIsSearchResultsLoading] = useState(false);
+  const [isAllowedToLoadPreviousPage, setIsAllowedToLoadPreviousPage] =
+    useState(false);
+  const [currentTopPage, setCurrentTopPage] = useState(0);
+  const [currentBottomPage, setCurrentBottomPage] = useState(0);
 
   const router = useRouter();
-
-  useEffect(() => {
-    setInnerSearchResults(searchResults);
-  }, [searchResults]);
 
   const {
     setAreCompanyCardsExpanded,
@@ -29,11 +29,119 @@ export default function SearchResults({ searchResults }) {
     setCurrentPage,
   } = useContext(SearchResultsContext);
 
+  useEffect(() => {
+    if (searchResults) {
+      setTimeout(() => {
+        setIsAllowedToLoadPreviousPage(true);
+      }, 400);
+    }
+  }, [searchResults]);
+
+  useEffect(() => {
+    setInnerSearchResults(searchResults);
+    if (searchResults) {
+      setCurrentPage(searchResults.page);
+    }
+  }, [searchResults]);
+
+  useEffect(() => {
+    console.log('TOP PAGE', currentTopPage);
+    console.log('BOTTOM PAGE', currentBottomPage);
+  }, [currentTopPage, currentBottomPage]);
+
+  useEffect(() => {
+    if (searchResults) {
+      console.log('SETTING');
+      setCurrentTopPage(searchResults.page);
+      setCurrentBottomPage(searchResults.page);
+    }
+  }, [searchResults]);
+
+  useEffect(() => {
+    console.log(isAllowedToLoadPreviousPage);
+  }, [isAllowedToLoadPreviousPage]);
+
+  const getMoreSearchResultsDirectional = async (direction = 'forward') => {
+    if (
+      (direction === 'forward' &&
+        COMPANIES_PER_PAGE * (currentBottomPage + 1) >
+          searchResults.totalCount) ||
+      (direction === 'back' && currentTopPage === 0) ||
+      isSearchResultsLoading
+    ) {
+      return;
+    }
+
+    const curScrollPos = document.documentElement.scrollTop;
+    const oldScroll = document.documentElement.scrollHeight;
+
+    setIsSearchResultsLoading(true);
+    if (direction === 'back') {
+      setIsAllowedToLoadPreviousPage(false);
+    }
+
+    const url = router.query.fromSuggestions
+      ? `${API_URL}/companies/search/searchFromSuggestions`
+      : `${API_URL}/companies/search`;
+
+    try {
+      const response = await axios.get(url, {
+        params: {
+          ...router.query,
+          page:
+            direction === 'forward'
+              ? currentBottomPage + 1
+              : currentTopPage - 1,
+        },
+      });
+
+      if (direction === 'forward') {
+        setCurrentBottomPage((prevState) => prevState + 1);
+      } else {
+        setCurrentTopPage((prevState) => prevState - 1);
+      }
+      const updatedResults = { ...innerSearchResults };
+
+      if (direction === 'forward') {
+        updatedResults.data.companies = [
+          ...updatedResults.data.companies,
+          ...response.data.data.companies,
+        ];
+      } else {
+        updatedResults.data.companies = [
+          ...response.data.data.companies,
+          ...updatedResults.data.companies,
+        ];
+      }
+      setInnerSearchResults(updatedResults);
+      setIsSearchResultsLoading(false);
+      const newScroll = document.documentElement.scrollHeight;
+      if (direction === 'back') {
+        setTimeout(() => {
+          document.documentElement.scrollTop =
+            curScrollPos + (newScroll - oldScroll + 140);
+          setIsAllowedToLoadPreviousPage(true);
+        }, 144);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsSearchResultsLoading(false);
+    }
+  };
+
   const getMoreSearchResults = async () => {
     setIsSearchResultsLoading(true);
+
+    const url = router.query.fromSuggestions
+      ? `${API_URL}/companies/search/searchFromSuggestions`
+      : `${API_URL}/companies/search`;
+
     try {
-      const response = await axios.get(`${API_URL}/companies/search`, {
-        params: { ...router.query, page: currentPage + 1 },
+      const response = await axios.get(url, {
+        params: {
+          ...router.query,
+          page: currentPage + 1,
+        },
       });
       setCurrentPage((prevState) => prevState + 1);
       const updatedResults = { ...innerSearchResults };
@@ -49,6 +157,35 @@ export default function SearchResults({ searchResults }) {
       setIsSearchResultsLoading(false);
     }
   };
+
+  const switchPage = () => {
+    if (!router.query.fromSuggestions || isSearchResultsLoading) {
+      return;
+    }
+    if (
+      window.innerHeight + window.pageYOffset >=
+      document.body.offsetHeight - 150
+    ) {
+      console.log('BOTTOM');
+      getMoreSearchResultsDirectional('forward');
+    } else if (window.pageYOffset <= 50 && isAllowedToLoadPreviousPage) {
+      console.log('TOP');
+      getMoreSearchResultsDirectional('back');
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', switchPage);
+    return () => {
+      window.removeEventListener('scroll', switchPage);
+    };
+  }, [
+    router.query,
+    isSearchResultsLoading,
+    currentBottomPage,
+    currentTopPage,
+    isAllowedToLoadPreviousPage,
+  ]);
 
   if (!innerSearchResults || !innerSearchResults.data) {
     return null;
@@ -89,7 +226,8 @@ export default function SearchResults({ searchResults }) {
       )}
       {COMPANIES_PER_PAGE * (currentPage + 1) <
         +innerSearchResults.totalCount &&
-        !isSearchResultsLoading && (
+        !isSearchResultsLoading &&
+        !router.query.fromSuggestions && (
           <div className={classes.displayMore}>
             <button type="button" onClick={getMoreSearchResults}>
               Display more results
