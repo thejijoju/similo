@@ -76,6 +76,13 @@ export default function Header() {
           Close
         </i>
       </div>
+      <div className={classes.description}>
+        <p>The european company directory.</p>
+        <p>150.000 + companies</p>
+      </div>
+      <div className={classes.secondDescription}>
+        <p>Made by people. For people.</p>
+      </div>
     </header>
   );
 }

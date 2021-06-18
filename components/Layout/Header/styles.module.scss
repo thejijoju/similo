@@ -7,7 +7,12 @@
   padding-right: 60px;
   border: 1px solid #ccc;
   box-shadow: 0 3px 2px 0 rgba(0, 0, 0, 0.1);
-
+  .description {
+    display: none;
+  }
+  .secondDescription {
+    display: none;
+  }
   .logo {
     min-width: 191px;
     margin-right: 124px;
@@ -42,6 +47,69 @@
       font-size: 0;
       background-image: url(../../../public/images/closeIcon.svg);
       cursor: pointer;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .Header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: calc(100vh - 93px);
+    padding-top: 254px;
+    padding-left: 100px;
+    padding-right: 100px;
+    border: none;
+    .logo {
+      position: relative;
+      left: 35px;
+      min-width: 106px;
+      margin-right: 0;
+      margin-bottom: 100px;
+    }
+
+    .searchContainer {
+      position: relative;
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 748px) {
+  .Header {
+    position: relative;
+    padding-top: 145px;
+    padding-left: 19px;
+    padding-right: 19px;
+    .description {
+      display: block;
+      margin-top: 20px;
+      p {
+        margin: 0;
+        margin-bottom: 5px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 14px;
+        color: #3e3636;
+      }
+    }
+    .secondDescription {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      font-size: 10px;
+      line-height: 12px;
+      color: #bc9d9d;
+    }
+    .logo {
+      margin-bottom: 46px;
+    }
+    .searchContainer {
+      .closeIcon {
+        top: 12px;
+      }
     }
   }
 }
