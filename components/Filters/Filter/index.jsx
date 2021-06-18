@@ -161,7 +161,7 @@ export default function index({
             }
           }}
         >
-          <span>Show more</span>
+          <span>{isListExpanded ? 'Show less' : 'Show more'}</span>
           <i
             className={classnames(
               classes.showMoreIcon,

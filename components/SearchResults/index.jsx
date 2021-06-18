@@ -31,9 +31,10 @@ export default function SearchResults({ searchResults }) {
 
   useEffect(() => {
     if (searchResults) {
+      setIsAllowedToLoadPreviousPage(false);
       setTimeout(() => {
         setIsAllowedToLoadPreviousPage(true);
-      }, 400);
+      }, 800);
     }
   }, [searchResults]);
 

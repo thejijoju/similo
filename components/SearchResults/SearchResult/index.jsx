@@ -69,7 +69,7 @@ export default function SearchResult({ company }) {
 
   useEffect(() => {
     if (isCompanyCardExpanded) {
-      setCompanyCardHeight(companyCardRef.current.scrollHeight + 42);
+      setCompanyCardHeight(companyCardRef.current.scrollHeight + 43);
     }
   }, [isCompanyCardExpanded]);
 
@@ -86,15 +86,14 @@ export default function SearchResult({ company }) {
       router.query.fromSuggestions &&
       decodeURI(router.query.term) === company.name
     ) {
-      console.log('SADSADAS');
-      setTimeout(() => {
-        companyCardRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 300);
       setTimeout(() => {
         expandCompanyCard();
+      }, 200);
+      setTimeout(() => {
+        companyCardRef.current.scrollIntoView({ behavior: 'smooth' });
       }, 600);
     }
-  }, []);
+  }, [router.query.term]);
 
   return (
     <>
@@ -181,21 +180,24 @@ export default function SearchResult({ company }) {
                   <span className={classes.title}>Area served</span>
                   <span className={classes.content}>Worldwide</span>
                 </div>
+                {company.subsidiaries && (
+                  <div
+                    className={classnames(
+                      classes.infoBlock,
+                      classes.subsidiaries
+                    )}
+                  >
+                    <span className={classes.title}>Subsidiaries</span>
+                    <span
+                      className={classes.content}
+                      onClick={showSubsidiaries}
+                    >
+                      List of subsidiaries (
+                      {company.subsidiaries.split(',').length})
+                    </span>
+                  </div>
+                )}
               </div>
-              {company.subsidiaries && (
-                <div
-                  className={classnames(
-                    classes.infoBlock,
-                    classes.subsidiaries
-                  )}
-                >
-                  <span className={classes.title}>Subsidiaries</span>
-                  <span className={classes.content} onClick={showSubsidiaries}>
-                    List of subsidiaries (
-                    {company.subsidiaries.split(',').length})
-                  </span>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -214,23 +216,29 @@ export default function SearchResult({ company }) {
         >
           Expand card
         </i>
-      </div>
+        {company.subsidiaries && (
+          <Subsidiaries
+            show={isSubsidiariesComponentVisible}
+            onHide={hideSubsidiaries}
+            subsidiaries={company.subsidiaries.split(',')}
+          />
+        )}
 
-      {company.subsidiaries && (
-        <Subsidiaries
-          show={isSubsidiariesComponentVisible}
-          onHide={hideSubsidiaries}
-          subsidiaries={company.subsidiaries.split(',')}
-        />
-      )}
+        <Modal
+          isOpen={isOpenModal}
+          onRequestClose={() => setIsOpenModal(false)}
+        >
+          <FeedbackForm
+            company={company}
+            onClose={() => setIsOpenModal(false)}
+          />
+        </Modal>
+      </div>
       {isCompanyCardExpanded && (
         <div className={classes.feedbackContainer} onClick={openModal}>
           Feedback
         </div>
       )}
-      <Modal isOpen={isOpenModal} onRequestClose={() => setIsOpenModal(false)}>
-        <FeedbackForm company={company} onClose={() => setIsOpenModal(false)} />
-      </Modal>
     </>
   );
 }
