@@ -28,6 +28,7 @@ export default function SearchResult({ company }) {
     useState(false);
   const [isSubsidiariesComponentVisible, setIsSubsidiariesComponentVisible] =
     useState(false);
+  const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState(false);
 
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
@@ -46,17 +47,23 @@ export default function SearchResult({ company }) {
 
   const collapseCompanyCard = () => {
     setIsExpandCardButtonRotated(false);
-    setTimeout(() => {
+    if (window.innerWidth > 1200) {
+      setTimeout(() => {
+        setIsCompanyCardExpanded(false);
+      }, 200);
+    } else {
       setIsCompanyCardExpanded(false);
-    }, 200);
+    }
     setCompanyCardHeight(companyCardInitialHeight.current);
   };
 
-  const showSubsidiaries = () => {
+  const showSubsidiaries = (event) => {
+    event.stopPropagation();
     setIsSubsidiariesComponentVisible(true);
   };
 
-  const hideSubsidiaries = () => {
+  const hideSubsidiaries = (event) => {
+    event.stopPropagation();
     setIsSubsidiariesComponentVisible(false);
   };
 
@@ -69,7 +76,11 @@ export default function SearchResult({ company }) {
 
   useEffect(() => {
     if (isCompanyCardExpanded) {
-      setCompanyCardHeight(companyCardRef.current.scrollHeight + 43);
+      if (window.innerWidth > 1200) {
+        setCompanyCardHeight(companyCardRef.current.scrollHeight + 43);
+      } else {
+        setCompanyCardHeight('unset');
+      }
     }
   }, [isCompanyCardExpanded]);
 
@@ -101,13 +112,25 @@ export default function SearchResult({ company }) {
         className={classes.SearchResult}
         ref={companyCardRef}
         style={{ height: companyCardHeight }}
+        onClick={() => {
+          if (window.innerWidth <= 1200) {
+            if (isCompanyCardExpanded) {
+              collapseCompanyCard();
+            } else {
+              expandCompanyCard();
+            }
+          }
+        }}
       >
-        <div
-          className={classes.logo}
-          style={{
-            backgroundImage: `url(${company.logoPath})`,
-          }}
-        />
+        <div className={classes.header}>
+          <div
+            className={classes.logo}
+            style={{
+              backgroundImage: `url(${company.logoPath})`,
+            }}
+          />
+          <h1 className={classes.mobileTitle}>{company.name}</h1>
+        </div>
         <div className={classes.companyInfo}>
           <h1>{company.name}</h1>
           <span className={classes.industry}>{company.industry}</span>
@@ -157,8 +180,24 @@ export default function SearchResult({ company }) {
                   </span>
                 </div>
               </div>
-              <div className={classes.divider} />
-              <div className={classes.additionalDetails}>
+              <div
+                className={classes.divider}
+                style={{
+                  display:
+                    isAdditionalInfoVisible || window.innerWidth > 1201
+                      ? 'block'
+                      : 'none',
+                }}
+              />
+              <div
+                className={classes.additionalDetails}
+                style={{
+                  display:
+                    isAdditionalInfoVisible || window.innerWidth > 1201
+                      ? 'flex'
+                      : 'none',
+                }}
+              >
                 <div className={classes.keyPeople}>
                   <span className={classes.title}>Key people</span>
                   <span className={classes.content}>
@@ -223,7 +262,22 @@ export default function SearchResult({ company }) {
             subsidiaries={company.subsidiaries.split(',')}
           />
         )}
-
+        <div
+          className={classes.showMore}
+          onClick={(event) => {
+            event.stopPropagation();
+            setIsAdditionalInfoVisible((prevState) => !prevState);
+          }}
+        >
+          <span>
+            <i
+              className={classnames(isAdditionalInfoVisible && classes.rotate)}
+            >
+              arrow icon
+            </i>
+            {isAdditionalInfoVisible ? 'see less' : 'see more'}
+          </span>
+        </div>
         <Modal
           isOpen={isOpenModal}
           onRequestClose={() => setIsOpenModal(false)}

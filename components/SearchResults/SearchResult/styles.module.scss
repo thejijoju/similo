@@ -12,6 +12,11 @@
   border-radius: 4px;
   overflow: hidden;
   transition: height ease-in-out 0.2s;
+  .header {
+    .mobileTitle {
+      display: none;
+    }
+  }
   .logo {
     width: 75px;
     min-width: 75px;
@@ -170,6 +175,9 @@
       }
     }
   }
+  .showMore {
+    display: none;
+  }
 }
 
 .feedbackContainer {
@@ -219,22 +227,30 @@
 
 @media (max-width: 1200px) {
   .SearchResult {
-    min-height: 55px !important;
-    height: 55px !important;
+    flex-direction: column;
+    min-height: unset;
+    height: 55px;
     padding-left: 8px;
     padding-right: 8px;
 
-    .logo {
-      align-self: center;
-      width: 50px;
-      height: 41px;
-      min-width: 50px;
-      min-height: 41px;
-      margin: 0;
-    }
-    .companyInfo {
+    .header {
+      display: flex;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-height: 55px;
+      .mobileTitle {
+        display: block;
+      }
+      .logo {
+        //align-self: center;
+        width: 50px;
+        height: 41px;
+        min-width: 50px;
+        min-height: 41px;
+        margin: 0;
+        margin-top: 6px;
+        background-position: center;
+      }
       h1 {
         margin: 0;
         margin-top: 15px;
@@ -244,51 +260,94 @@
         letter-spacing: 0.4px;
         white-space: nowrap;
       }
-      .industry {
-        visibility: hidden;
+    }
+
+    .companyInfo {
+      padding-left: 21px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      h1 {
+        display: none;
       }
-      .tags {
-        .tag {
-        }
+      .industry {
+        display: none;
       }
     }
     .expandCard {
       display: none;
-      &.rotate {
-      }
     }
     .details {
       .mainDetails {
         .infoBlock {
-          &:nth-child(2n) {
-          }
+          justify-content: unset;
+          width: 100%;
+          margin-bottom: 13px;
+          padding: 0 !important;
+
           .title {
+            min-width: 50%;
           }
           .content {
+            min-width: 50%;
             a {
             }
           }
         }
       }
       .divider {
+        margin-top: 15px;
+        margin-bottom: 30px;
       }
       .additionalDetails {
+        //display: none;
+        margin-bottom: 0;
         .infoBlock {
+          width: 100%;
+          margin-bottom: 18px;
+          padding: 0 !important;
+
           &.subsidiaries {
-            .content {
-            }
+            margin-top: 0;
           }
-          &:nth-child(3) {
-          }
+
           .title {
+            min-width: 50%;
           }
           .content {
+            min-width: 50%;
           }
         }
         .keyPeople {
+          width: 100%;
           .title {
+            min-width: 50%;
           }
         }
+      }
+    }
+  }
+  .showMore {
+    display: flex !important;
+    justify-content: center;
+    margin-bottom: 8px;
+    span {
+      display: flex;
+      align-items: center;
+      font-size: 10px;
+      line-height: 12px;
+      letter-spacing: 0.142857px;
+      color: #c1abab;
+    }
+    i {
+      display: block;
+      width: 16px;
+      height: 6px;
+      margin-right: 10px;
+      font-size: 0;
+      background-image: url(../../../public/images/wideArrowDown.svg);
+      background-size: contain;
+      &.rotate {
+        transform: rotate(180deg);
       }
     }
   }
