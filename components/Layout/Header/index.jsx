@@ -19,7 +19,7 @@ export default function Header() {
     useState(false);
   const [initialHeight, setInitalHeight] = useState('');
 
-  const { isSearchMode } = useContext(UIContext);
+  const { isSearchMode, isSearchResultsMode } = useContext(UIContext);
 
   const searchContainerRef = useRef();
   const headerRef = useRef();
@@ -76,7 +76,12 @@ export default function Header() {
 
   return (
     <header
-      className={classnames(classes.Header, isSearchMode && classes.searchMode)}
+      className={classnames(
+        classes.Header,
+        isSearchMode && classes.searchMode,
+        isSearchResultsMode && classes.searchResultsMode,
+        isSearchResultsMode && classes.searchMode
+      )}
       ref={headerRef}
       style={{ height: initialHeight }}
     >

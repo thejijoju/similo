@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
@@ -8,7 +8,7 @@ import SkeletonLoader from '@/components/SkeletonLoader';
 import SearchResult from './SearchResult';
 
 import classes from './styles.module.scss';
-import { SearchResultsContext } from '../../context/index';
+import { SearchResultsContext, UIContext } from '../../context/index';
 
 export default function SearchResults({ searchResults }) {
   const [innerSearchResults, setInnerSearchResults] = useState({
@@ -19,6 +19,9 @@ export default function SearchResults({ searchResults }) {
     useState(false);
   const [currentTopPage, setCurrentTopPage] = useState(0);
   const [currentBottomPage, setCurrentBottomPage] = useState(0);
+  const [noResultInitialHeight, setNoResultInitalHeight] = useState('');
+  const [searchResultsInitialHeight, setSearchResultsInitalHeight] =
+    useState('');
 
   const router = useRouter();
 
@@ -28,6 +31,22 @@ export default function SearchResults({ searchResults }) {
     currentPage,
     setCurrentPage,
   } = useContext(SearchResultsContext);
+
+  const { setIsSearchResultsMode } = useContext(UIContext);
+
+  const noResultsRef = useRef();
+  const searchResultsRef = useRef();
+
+  // Optional chaining gives error 'Parsing error: Unexpected token'
+  useEffect(() => {
+    if (innerSearchResults) {
+      if (innerSearchResults.data) {
+        if (innerSearchResults.data.companies) {
+          setIsSearchResultsMode(true);
+        }
+      }
+    }
+  }, [innerSearchResults]);
 
   useEffect(() => {
     if (searchResults) {
@@ -45,11 +64,11 @@ export default function SearchResults({ searchResults }) {
     }
   }, [searchResults]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     console.log('TOP PAGE', currentTopPage);
     console.log('BOTTOM PAGE', currentBottomPage);
   }, [currentTopPage, currentBottomPage]);
-
+ */
   useEffect(() => {
     if (searchResults) {
       console.log('SETTING');
@@ -58,9 +77,9 @@ export default function SearchResults({ searchResults }) {
     }
   }, [searchResults]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     console.log(isAllowedToLoadPreviousPage);
-  }, [isAllowedToLoadPreviousPage]);
+  }, [isAllowedToLoadPreviousPage]); */
 
   const getMoreSearchResultsDirectional = async (direction = 'forward') => {
     if (
@@ -188,6 +207,39 @@ export default function SearchResults({ searchResults }) {
     isAllowedToLoadPreviousPage,
   ]);
 
+  useEffect(() => {
+    let elementHeightCorrection;
+    if (window.innerWidth <= 329) {
+      elementHeightCorrection = '133';
+    } else if (window.innerWidth > 329 && window.innerWidth < 748) {
+      elementHeightCorrection = '187';
+    } else if (window.innerWidth > 748 && window.innerWidth < 1201) {
+      elementHeightCorrection = '280';
+    }
+    setNoResultInitalHeight(`calc(100vh - ${elementHeightCorrection}px)`);
+    setSearchResultsInitalHeight(
+      `calc(100vh - ${elementHeightCorrection}px + 29px)`
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!noResultsRef.current) {
+      return;
+    }
+    if (noResultInitialHeight.toString().includes('calc')) {
+      setNoResultInitalHeight(noResultsRef.current.clientHeight);
+    }
+  }, [noResultInitialHeight]);
+
+  useEffect(() => {
+    if (!searchResultsRef.current) {
+      return;
+    }
+    if (searchResultsInitialHeight.toString().includes('calc')) {
+      setNoResultInitalHeight(searchResultsRef.current.clientHeight);
+    }
+  }, [searchResultsInitialHeight]);
+
   if (!innerSearchResults || !innerSearchResults.data) {
     return null;
   }
@@ -195,7 +247,11 @@ export default function SearchResults({ searchResults }) {
   if (innerSearchResults.count === 0) {
     return (
       <div className={classes.SearchResults}>
-        <div className={classes.noResults}>
+        <div
+          className={classes.noResults}
+          ref={noResultsRef}
+          style={{ height: noResultInitialHeight }}
+        >
           No result found. Try a company or brand name or use a different
           keyword.
         </div>
@@ -204,7 +260,11 @@ export default function SearchResults({ searchResults }) {
   }
 
   return (
-    <div className={classes.SearchResults}>
+    <div
+      className={classes.SearchResults}
+      style={{ minHeight: searchResultsInitialHeight }}
+      ref={searchResultsRef}
+    >
       <div className={classes.header}>
         <span>{innerSearchResults.totalCount} Total results</span>
         <span

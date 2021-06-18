@@ -216,3 +216,80 @@
     }
   }
 }
+
+@media (max-width: 1200px) {
+  .SearchResult {
+    min-height: 55px !important;
+    height: 55px !important;
+    padding-left: 8px;
+    padding-right: 8px;
+
+    .logo {
+      align-self: center;
+      width: 50px;
+      height: 41px;
+      min-width: 50px;
+      min-height: 41px;
+      margin: 0;
+    }
+    .companyInfo {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      h1 {
+        margin: 0;
+        margin-top: 15px;
+        margin-left: 45px;
+        font-size: 18px;
+        line-height: 21px;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+      }
+      .industry {
+        visibility: hidden;
+      }
+      .tags {
+        .tag {
+        }
+      }
+    }
+    .expandCard {
+      display: none;
+      &.rotate {
+      }
+    }
+    .details {
+      .mainDetails {
+        .infoBlock {
+          &:nth-child(2n) {
+          }
+          .title {
+          }
+          .content {
+            a {
+            }
+          }
+        }
+      }
+      .divider {
+      }
+      .additionalDetails {
+        .infoBlock {
+          &.subsidiaries {
+            .content {
+            }
+          }
+          &:nth-child(3) {
+          }
+          .title {
+          }
+          .content {
+          }
+        }
+        .keyPeople {
+          .title {
+          }
+        }
+      }
+    }
+  }
+}

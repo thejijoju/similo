@@ -9,7 +9,7 @@ module.exports = {
   plugins: ['prettier'],
   parserOptions: {
     ecmaFeatures: {
-      ecmaVersion: 6,
+      ecmaVersion: 2020,
       sourceType: 'module',
       impliedStrict: true,
       jsx: true,

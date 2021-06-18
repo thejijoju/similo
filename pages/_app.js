@@ -15,6 +15,7 @@ function MyApp({ Component, pageProps }) {
   const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
 
   const [isSearchMode, setIsSearchMode] = useState(false);
+  const [isSearchResultsMode, setIsSearchResultsMode] = useState(false);
 
   return (
     <SearchResultsContext.Provider
@@ -35,7 +36,14 @@ function MyApp({ Component, pageProps }) {
         setCompanyTypeFilter,
       }}
     >
-      <UIContext.Provider value={{ isSearchMode, setIsSearchMode }}>
+      <UIContext.Provider
+        value={{
+          isSearchMode,
+          setIsSearchMode,
+          isSearchResultsMode,
+          setIsSearchResultsMode,
+        }}
+      >
         <Layout>
           <Component {...pageProps} />
         </Layout>
