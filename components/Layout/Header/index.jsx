@@ -14,8 +14,10 @@ export default function Header() {
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [isSearchSuggestionVisible, setIsSearchSuggestionVisible] =
     useState(false);
+  const [initialHeight, setInitalHeight] = useState('');
 
   const searchContainerRef = useRef();
+  const headerRef = useRef();
 
   const router = useRouter();
 
@@ -50,10 +52,29 @@ export default function Header() {
     }
   }, [searchSuggestions]);
 
+  useEffect(() => {
+    if (window.innerWidth > 1200) {
+      return;
+    }
+    setInitalHeight(
+      `calc(100vh - ${window.innerWidth <= 329 ? '45' : '93'}px)`
+    );
+  }, []);
+
+  useEffect(() => {
+    if (initialHeight.toString().includes('calc')) {
+      setInitalHeight(headerRef.current.clientHeight);
+    }
+  }, [initialHeight]);
+
   useOnClickOutside(searchContainerRef, hideSearchSuggestions);
 
   return (
-    <header className={classes.Header}>
+    <header
+      className={classes.Header}
+      ref={headerRef}
+      style={{ height: initialHeight }}
+    >
       <div className={classes.logo}>
         <Image src="/images/Logo1.svg" width={191} height={79} />
       </div>

@@ -23,6 +23,11 @@ export default function HomePage({ searchResults, expertise, locations }) {
   } = useContext(SearchResultsContext);
 
   useEffect(() => {
+    console.log(document.documentElement.clientHeight);
+    document.documentElement.style.minHeight = `${document.documentElement.clientHeight}px`;
+  });
+
+  useEffect(() => {
     const expertiseFilters = router.query.expertise
       ? router.query.expertise.split(',')
       : [];
