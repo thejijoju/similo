@@ -19,6 +19,8 @@
 @media (max-width: 748px) {
   .searchBar {
     height: 38px !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
     border: 1.25px solid #83c6f8 !important;
     box-shadow: inset 0px 1px 4px rgba(131, 198, 248, 0.5);
     &::placeholder {

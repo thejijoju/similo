@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
+import classnames from 'classnames';
+
+import { UIContext } from '@/context/index';
 import SearchSuggestions from './SearchSuggestions';
 import Search from './Search';
 
@@ -15,6 +18,8 @@ export default function Header() {
   const [isSearchSuggestionVisible, setIsSearchSuggestionVisible] =
     useState(false);
   const [initialHeight, setInitalHeight] = useState('');
+
+  const { isSearchMode } = useContext(UIContext);
 
   const searchContainerRef = useRef();
   const headerRef = useRef();
@@ -71,7 +76,7 @@ export default function Header() {
 
   return (
     <header
-      className={classes.Header}
+      className={classnames(classes.Header, isSearchMode && classes.searchMode)}
       ref={headerRef}
       style={{ height: initialHeight }}
     >

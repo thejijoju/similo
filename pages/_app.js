@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import Layout from '@/components/Layout';
-import { SearchResultsContext } from '../context/index';
+import { SearchResultsContext, UIContext } from '../context/index';
 
 import '@/styles/globals.css';
 
@@ -13,6 +13,8 @@ function MyApp({ Component, pageProps }) {
   const [companyExpertiseFilter, setCompanyExpertiseFilter] = useState([]);
   const [companyRevenueFilter, setCompanyRevenueFilter] = useState([]);
   const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
+
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   return (
     <SearchResultsContext.Provider
@@ -33,9 +35,11 @@ function MyApp({ Component, pageProps }) {
         setCompanyTypeFilter,
       }}
     >
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <UIContext.Provider value={{ isSearchMode, setIsSearchMode }}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </UIContext.Provider>
     </SearchResultsContext.Provider>
   );
 }

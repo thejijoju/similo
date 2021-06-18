@@ -29,7 +29,7 @@
       }
     }
 
-    .compenyIndustry {
+    .companyIndustry {
       display: flex;
       align-items: center;
       font-size: 16px;
@@ -47,8 +47,119 @@
       }
     }
 
+    .logo {
+      display: none;
+    }
+
     &:hover {
       background-color: #f6f1f1;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .SearchSuggestions {
+    box-shadow: none;
+    border: none;
+    .suggestion {
+      display: flex;
+      align-items: center;
+      height: 51px;
+      padding-left: 36px;
+      padding-right: 36px;
+      cursor: pointer;
+
+      .title {
+        width: 150px;
+        font-size: 16px;
+        line-height: 19px;
+        color: #1e1c1c;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &::first-letter {
+          font-weight: bold;
+        }
+      }
+
+      .companyIndustry {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        line-height: 16px;
+        color: #999494;
+        white-space: nowrap;
+        i {
+          display: block;
+          width: 4px;
+          height: 4px;
+          margin-right: 7px;
+          font-size: 0;
+          background-color: #999494;
+          border-radius: 50%;
+        }
+      }
+
+      .logo {
+        width: 38px;
+        height: 31px;
+        margin-left: 26px;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      &:hover {
+        background-color: #f6f1f1;
+      }
+    }
+  }
+}
+
+@media (max-width: 748px) {
+  .SearchSuggestions {
+    .suggestion {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      box-sizing: border-box;
+      height: 51px;
+      padding-top: 9px;
+      padding-left: 36px;
+      padding-right: 36px;
+      cursor: pointer;
+      .title {
+        margin: 0;
+        margin-bottom: 4px;
+      }
+
+      .companyIndustry {
+        width: auto;
+        i {
+          display: block;
+          width: 4px;
+          height: 4px;
+          margin-right: 7px;
+          font-size: 0;
+          background-color: #999494;
+          border-radius: 50%;
+        }
+      }
+
+      .logo {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 748px) {
+  .SearchSuggestions {
+    .suggestion {
+      .companyIndustry {
+        font-size: 12px;
+        line-height: 14px;
+      }
     }
   }
 }

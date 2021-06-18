@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   const companies = await Company.findAll({
     where: { name: { [Op.iLike]: `%${searchTerm}%` } },
-    attributes: ['name', 'industry'],
+    attributes: ['name', 'industry', 'logoPath'],
     limit: 6,
   });
   return res.json({

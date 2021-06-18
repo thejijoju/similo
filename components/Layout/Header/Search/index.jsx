@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import qs from 'qs';
 
-import { SearchResultsContext } from '@/context/index';
+import { SearchResultsContext, UIContext } from '@/context/index';
 import classes from './styles.module.scss';
 import { API_URL, COMPANIES_PER_PAGE } from '../../../../constants';
 
@@ -24,6 +24,8 @@ export default function Search({
     companyRevenueFilter,
     companyLocationFilter,
   } = useContext(SearchResultsContext);
+  const { setIsSearchMode } = useContext(UIContext);
+
   const router = useRouter();
 
   const getSearchSuggestions = (event) => {
@@ -115,6 +117,7 @@ export default function Search({
   return (
     <form onSubmit={search} className={classes.Search}>
       <input
+        onFocus={() => setIsSearchMode(true)}
         type="text"
         placeholder="What company or brand do you want to compare?"
         className={classes.searchBar}

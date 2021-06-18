@@ -32,10 +32,14 @@ export default function SearchSuggestions({
             onClick={() => search(suggestion.name)}
           >
             <p className={classes.title}>{suggestion.name}</p>
-            <span className={classes.compenyIndustry}>
+            <span className={classes.companyIndustry}>
               <i>dot</i>
               {suggestion.industry}
             </span>
+            <div
+              className={classes.logo}
+              style={{ backgroundImage: `url(${suggestion.logoPath})` }}
+            />
           </div>
         );
       })}
