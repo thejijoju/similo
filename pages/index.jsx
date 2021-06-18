@@ -47,6 +47,10 @@ export default function HomePage({ searchResults, expertise, locations }) {
   return (
     <div className={classes.HomePage}>
       <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
+        />
         <title>Similo</title>
       </Head>
       <main className={classes.main}>
