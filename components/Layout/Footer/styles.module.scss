@@ -31,7 +31,8 @@
 
 @media (max-width: 1200px) {
   .Footer {
-    position: relative;
+    position: fixed;
+    bottom: 0;
     display: flex;
     align-items: flex-start;
     width: 100%;
@@ -93,9 +94,12 @@
 
 @media (max-width: 329px) {
   .Footer {
+    height: 45px;
+    padding-top: 12px;
     padding-left: 61px;
     padding-right: 61px;
     .logo {
+      top: 29px;
       span {
         font-size: 8px;
         line-height: 9px;
