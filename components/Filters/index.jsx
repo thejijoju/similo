@@ -1,8 +1,9 @@
 import React, { useContext, useState, useRef } from 'react';
 
 import classnames from 'classnames';
+import usePortal from 'react-useportal';
 
-import { SearchResultsContext } from '@/context/index';
+import { SearchResultsContext, UIContext } from '@/context/index';
 import Filter from './Filter';
 
 import classes from './styles.module.scss';
@@ -32,6 +33,10 @@ const COMPANY_TYPES = ['Public', 'Private', 'Subsidary'];
 export default function Filters({ expertise, locations }) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
+  const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
+  const [currentSortOption, setCurrentSortOption] = useState('relevant');
+
+  const { Portal } = usePortal();
 
   const {
     companySizeFilter,
@@ -45,6 +50,9 @@ export default function Filters({ expertise, locations }) {
     companyTypeFilter,
     setCompanyTypeFilter,
   } = useContext(SearchResultsContext);
+
+  const { isFiltersPanelVisible, setIsFiltersPanelVisible } =
+    useContext(UIContext);
 
   const filtersContainerRef = useRef();
 
@@ -77,7 +85,12 @@ export default function Filters({ expertise, locations }) {
   };
 
   return (
-    <div className={classes.Filters}>
+    <div
+      className={classnames(
+        classes.Filters,
+        isFiltersPanelVisible && classes.show
+      )}
+    >
       <div className={classes.buttons}>
         <button
           type="button"
@@ -104,12 +117,65 @@ export default function Filters({ expertise, locations }) {
         style={{ minHeight: filtersContainerHeight }}
         ref={filtersContainerRef}
       >
+        <div className={classes.header}>
+          {isFilterActive() && (
+            <span onClick={resetFilters}>Reset all filters</span>
+          )}
+          <i
+            className={classes.closeIcon}
+            onClick={() => setIsFiltersPanelVisible(false)}
+          >
+            Close
+          </i>
+        </div>
         <div
           className={classnames(
             classes.content,
             areFiltersVisible && classes.visible
           )}
         >
+          <div
+            className={classnames(
+              classes.sortOptions,
+              areSortOptionsExpanded && classes.expand
+            )}
+          >
+            <div
+              className={classes.sortHeader}
+              onClick={() =>
+                setAreSortOptionsExpanded((prevState) => !prevState)
+              }
+            >
+              <h2>
+                {currentSortOption === 'relevant'
+                  ? 'Most relevant'
+                  : 'Most recent'}
+              </h2>
+              <i
+                className={classnames(
+                  classes.expandIcon,
+                  areSortOptionsExpanded && classes.rotate
+                )}
+              >
+                Expand sort options
+              </i>
+            </div>
+            <span
+              className={classes.currentOption}
+              onClick={() => {
+                setCurrentSortOption((prevOption) => {
+                  if (prevOption === 'recent') {
+                    return 'relevant';
+                  }
+                  return 'recent';
+                });
+              }}
+            >
+              {currentSortOption === 'relevant'
+                ? 'Most recent'
+                : 'Most relevant'}
+            </span>
+          </div>
           <Filter
             title="Location"
             values={locations}
@@ -156,6 +222,11 @@ export default function Filters({ expertise, locations }) {
           />
         </div>
       </div>
+      {isFiltersPanelVisible && (
+        <Portal>
+          <div className={classes.overlay} />
+        </Portal>
+      )}
     </div>
   );
 }

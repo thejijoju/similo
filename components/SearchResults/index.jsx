@@ -32,7 +32,8 @@ export default function SearchResults({ searchResults }) {
     setCurrentPage,
   } = useContext(SearchResultsContext);
 
-  const { setIsSearchResultsMode } = useContext(UIContext);
+  const { setIsSearchResultsMode, setIsFiltersPanelVisible } =
+    useContext(UIContext);
 
   const noResultsRef = useRef();
   const searchResultsRef = useRef();
@@ -71,7 +72,6 @@ export default function SearchResults({ searchResults }) {
  */
   useEffect(() => {
     if (searchResults) {
-      console.log('SETTING');
       setCurrentTopPage(searchResults.page);
       setCurrentBottomPage(searchResults.page);
     }
@@ -151,7 +151,7 @@ export default function SearchResults({ searchResults }) {
         for (let i = 0; i < newElementsCount; i++) {
           scrollAmount += searchResultsElements[0].offsetHeight;
         }
-        console.log('HEGHT', scrollAmount);
+
         setTimeout(() => {
           /* document.documentElement.scrollTop =
             curScrollPos + (newScroll - oldScroll + 140); */
@@ -230,11 +230,13 @@ export default function SearchResults({ searchResults }) {
     if (window.innerWidth <= 329) {
       elementHeightCorrection = '133';
     } else if (window.innerWidth > 329 && window.innerWidth < 748) {
-      elementHeightCorrection = '187';
+      elementHeightCorrection = '175';
     } else if (window.innerWidth > 748 && window.innerWidth < 1201) {
       elementHeightCorrection = '280';
     }
-    setNoResultInitalHeight(`calc(100vh - ${elementHeightCorrection}px)`);
+    setNoResultInitalHeight(
+      `calc(100vh - ${elementHeightCorrection}px + 14px)`
+    );
     setSearchResultsInitalHeight(
       `calc(100vh - ${elementHeightCorrection}px + 29px)`
     );
@@ -284,6 +286,9 @@ export default function SearchResults({ searchResults }) {
       ref={searchResultsRef}
     >
       <div className={classes.header}>
+        <button type="button" onClick={() => setIsFiltersPanelVisible(true)}>
+          <i>lines</i>Filter
+        </button>
         <span>{innerSearchResults.totalCount} Total results</span>
         <span
           className={classes.openAllCards}

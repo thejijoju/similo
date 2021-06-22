@@ -67,6 +67,12 @@ export default function index({
     setIsListExpanded(false);
   };
 
+  useEffect(() => {
+    if (window.innerWidth <= 1200) {
+      collapseFilter();
+    }
+  }, []);
+
   const expandList = () => {
     setIsListExpanded(true);
     setFilterHeight(
@@ -85,30 +91,34 @@ export default function index({
       }}
       ref={filterRef}
     >
-      <div className={classes.header}>
+      <div
+        className={classes.header}
+        onClick={() => {
+          if (isExpanded) {
+            collapseFilter();
+          } else {
+            expandFilter();
+          }
+        }}
+      >
         <h2>{title}</h2>
         <i
           className={classnames(
             classes.closeFilterIcon,
             !isExpanded && classes.rotate
           )}
-          onClick={() => {
-            if (isExpanded) {
-              collapseFilter();
-            } else {
-              expandFilter();
-            }
-          }}
         >
           Close filter
         </i>
       </div>
       {search && (
-        <input
-          type="text"
-          className={classes.search}
-          placeholder="enter a location..."
-        />
+        <div className={classes.searchContainer}>
+          <input
+            type="text"
+            className={classes.search}
+            placeholder="enter a location..."
+          />
+        </div>
       )}
       <div
         className={classnames(

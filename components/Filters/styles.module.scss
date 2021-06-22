@@ -1,12 +1,25 @@
+.overlay {
+  display: none;
+  background: #191212;
+  opacity: 0.68;
+}
+
 .Filters {
+  position: static;
   width: 266px;
   padding-top: 36px;
   .filtersContainer {
     display: block;
+    .header {
+      display: none;
+    }
     .content {
       display: none;
       &.visible {
         display: block;
+      }
+      .sortOptions {
+        display: none;
       }
     }
   }
@@ -87,7 +100,117 @@
 }
 
 @media (max-width: 1200px) {
+  .overlay {
+    position: fixed;
+    left: 0;
+    top: 172px;
+    bottom: 0;
+    right: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+  }
   .Filters {
-    display: none;
+    width: 327px;
+    position: fixed;
+    top: 172px;
+    left: -327px;
+    bottom: 0;
+    padding-top: 20px;
+    background-color: #fafaf7;
+    overflow: auto;
+    z-index: 1;
+    transition: left 0.1s ease-in;
+    .filtersContainer {
+      .header {
+        display: flex;
+        justify-content: space-between;
+        height: 35px;
+        padding-left: 33px;
+        padding-right: 25px;
+        .closeIcon {
+          display: block;
+          width: 14px;
+          height: 16px;
+          margin-left: auto;
+          font-size: 0;
+          background-image: url(../../public/images/closeIconThick.svg);
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+        span {
+          font-size: 16px;
+          line-height: 19px;
+          letter-spacing: 0.571429px;
+          color: #605f5c;
+          font-weight: bold;
+        }
+      }
+      .content {
+        .sortOptions {
+          display: block;
+          box-sizing: border-box;
+          height: 67px;
+          padding-top: 25px;
+          padding-left: 33px;
+          border-bottom: 1px solid #ffffff;
+          overflow: hidden;
+          transition: all ease-in-out 0.2s;
+          &.expand {
+            height: 100px;
+          }
+          .sortHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 19px;
+            padding-right: 23px;
+            h2 {
+              margin: 0;
+              font-size: 16px;
+              line-height: 19px;
+              letter-spacing: 0.571429px;
+              color: #14a2b8;
+            }
+            .expandIcon {
+              display: block;
+              width: 18px;
+              height: 7px;
+              font-size: 0;
+              background-image: url(../../public/images/arrowDownThick.svg);
+              background-position: center;
+              transition: all ease-in-out 0.2s;
+              &.rotate {
+                transform: rotate(180deg);
+              }
+            }
+          }
+        }
+        span.currentOption {
+          font-size: 16px;
+          line-height: 19px;
+          letter-spacing: 0.571429px;
+          color: #14a2b8;
+          font-weight: bold;
+        }
+      }
+    }
+    &.show {
+      left: 0;
+    }
+    .buttons {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 748px) {
+  .overlay {
+    top: 68px;
+  }
+  .Filters {
+    top: 68px;
   }
 }

@@ -16,6 +16,7 @@ function MyApp({ Component, pageProps }) {
 
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [isSearchResultsMode, setIsSearchResultsMode] = useState(false);
+  const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(false);
 
   return (
     <SearchResultsContext.Provider
@@ -42,6 +43,8 @@ function MyApp({ Component, pageProps }) {
           setIsSearchMode,
           isSearchResultsMode,
           setIsSearchResultsMode,
+          isFiltersPanelVisible,
+          setIsFiltersPanelVisible,
         }}
       >
         <Layout>

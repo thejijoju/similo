@@ -8,7 +8,7 @@ import qs from 'qs';
 import Filters from '@/components/Filters';
 import SearchResults from '@/components/SearchResults';
 
-import { SearchResultsContext } from '@/context/index';
+import { SearchResultsContext, UIContext } from '@/context/index';
 import classes from './styles.module.scss';
 import { API_URL } from '../constants/index';
 
@@ -22,10 +22,19 @@ export default function HomePage({ searchResults, expertise, locations }) {
     setCompanyTypeFilter,
   } = useContext(SearchResultsContext);
 
+  const { isFiltersPanelVisible } = useContext(UIContext);
+
   useEffect(() => {
-    console.log(document.documentElement.clientHeight);
     document.documentElement.style.minHeight = `${document.documentElement.clientHeight}px`;
   });
+
+  useEffect(() => {
+    if (isFiltersPanelVisible) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isFiltersPanelVisible]);
 
   useEffect(() => {
     const expertiseFilters = router.query.expertise

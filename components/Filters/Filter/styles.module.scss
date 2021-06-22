@@ -12,7 +12,7 @@
     align-items: center;
     margin-bottom: 21px;
     padding-right: 26px;
-
+    cursor: pointer;
     h2 {
       margin: 0;
       font-size: 18px;
@@ -146,6 +146,56 @@
       transition: all ease-in-out 0.2s;
       &.rotate {
         transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .Filter {
+    padding-left: 34px;
+    border-bottom: 1px solid #ffffff;
+    .header {
+      padding-right: 21px;
+      h2 {
+        font-size: 16px;
+        line-height: 19px;
+        letter-spacing: 0.571429px;
+        color: #605f5c;
+        height: 21px;
+      }
+      i.closeFilterIcon {
+        width: 18px;
+        height: 7px;
+        background-image: url(../../../public/images/arrowDownThick.svg);
+        background-position: center;
+        transform: rotate(180deg);
+        &.rotate {
+          transform: none;
+        }
+      }
+    }
+    .checkBoxes {
+      .container {
+        padding-left: 40px;
+      }
+    }
+  }
+  .showMore {
+    margin-left: 40px;
+    font-weight: bold;
+  }
+
+  .searchContainer {
+    padding-right: 58px;
+    margin-bottom: 27px;
+    .search {
+      background-color: transparent;
+      &::placeholder {
+        font-size: 14px;
+        line-height: 16px;
+        letter-spacing: 0.466667px;
+        color: #605f5c;
       }
     }
   }

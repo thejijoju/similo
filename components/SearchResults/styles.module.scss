@@ -13,11 +13,12 @@
     font-size: 12px;
     line-height: 14px;
     color: #7a7c7f;
+    button {
+      display: none;
+    }
     span {
-      &:first-child {
-        margin-right: 21px;
-      }
       &.openAllCards {
+        margin-left: 21px;
         cursor: pointer;
       }
       i {
@@ -56,7 +57,7 @@
   .SearchResults {
     width: 100%;
     box-sizing: border-box;
-    padding-top: 29px;
+    padding-top: 15px;
     padding-left: 100px;
     padding-right: 100px;
     .noResults {
@@ -66,7 +67,8 @@
     }
     .header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: flex-end;
       span {
         margin-right: 0 !important;
         &:first-child {
@@ -74,7 +76,31 @@
         &.openAllCards {
           display: none;
         }
+      }
+      button {
+        display: flex;
+        align-items: center;
+        width: 79px;
+        height: 30px;
+        padding-left: 12px;
+        font-size: 14px;
+        line-height: 16px;
+        letter-spacing: 0.4px;
+        color: #ffffff;
+        background-color: #14a2b8;
+        border: 0.8px solid #14a2b8;
+        box-sizing: border-box;
+        border-radius: 2px;
+        outline: none;
         i {
+          display: block;
+          width: 18px;
+          height: 12px;
+          margin-right: 10px;
+          font-size: 0;
+          background-image: url(../../public/images/linesIcon.svg);
+          background-repeat: no-repeat;
+          background-position: center;
         }
       }
     }
