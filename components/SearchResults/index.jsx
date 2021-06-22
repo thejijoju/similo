@@ -159,7 +159,7 @@ export default function SearchResults({ searchResults }) {
             top: scrollAmount + document.documentElement.scrollTop,
           });
           setIsAllowedToLoadPreviousPage(true);
-        }, 0);
+        }, 144);
       }
     } catch (error) {
       console.log(error);

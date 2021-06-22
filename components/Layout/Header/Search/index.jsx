@@ -114,6 +114,12 @@ export default function Search({
     companyLocationFilter,
   ]);
 
+  useEffect(() => {
+    if (!router.query.term) {
+      setSearchTerm('');
+    }
+  }, [router.query.term]);
+
   return (
     <form onSubmit={search} className={classes.Search}>
       <input

@@ -1,6 +1,8 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import classnames from 'classnames';
 
@@ -19,7 +21,12 @@ export default function Header() {
     useState(false);
   const [initialHeight, setInitalHeight] = useState('');
 
-  const { isSearchMode, isSearchResultsMode } = useContext(UIContext);
+  const {
+    isSearchMode,
+    isSearchResultsMode,
+    setIsSearchMode,
+    setIsSearchResultsMode,
+  } = useContext(UIContext);
 
   const searchContainerRef = useRef();
   const headerRef = useRef();
@@ -85,8 +92,19 @@ export default function Header() {
       ref={headerRef}
       style={{ height: initialHeight }}
     >
-      <div className={classes.logo}>
-        <Image src="/images/Logo1.svg" width={191} height={79} />
+      <div
+        className={classes.logo}
+        onClick={() => {
+          console.log('the fuck');
+          setIsSearchMode(false);
+          setIsSearchResultsMode(false);
+        }}
+      >
+        <Link href="/">
+          <a>
+            <Image src="/images/Logo1.svg" width={191} height={79} />
+          </a>
+        </Link>
       </div>
       <div className={classes.searchContainer} ref={searchContainerRef}>
         <Search

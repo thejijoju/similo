@@ -1,5 +1,30 @@
 .HomePage {
   .main {
+    padding-top: 120px;
     display: flex;
+  }
+}
+
+@media (max-width: 1200px) {
+  .HomePage {
+    .main {
+      padding-top: 158px;
+    }
+  }
+}
+
+@media (max-width: 748px) {
+  .HomePage {
+    .main {
+      padding-top: 53px;
+    }
+  }
+}
+
+@media (max-width: 329px) {
+  .HomePage {
+    .main {
+      padding-top: 59px;
+    }
   }
 }
