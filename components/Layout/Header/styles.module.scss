@@ -87,6 +87,13 @@
     .searchContainer {
       position: relative;
       width: 100%;
+      .searchSuggestionsContainer {
+        z-index: 1;
+        position: fixed;
+        top: 158px;
+        left: 0;
+        width: 100%;
+      }
     }
   }
 }
@@ -134,6 +141,9 @@
       margin-bottom: 46px;
     }
     .searchContainer {
+      .searchSuggestionsContainer {
+        top: 68px;
+      }
       &::after {
         left: 12px;
       }
