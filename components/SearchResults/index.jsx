@@ -92,8 +92,8 @@ export default function SearchResults({ searchResults }) {
       return;
     }
 
-    const curScrollPos = document.documentElement.scrollTop;
-    const oldScroll = document.documentElement.scrollHeight;
+    // const curScrollPos = document.documentElement.scrollTop;
+    // const oldScroll = document.documentElement.scrollHeight;
 
     setIsSearchResultsLoading(true);
     if (direction === 'back') {
@@ -135,13 +135,31 @@ export default function SearchResults({ searchResults }) {
       }
       setInnerSearchResults(updatedResults);
       setIsSearchResultsLoading(false);
-      const newScroll = document.documentElement.scrollHeight;
+      // const newScroll = document.documentElement.scrollHeight;
       if (direction === 'back') {
+        const searchResultsElements = document.querySelectorAll(
+          'div[data-element="search-result"]'
+        );
+
+        let newElementsCount = searchResults.totalCount - COMPANIES_PER_PAGE;
+        if (newElementsCount > COMPANIES_PER_PAGE) {
+          newElementsCount = COMPANIES_PER_PAGE;
+        }
+
+        let scrollAmount = 0;
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < newElementsCount; i++) {
+          scrollAmount += searchResultsElements[0].offsetHeight;
+        }
+        console.log('HEGHT', scrollAmount);
         setTimeout(() => {
-          document.documentElement.scrollTop =
-            curScrollPos + (newScroll - oldScroll + 140);
+          /* document.documentElement.scrollTop =
+            curScrollPos + (newScroll - oldScroll + 140); */
+          document.documentElement.scrollTo({
+            top: scrollAmount + document.documentElement.scrollTop,
+          });
           setIsAllowedToLoadPreviousPage(true);
-        }, 144);
+        }, 0);
       }
     } catch (error) {
       console.log(error);

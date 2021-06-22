@@ -109,6 +109,7 @@ export default function SearchResult({ company }) {
   return (
     <>
       <div
+        data-element="search-result"
         className={classes.SearchResult}
         ref={companyCardRef}
         style={{ height: companyCardHeight }}
