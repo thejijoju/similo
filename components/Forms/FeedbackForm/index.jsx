@@ -4,7 +4,7 @@ import classnames from 'classnames';
 
 import classes from './styles.module.scss';
 
-export const FeedbackForm = ({company, onClose}) => {
+export const FeedbackForm = ({ company, onClose }) => {
   const [state, setState] = useState({
     feedback: '',
   });
@@ -24,10 +24,13 @@ export const FeedbackForm = ({company, onClose}) => {
 
   return (
     <>
-      <div className={classes.Wrapper}>
+      <div
+        className={classes.Wrapper}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className={classes.title}>Send feedback</div>
         <div className={classes.subTitle}>What is the issue?</div>
-        <form action="">
+        <form>
           <textarea
             className={classes.textarea}
             name="feedback"

@@ -106,6 +106,14 @@ export default function SearchResult({ company }) {
     }
   }, [router.query.term]);
 
+  useEffect(() => {
+    if (isOpenModal && window.innerWidth <= 748) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isOpenModal]);
+
   return (
     <>
       <div

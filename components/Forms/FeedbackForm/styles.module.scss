@@ -12,7 +12,7 @@
   }
   .textarea {
     margin-top: 37px;
-    border: 1px solid #E5E2E2;
+    border: 1px solid #e5e2e2;
     box-sizing: border-box;
     border-radius: 13px;
     outline: none;
@@ -44,12 +44,62 @@
     }
 
     .btnSend {
-      background: #D8D8D8;
+      background: #d8d8d8;
       mix-blend-mode: normal;
       opacity: 0.56;
-      border: 1px solid #E5E2E2;
+      border: 1px solid #e5e2e2;
       box-sizing: border-box;
       border-radius: 13px;
+    }
+  }
+}
+@media (max-width: 748px) {
+  .Wrapper {
+    .subTitle {
+      margin-bottom: 17px;
+    }
+    .textarea {
+      width: 100%;
+      height: 180px;
+      margin-top: 0;
+      &::placeholder {
+        font-size: 14px;
+        line-height: 16px;
+        color: #5f5d60;
+      }
+    }
+
+    .buttons {
+      margin-top: 81px;
+      .btn {
+        padding-left: 7px;
+        padding-right: 7px;
+        font-size: 18px;
+        line-height: 21px;
+        color: #181719;
+        &:last-child {
+          margin-left: 9px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 329px) {
+  .Wrapper {
+    .title {
+      font-size: 24px;
+      line-height: 28px;
+    }
+    .subTitle {
+      font-size: 17px;
+      line-height: 20px;
+    }
+    .textarea {
+      height: 148px;
+    }
+    .buttons {
+      margin-top: 47px;
     }
   }
 }

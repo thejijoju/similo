@@ -14,6 +14,9 @@ const ModalContainer = ({ isOpen, onRequestClose, children }) => {
       overlayClassName={classes.Overlay}
       contentLabel="Post modal"
     >
+      <i className={classes.closeIcon} onClick={onRequestClose}>
+        Close
+      </i>
       {children}
     </Modal>
   );
