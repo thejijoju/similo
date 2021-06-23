@@ -8,7 +8,7 @@ const sequelize = require('../../../config/db');
 
 function convertRevenueToNumber(revenue) {
   let multiplier = 1000;
-  const stringMultiplier = revenue.split(' ')[1];
+  const stringMultiplier = revenue.trim().split(' ')[1];
   if (stringMultiplier === 'million') {
     multiplier = 1000000;
   } else if (stringMultiplier === 'billion') {
@@ -18,11 +18,11 @@ function convertRevenueToNumber(revenue) {
   let value = revenue.split(' ')[0];
   value = value.replace(/€/g, '');
   value = parseFloat(value);
-
+  console.log(revenue, value, multiplier);
   return value * multiplier;
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.query.addVector) {
     return sequelize
       .query(
@@ -39,6 +39,12 @@ export default function handler(req, res) {
         res.json({ status: 'fail', message: error.message });
       });
   }
+
+  await Company.destroy({
+    where: {},
+    truncate: true,
+  });
+
   const promises = [];
   const data = JSON.parse(
     fs.readFileSync(`${process.cwd()}/pages/api/companies/output.json`, 'utf8')
@@ -59,6 +65,12 @@ export default function handler(req, res) {
       }
       if (key === 'employeesCount' && companyData[key] !== null) {
         companyData[key] = parseInt(companyData[key].replace(/,/g, ''), 10);
+      }
+      if (key === 'expertise' && companyData[key] !== null) {
+        const tags = companyData[key]
+          .split(',')
+          .map((tag) => tag.toLowerCase());
+        companyData[key] = tags.join(',');
       }
     }
     promises.push(Company.create(companyData));

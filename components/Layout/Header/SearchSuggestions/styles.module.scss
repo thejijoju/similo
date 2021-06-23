@@ -23,10 +23,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-
-      &::first-letter {
-        font-weight: bold;
-      }
     }
 
     .companyIndustry {
@@ -79,10 +75,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-
-        &::first-letter {
-          font-weight: bold;
-        }
       }
 
       .companyIndustry {

@@ -13,6 +13,7 @@ function MyApp({ Component, pageProps }) {
   const [companyExpertiseFilter, setCompanyExpertiseFilter] = useState([]);
   const [companyRevenueFilter, setCompanyRevenueFilter] = useState([]);
   const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
+  const [sortOption, setSortOption] = useState('relevant');
 
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [isSearchResultsMode, setIsSearchResultsMode] = useState(false);
@@ -35,6 +36,8 @@ function MyApp({ Component, pageProps }) {
         setCompanyRevenueFilter,
         companyTypeFilter,
         setCompanyTypeFilter,
+        sortOption,
+        setSortOption,
       }}
     >
       <UIContext.Provider

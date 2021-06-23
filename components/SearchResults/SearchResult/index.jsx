@@ -14,10 +14,20 @@ function convertNumberToString(number) {
   if (!number) {
     return null;
   }
-  const parsedNumber = parseInt(number, 10);
+
+  switch (true) {
+    case number >= 1000000000:
+      return `€${number / 1000000000} billion`.replace('.', ',');
+    case number >= 1000000:
+      return `€${number / 1000000} million`.replace('.', ',');
+    default:
+      return `€${number / 1000} thousand`.replace('.', ',');
+  }
+
+  /* const parsedNumber = parseInt(number, 10);
   return `€${parsedNumber.toLocaleString('en-US', {
     maximumFractionDigits: 2,
-  })}`;
+  })}`; */
 }
 
 export default function SearchResult({ company }) {
@@ -29,9 +39,11 @@ export default function SearchResult({ company }) {
   const [isSubsidiariesComponentVisible, setIsSubsidiariesComponentVisible] =
     useState(false);
   const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState(false);
+  const [keyPeopleOffset, setKeyPeopleOffset] = useState(0);
 
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
+  const employeesCountRef = useRef();
 
   const { areCompanyCardsExpanded } = useContext(SearchResultsContext);
 
@@ -99,9 +111,16 @@ export default function SearchResult({ company }) {
     ) {
       setTimeout(() => {
         expandCompanyCard();
-      }, 200);
+      }, 800);
       setTimeout(() => {
-        companyCardRef.current.scrollIntoView({ behavior: 'smooth' });
+        /* companyCardRef.current.scrollIntoView({ behavior: 'smooth' }); */
+        const yOffset = -140;
+        const y =
+          companyCardRef.current.getBoundingClientRect().top +
+          window.pageYOffset +
+          yOffset;
+
+        window.scrollTo({ top: y, behavior: 'smooth' });
       }, 600);
     }
   }, [router.query.term]);
@@ -113,6 +132,16 @@ export default function SearchResult({ company }) {
       document.body.style.overflow = 'unset';
     }
   }, [isOpenModal]);
+
+  useEffect(() => {
+    if (employeesCountRef.current) {
+      setKeyPeopleOffset(-employeesCountRef.current.offsetWidth);
+      document.documentElement.style.setProperty(
+        '--keyPeopleOffset',
+        `${employeesCountRef.current.offsetWidth}px`
+      );
+    }
+  }, [employeesCountRef.current]);
 
   return (
     <>
@@ -166,22 +195,28 @@ export default function SearchResult({ company }) {
                   <span className={classes.title}>Headquarters</span>
                   <span className={classes.content}>{company.HQLocation}</span>
                 </div>
-                <div className={classes.infoBlock}>
-                  <span className={classes.title}>Parent Organization</span>
-                  <span className={classes.content}>
-                    {company.parentCompany}
-                  </span>
-                </div>
-                <div className={classes.infoBlock}>
-                  <span className={classes.title}>Founder</span>
-                  <span className={classes.content}>{company.founder}</span>
-                </div>
-                <div className={classes.infoBlock}>
-                  <span className={classes.title}>Founded</span>
-                  <span className={classes.content}>
-                    {company.yearOfFoundation}
-                  </span>
-                </div>
+                {company.parentCompany && (
+                  <div className={classes.infoBlock}>
+                    <span className={classes.title}>Parent Organization</span>
+                    <span className={classes.content}>
+                      {company.parentCompany}
+                    </span>
+                  </div>
+                )}
+                {company.founder && (
+                  <div className={classes.infoBlock}>
+                    <span className={classes.title}>Founder</span>
+                    <span className={classes.content}>{company.founder}</span>
+                  </div>
+                )}
+                {company.yearOfFoundation && (
+                  <div className={classes.infoBlock}>
+                    <span className={classes.title}>Founded</span>
+                    <span className={classes.content}>
+                      {company.yearOfFoundation}
+                    </span>
+                  </div>
+                )}
                 <div className={classes.infoBlock}>
                   <span className={classes.title}>Revenue</span>
                   <span className={classes.content}>
@@ -209,21 +244,26 @@ export default function SearchResult({ company }) {
               >
                 <div className={classes.keyPeople}>
                   <span className={classes.title}>Key people</span>
-                  <span className={classes.content}>
+                  <span
+                    className={classes.content}
+                    style={{ left: keyPeopleOffset }}
+                  >
                     Michael Burke (Chairman & CEO), Nicolas Ghesquière, Virgil
                     Abloh (Creative directors)
                   </span>
                 </div>
-                <div className={classes.infoBlock}>
-                  <span className={classes.title}>Number of employees</span>
-                  <span className={classes.content}>
-                    {company.employeesCount
-                      ? company.employeesCount.toLocaleString('en-US', {
-                          maximumFractionDigits: 2,
-                        })
-                      : null}
-                  </span>
-                </div>
+                {company.employeesCount && (
+                  <div className={classes.infoBlock}>
+                    <span className={classes.title}>Number of employees</span>
+                    <span className={classes.content} ref={employeesCountRef}>
+                      {company.employeesCount
+                        ? company.employeesCount.toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                          })
+                        : null}
+                    </span>
+                  </div>
+                )}
                 <div className={classes.infoBlock}>
                   <span className={classes.title}>Area served</span>
                   <span className={classes.content}>Worldwide</span>

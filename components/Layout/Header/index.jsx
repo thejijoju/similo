@@ -28,6 +28,14 @@ export default function Header() {
     setIsSearchResultsMode,
   } = useContext(UIContext);
 
+  /* const {
+    setCompanyExpertiseFilter,
+    setCompanySizeFilter,
+    setCompanyRevenueFilter,
+    setCompanyTypeFilter,
+    setCompanyLocationFilter,
+  } = useContext(SearchResultsContext); */
+
   const searchContainerRef = useRef();
   const headerRef = useRef();
 
@@ -95,7 +103,6 @@ export default function Header() {
       <div
         className={classes.logo}
         onClick={() => {
-          console.log('the fuck');
           setIsSearchMode(false);
           setIsSearchResultsMode(false);
         }}
@@ -119,6 +126,7 @@ export default function Header() {
             show={isSearchSuggestionVisible}
             onHide={hideSearchSuggestions}
             setSearchTerm={setSearchTerm}
+            searchTerm={searchTerm}
           />
         </div>
         <i className={classes.closeIcon} onClick={clearSearch}>

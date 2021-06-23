@@ -1,5 +1,7 @@
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
 const { Company } = require('../../../../models');
+
+const sequelize = require('../../../../config/db');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -16,6 +18,27 @@ export default async function handler(req, res) {
     attributes: ['name', 'industry', 'logoPath'],
     limit: 6,
   });
+
+  if (!companies.length) {
+    const industries = await sequelize.query(
+      `SELECT DISTINCT("industry") FROM "Companies"
+       WHERE industry IS NOT NULL AND LOWER(industry) LIKE LOWER('%${searchTerm}%')`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    return res.json({
+      status: 'success',
+      count: companies.length,
+      data: {
+        companies: industries.map((industry) => {
+          return { name: industry.industry, type: 'industry' };
+        }),
+      },
+    });
+  }
+
   return res.json({
     status: 'success',
     count: companies.length,

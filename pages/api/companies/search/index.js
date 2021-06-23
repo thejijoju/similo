@@ -14,6 +14,7 @@ export default async function handler(req, res) {
   }
 
   let searchTerm = req.query.term || '';
+
   let searchTermArray = decodeURI(searchTerm).split(' ');
   searchTermArray = searchTermArray.map((term) => {
     return `${term}:*`;
@@ -28,7 +29,16 @@ export default async function handler(req, res) {
   if (!page) {
     page = 0;
   }
-  const { perPage } = req.query || 8;
+
+  let { perPage } = req.query;
+  if (!perPage) {
+    perPage = 8;
+  }
+
+  let { sort } = req.query;
+  if (!sort) {
+    sort = 'relevant';
+  }
 
   const companySize = (req.query.companySize || '').split(',|');
   const sizeRanges = convertSizeRanges(companySize);
@@ -102,13 +112,18 @@ export default async function handler(req, res) {
     });
   }
 
+  const sortQuery =
+    sort === 'relevant'
+      ? `ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name`
+      : `ORDER BY "createdAt" DESC, name`;
+
   const query = `SELECT * FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
   ${companySizeQuery}
   ${expertiseQuery}
   ${companyTypeQuery}
   ${companyRevenueQuery}
   ${locationsQuery}
-  ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name
+  ${sortQuery}
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
   const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')

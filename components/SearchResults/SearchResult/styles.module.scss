@@ -12,6 +12,11 @@
   border-radius: 4px;
   overflow: hidden;
   transition: height ease-in-out 0.2s;
+  &:hover {
+    .expandCard {
+      display: block !important;
+    }
+  }
   .header {
     .mobileTitle {
       display: none;
@@ -49,6 +54,7 @@
     }
     .tags {
       padding-bottom: 12px;
+      text-transform: capitalize;
       .tag {
         display: inline-block;
         margin-right: 7px;
@@ -63,6 +69,7 @@
     }
   }
   .expandCard {
+    display: none !important;
     position: absolute;
     top: 44px;
     right: 92px;
@@ -108,6 +115,8 @@
           line-height: 18px;
           letter-spacing: 0.3px;
           color: #090909;
+          text-align: right;
+          padding-left: 10px;
           a {
             color: #0e62c2;
           }
@@ -162,15 +171,20 @@
       .keyPeople {
         width: 100%;
         display: flex;
-        justify-content: space-between;
+        //justify-content: space-between;
         margin-bottom: 38px;
         .title {
-          min-width: calc(50% + 67px);
+          min-width: 50%;
           font-size: 15px;
           font-weight: bold;
           line-height: 18px;
           letter-spacing: 0.3px;
           color: #090909;
+        }
+        .content {
+          position: relative;
+          min-width: calc(50% + 67px + var(--keyPeopleOffset));
+          margin-left: -67px;
         }
       }
     }
@@ -210,7 +224,11 @@
         justify-content: space-between;
         .keyPeople {
           .title {
-            min-width: calc(50% + 25px);
+          }
+          .content {
+            position: relative;
+            min-width: calc(50% + 25px + var(--keyPeopleOffset));
+            margin-left: -25px;
           }
         }
         .infoBlock {
@@ -233,6 +251,12 @@
     padding-left: 8px;
     padding-right: 8px;
 
+    &:hover {
+      .expandCard {
+        display: none !important;
+      }
+    }
+
     .header {
       display: flex;
       overflow: hidden;
@@ -242,13 +266,13 @@
         display: block;
       }
       .logo {
-        //align-self: center;
+        align-self: center;
         width: 50px;
         height: 41px;
         min-width: 50px;
         min-height: 41px;
         margin: 0;
-        margin-top: 6px;
+        //margin-top: 6px;
         background-position: center;
       }
       h1 {
@@ -320,6 +344,10 @@
         .keyPeople {
           width: 100%;
           .title {
+            min-width: 50%;
+          }
+          .content {
+            margin-left: 0;
             min-width: 50%;
           }
         }

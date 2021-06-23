@@ -34,8 +34,6 @@ export default function Filters({ expertise, locations }) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
-  const [currentSortOption, setCurrentSortOption] = useState('relevant');
-
   const { Portal } = usePortal();
 
   const {
@@ -49,6 +47,8 @@ export default function Filters({ expertise, locations }) {
     setCompanyRevenueFilter,
     companyTypeFilter,
     setCompanyTypeFilter,
+    sortOption,
+    setSortOption,
   } = useContext(SearchResultsContext);
 
   const { isFiltersPanelVisible, setIsFiltersPanelVisible } =
@@ -99,8 +99,20 @@ export default function Filters({ expertise, locations }) {
         >
           <i>lines</i>Filter
         </button>
-        <button type="button" className={classes.mostRelevantButton}>
-          Most relevant <i>arrow down</i>
+        <button
+          type="button"
+          className={classes.mostRelevantButton}
+          onClick={() => {
+            setSortOption((prevOption) => {
+              if (prevOption === 'relevant') {
+                return 'recent';
+              }
+              return 'relevant';
+            });
+          }}
+        >
+          {sortOption === 'relevant' ? 'Most relevant' : 'Most recent'}
+          <i>arrow down</i>
         </button>
         {isFilterActive() && (
           <button
@@ -147,9 +159,7 @@ export default function Filters({ expertise, locations }) {
               }
             >
               <h2>
-                {currentSortOption === 'relevant'
-                  ? 'Most relevant'
-                  : 'Most recent'}
+                {sortOption === 'relevant' ? 'Most relevant' : 'Most recent'}
               </h2>
               <i
                 className={classnames(
@@ -163,7 +173,7 @@ export default function Filters({ expertise, locations }) {
             <span
               className={classes.currentOption}
               onClick={() => {
-                setCurrentSortOption((prevOption) => {
+                setSortOption((prevOption) => {
                   if (prevOption === 'recent') {
                     return 'relevant';
                   }
@@ -171,15 +181,13 @@ export default function Filters({ expertise, locations }) {
                 });
               }}
             >
-              {currentSortOption === 'relevant'
-                ? 'Most recent'
-                : 'Most relevant'}
+              {sortOption === 'relevant' ? 'Most recent' : 'Most relevant'}
             </span>
           </div>
           <Filter
             title="Location"
             values={locations}
-            defaultSize={3}
+            defaultSize={4}
             search
             state={companyLocationFilter}
             setState={setCompanyLocationFilter}
@@ -209,7 +217,7 @@ export default function Filters({ expertise, locations }) {
           <Filter
             title="Revenue"
             values={REVENUE}
-            defaultSize={3}
+            defaultSize={4}
             state={companyRevenueFilter}
             setState={setCompanyRevenueFilter}
           />

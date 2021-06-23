@@ -10,6 +10,8 @@ import SearchResult from './SearchResult';
 import classes from './styles.module.scss';
 import { SearchResultsContext, UIContext } from '../../context/index';
 
+let timer;
+
 export default function SearchResults({ searchResults }) {
   const [innerSearchResults, setInnerSearchResults] = useState({
     ...searchResults,
@@ -30,6 +32,11 @@ export default function SearchResults({ searchResults }) {
     areCompanyCardsExpanded,
     currentPage,
     setCurrentPage,
+    setCompanyExpertiseFilter,
+    setCompanySizeFilter,
+    setCompanyRevenueFilter,
+    setCompanyTypeFilter,
+    setCompanyLocationFilter,
   } = useContext(SearchResultsContext);
 
   const { setIsSearchResultsMode, setIsFiltersPanelVisible } =
@@ -50,13 +57,11 @@ export default function SearchResults({ searchResults }) {
   }, [innerSearchResults]);
 
   useEffect(() => {
-    if (searchResults) {
-      setIsAllowedToLoadPreviousPage(false);
-      setTimeout(() => {
-        setIsAllowedToLoadPreviousPage(true);
-      }, 800);
-    }
-  }, [searchResults]);
+    setIsAllowedToLoadPreviousPage(false);
+    timer = setTimeout(() => {
+      setIsAllowedToLoadPreviousPage(true);
+    }, 1000);
+  }, [searchResults, innerSearchResults]);
 
   useEffect(() => {
     setInnerSearchResults(searchResults);
@@ -65,11 +70,11 @@ export default function SearchResults({ searchResults }) {
     }
   }, [searchResults]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     console.log('TOP PAGE', currentTopPage);
     console.log('BOTTOM PAGE', currentBottomPage);
   }, [currentTopPage, currentBottomPage]);
- */
+
   useEffect(() => {
     if (searchResults) {
       setCurrentTopPage(searchResults.page);
@@ -85,7 +90,7 @@ export default function SearchResults({ searchResults }) {
     if (
       (direction === 'forward' &&
         COMPANIES_PER_PAGE * (currentBottomPage + 1) >
-          searchResults.totalCount) ||
+          innerSearchResults.totalCount) ||
       (direction === 'back' && currentTopPage === 0) ||
       isSearchResultsLoading
     ) {
@@ -114,7 +119,7 @@ export default function SearchResults({ searchResults }) {
               : currentTopPage - 1,
         },
       });
-
+      console.log(direction);
       if (direction === 'forward') {
         setCurrentBottomPage((prevState) => prevState + 1);
       } else {
@@ -141,7 +146,8 @@ export default function SearchResults({ searchResults }) {
           'div[data-element="search-result"]'
         );
 
-        let newElementsCount = searchResults.totalCount - COMPANIES_PER_PAGE;
+        let newElementsCount =
+          innerSearchResults.totalCount - COMPANIES_PER_PAGE;
         if (newElementsCount > COMPANIES_PER_PAGE) {
           newElementsCount = COMPANIES_PER_PAGE;
         }
@@ -159,6 +165,7 @@ export default function SearchResults({ searchResults }) {
             top: scrollAmount + document.documentElement.scrollTop,
           });
           setIsAllowedToLoadPreviousPage(true);
+          clearTimeout(timer);
         }, 144);
       }
     } catch (error) {
@@ -196,15 +203,57 @@ export default function SearchResults({ searchResults }) {
     }
   };
 
+  const getSearchResults = async () => {
+    setCurrentPage(0);
+    const url = router.query.fromSuggestions
+      ? `${API_URL}/companies/search/searchFromSuggestions`
+      : `${API_URL}/companies/search`;
+    try {
+      const response = await axios.get(url, {
+        params: {
+          ...router.query,
+          page:
+            router.query.suggestionType === 'company' ? undefined : currentPage,
+        },
+      });
+      console.log(response.data);
+      setInnerSearchResults(response.data);
+      // setCurrentPage(response.data.page);
+      setCurrentTopPage(response.data.page);
+      setCurrentBottomPage(response.data.page);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    /* if (
+      router.query.fromSuggestions &&
+      router.query.suggestionType === 'company'
+    ) {
+      return;
+    } */
+    if (router.query.term) {
+      getSearchResults();
+    } else {
+      setInnerSearchResults([]);
+      setCompanyExpertiseFilter([]);
+      setCompanySizeFilter([]);
+      setCompanyRevenueFilter([]);
+      setCompanyTypeFilter([]);
+      setCompanyLocationFilter([]);
+    }
+  }, [router.query]);
+
   const switchPage = () => {
     if (!router.query.fromSuggestions || isSearchResultsLoading) {
       return;
     }
     if (
       window.innerHeight + window.pageYOffset >=
-      document.body.offsetHeight - 150
+        document.body.offsetHeight - 150 &&
+      isAllowedToLoadPreviousPage
     ) {
-      console.log('BOTTOM');
       getMoreSearchResultsDirectional('forward');
     } else if (window.pageYOffset <= 50 && isAllowedToLoadPreviousPage) {
       console.log('TOP');

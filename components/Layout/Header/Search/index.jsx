@@ -23,6 +23,7 @@ export default function Search({
     companyTypeFilter,
     companyRevenueFilter,
     companyLocationFilter,
+    sortOption,
   } = useContext(SearchResultsContext);
   const { setIsSearchMode } = useContext(UIContext);
 
@@ -87,7 +88,10 @@ export default function Search({
 
     if (router.query.fromSuggestions && !event) {
       queryObject.fromSuggestions = 'true';
+      queryObject.suggestionType = router.query.suggestionType;
     }
+
+    queryObject.sort = sortOption;
 
     const queryString = qs.stringify(queryObject);
 
@@ -95,7 +99,9 @@ export default function Search({
     hideSearchSuggestions();
     clearTimeout(timer);
     router.push(
-      `/?${queryString}`
+      `/?${queryString}`,
+      undefined,
+      { shallow: true }
       /* `/?term=${encodeURIComponent(
         searchTerm
       )}&page=0&perPage=${COMPANIES_PER_PAGE}`  ,
@@ -112,6 +118,7 @@ export default function Search({
     companyTypeFilter,
     companyRevenueFilter,
     companyLocationFilter,
+    sortOption,
   ]);
 
   useEffect(() => {

@@ -20,6 +20,7 @@ export default function HomePage({ searchResults, expertise, locations }) {
     setCompanySizeFilter,
     setCompanyRevenueFilter,
     setCompanyTypeFilter,
+    setCompanyLocationFilter,
   } = useContext(SearchResultsContext);
 
   const { isFiltersPanelVisible } = useContext(UIContext);
@@ -56,6 +57,11 @@ export default function HomePage({ searchResults, expertise, locations }) {
       ? router.query.revenue.split(',|')
       : [];
     setCompanyRevenueFilter(revenueFilters);
+
+    const locationsFilters = router.query.locations
+      ? router.query.locations.split(',')
+      : [];
+    setCompanyLocationFilter(locationsFilters);
   }, []);
 
   return (

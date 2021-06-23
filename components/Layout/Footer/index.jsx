@@ -12,7 +12,7 @@ export default function Footer() {
         <div className={classes.imageContainer}>
           <Image src="/images/Logo2.svg" width={81} height={51} />
         </div>
-        <span>Simili © {new Date().getFullYear()}</span>
+        <span>Similo © {new Date().getFullYear()}</span>
       </div>
       <div className={classes.links}>
         <Link href="/">

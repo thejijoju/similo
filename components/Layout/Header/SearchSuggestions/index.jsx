@@ -4,21 +4,39 @@ import { useRouter } from 'next/router';
 import { COMPANIES_PER_PAGE } from 'constants/index';
 import classes from './styles.module.scss';
 
+function highlightMatchingText(searchTerm, text) {
+  /* const querystr = 'ula';
+  const result = 'Calculator'; */
+  const reg = new RegExp(searchTerm, 'gi');
+  const finalStr = text.replace(reg, (str) => {
+    return `<b>${str}</b>`;
+  });
+  console.log(finalStr);
+  return {
+    __html: finalStr,
+  };
+}
+
 export default function SearchSuggestions({
   searchSuggestions = [],
   show,
   onHide,
   setSearchTerm,
+  searchTerm,
 }) {
   const router = useRouter();
 
-  const search = (term) => {
+  const search = (term, type) => {
     setSearchTerm(term);
     onHide();
     router.push(
       `/?term=${encodeURIComponent(
         term
-      )}&perPage=${COMPANIES_PER_PAGE}&fromSuggestions=true`
+      )}&perPage=${COMPANIES_PER_PAGE}&fromSuggestions=true&suggestionType=${
+        type === 'industry' ? 'industry' : 'company'
+      }`,
+      undefined,
+      { shallow: true }
     );
   };
 
@@ -29,11 +47,18 @@ export default function SearchSuggestions({
           <div
             className={classes.suggestion}
             key={suggestion.name}
-            onClick={() => search(suggestion.name)}
+            onClick={() => search(suggestion.name, suggestion.type)}
           >
-            <p className={classes.title}>{suggestion.name}</p>
+            <p
+              className={classes.title}
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={highlightMatchingText(
+                searchTerm,
+                suggestion.name
+              )}
+            />
             <span className={classes.companyIndustry}>
-              <i>dot</i>
+              {suggestion.industry && <i>dot</i>}
               {suggestion.industry}
             </span>
             <div

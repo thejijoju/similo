@@ -16,7 +16,9 @@ export default async function handler(req, res) {
   const searchTerm = decodeURI(req.query.term) || '';
 
   let { page } = req.query;
-  const { perPage } = req.query || 8;
+  const perPage = req.query.perPage || 8;
+
+  const suggestionType = req.query.suggestionType || 'company';
 
   const companySize = (req.query.companySize || '').split(',|');
   const sizeRanges = convertSizeRanges(companySize);
@@ -30,41 +32,51 @@ export default async function handler(req, res) {
 
   const locations = (req.query.locations || '').split(',');
 
+  const sort = req.query.sort || 'relevant';
+
   let company;
+  let query;
+  let countQuery;
 
-  try {
-    company = await Company.findOne({ where: { name: searchTerm } });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ status: 'fail', message: 'No such company exists' });
-  }
+  if (suggestionType === 'company') {
+    try {
+      company = await Company.findOne({ where: { name: searchTerm } });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'No such company exists' });
+    }
 
-  if (!company) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'No such company exists',
-    });
-  }
+    if (!company) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'No such company exists',
+      });
+    }
 
-  if (!company.industry) {
-    return res.json({
-      status: 'success',
-      data: { companies: company },
-    });
-  }
+    if (!company.industry) {
+      return res.json({
+        status: 'success',
+        data: { companies: company },
+      });
+    }
 
-  if (!page) {
-    const companyRowNumber = await sequelize.query(
-      `SELECT rnum FROM 
+    if (!page) {
+      const companyRowNumber = await sequelize.query(
+        `SELECT rnum FROM 
   (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry='${company.industry}') a
   WHERE a.name='${company.name}'`,
-      {
-        type: QueryTypes.SELECT,
-      }
-    );
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
 
-    page = Math.floor((companyRowNumber[0].rnum - 0.1) / perPage);
+      page = Math.floor((companyRowNumber[0].rnum - 0.1) / perPage);
+    }
+  } else if (suggestionType === 'industry') {
+    if (!page) {
+      page = 0;
+    }
   }
 
   let expertiseQuery = '';
@@ -127,30 +139,46 @@ export default async function handler(req, res) {
     });
   }
 
-  const query = `SELECT * FROM "Companies" WHERE (industry='${
-    company.industry
-  }')
-  ${companySizeQuery}
-  ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${locationsQuery}
-  ORDER by name
-  LIMIT ${perPage} OFFSET ${page * perPage}`;
+  if (suggestionType === 'company') {
+    query = `SELECT * FROM "Companies" WHERE (industry='${company.industry}')
+    ${companySizeQuery}
+    ${expertiseQuery}
+    ${companyTypeQuery}
+    ${companyRevenueQuery}
+    ${locationsQuery}
+    ORDER by name
+    LIMIT ${perPage} OFFSET ${page * perPage}`;
 
-  const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${company.industry}')
-  ${companySizeQuery}
-  ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${locationsQuery}`;
+    countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${company.industry}')
+    ${companySizeQuery}
+    ${expertiseQuery}
+    ${companyTypeQuery}
+    ${companyRevenueQuery}
+    ${locationsQuery}`;
+  } else if (suggestionType === 'industry') {
+    query = `SELECT * FROM "Companies" WHERE (industry='${searchTerm}')
+    ${companySizeQuery}
+    ${expertiseQuery}
+    ${companyTypeQuery}
+    ${companyRevenueQuery}
+    ${locationsQuery}
+    ORDER by ${sort === 'relevant' ? 'name' : '"createdAt"'} ASC
+    LIMIT ${perPage} OFFSET ${page * perPage}`;
+
+    countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${searchTerm}')
+    ${companySizeQuery}
+    ${expertiseQuery}
+    ${companyTypeQuery}
+    ${companyRevenueQuery}
+    ${locationsQuery}`;
+  }
 
   const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
   });
 
-  console.log(page);
+  console.log('PAGE', req.query.page, page);
 
   return res.json({
     status: 'success',
