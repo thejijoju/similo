@@ -178,8 +178,6 @@ export default async function handler(req, res) {
     type: QueryTypes.SELECT,
   });
 
-  console.log('PAGE', req.query.page, page);
-
   return res.json({
     status: 'success',
     count: rows.length,

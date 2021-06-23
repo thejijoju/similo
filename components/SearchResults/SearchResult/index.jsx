@@ -23,11 +23,6 @@ function convertNumberToString(number) {
     default:
       return `€${number / 1000} thousand`.replace('.', ',');
   }
-
-  /* const parsedNumber = parseInt(number, 10);
-  return `€${parsedNumber.toLocaleString('en-US', {
-    maximumFractionDigits: 2,
-  })}`; */
 }
 
 export default function SearchResult({ company }) {
@@ -45,7 +40,11 @@ export default function SearchResult({ company }) {
   const companyCardInitialHeight = useRef();
   const employeesCountRef = useRef();
 
-  const { areCompanyCardsExpanded } = useContext(SearchResultsContext);
+  const {
+    areCompanyCardsExpanded,
+    companyExpertiseFilter,
+    setCompanyExpertiseFilter,
+  } = useContext(SearchResultsContext);
 
   const openModal = () => {
     setIsOpenModal(true);
@@ -77,6 +76,22 @@ export default function SearchResult({ company }) {
   const hideSubsidiaries = (event) => {
     event.stopPropagation();
     setIsSubsidiariesComponentVisible(false);
+  };
+
+  const toggleExpertiseFilter = (value) => {
+    const indexOfValue = companyExpertiseFilter.indexOf(value);
+    if (indexOfValue === -1) {
+      setCompanyExpertiseFilter((prevState) => {
+        const newState = [...prevState, value];
+        return newState;
+      });
+    } else {
+      setCompanyExpertiseFilter((prevState) => {
+        const newState = [...prevState];
+        newState.splice(indexOfValue, 1);
+        return newState;
+      });
+    }
   };
 
   useEffect(() => {
@@ -175,8 +190,16 @@ export default function SearchResult({ company }) {
           <div className={classes.tags}>
             {company.expertise &&
               company.expertise.split(',').map((tag) => (
-                <span className={classes.tag} key={tag}>
-                  {tag}
+                <span
+                  className={classnames(
+                    classes.tag,
+                    companyExpertiseFilter.includes(tag.trim()) &&
+                      classes.active
+                  )}
+                  key={tag}
+                  onClick={() => toggleExpertiseFilter(tag.trim())}
+                >
+                  {tag.trim()}
                 </span>
               ))}
           </div>

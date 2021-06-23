@@ -63,8 +63,13 @@
         font-size: 12px;
         line-height: 14px;
         color: #262a2b !important;
+        font-weight: bold;
         background: #fbf9f9;
         border-radius: 16px;
+        cursor: pointer;
+        &.active {
+          background-color: #d6edf1;
+        }
       }
     }
   }
@@ -115,7 +120,7 @@
           line-height: 18px;
           letter-spacing: 0.3px;
           color: #090909;
-          text-align: right;
+          text-align: left;
           padding-left: 10px;
           a {
             color: #0e62c2;
