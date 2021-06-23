@@ -131,9 +131,7 @@
   .showMore {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    width: 92px;
     font-size: 12px;
     line-height: 14px;
     color: #0f7c91;
@@ -142,6 +140,7 @@
       display: block;
       width: 13px;
       height: 10px;
+      margin-left: 10px;
       font-size: 0;
       background-image: url(../../../public/images/grayArrow.svg);
       transform: rotate(180deg);
