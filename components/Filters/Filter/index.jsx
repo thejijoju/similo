@@ -26,15 +26,15 @@ export default function index({
   // const expandedListHeightDiff = useRef();
 
   useEffect(() => {
-    if (filterRef.current && listRef.current) {
+    if (filterRef.current && listRef.current && typeof window !== undefined) {
       /* expandedListHeightDiff.current =
         listRef.current.scrollHeight - listRef.current.clientHeight; */
       setTimeout(() => {
         defaultFilterHeight.current = filterRef.current.clientHeight;
         setFilterHeight(filterRef.current.clientHeight);
-      }, 100);
+      }, 200);
     }
-  }, [filterRef.current, listRef.current, defaultFilterHeight.current]);
+  }, []);
 
   useEffect(() => {
     if (values.length <= defaultSize) {
