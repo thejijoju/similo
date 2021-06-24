@@ -26,11 +26,7 @@ export default function index({
   const expandedListHeightDiff = useRef();
 
   useEffect(() => {
-    if (
-      filterRef.current &&
-      expandedListHeightDiff.current &&
-      defaultFilterHeight.current
-    ) {
+    if (filterRef.current) {
       console.log('!!!!');
       expandedListHeightDiff.current =
         listRef.current.scrollHeight - listRef.current.clientHeight;
