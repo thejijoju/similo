@@ -23,21 +23,16 @@ export default function index({
   const listRef = useRef();
   const defaultFilterHeight = useRef();
 
-  const expandedListHeightDiff = useRef();
+  // const expandedListHeightDiff = useRef();
 
   useEffect(() => {
     if (filterRef.current && listRef.current) {
-      expandedListHeightDiff.current =
-        listRef.current.scrollHeight - listRef.current.clientHeight;
+      /* expandedListHeightDiff.current =
+        listRef.current.scrollHeight - listRef.current.clientHeight; */
       defaultFilterHeight.current = filterRef.current.clientHeight;
       setFilterHeight(filterRef.current.clientHeight);
     }
-  }, [
-    filterRef.current,
-    listRef.current,
-    defaultFilterHeight.current,
-    expandedListHeightDiff.current,
-  ]);
+  }, [filterRef.current, listRef.current, defaultFilterHeight.current]);
 
   useEffect(() => {
     if (values.length <= defaultSize) {
