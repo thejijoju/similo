@@ -32,7 +32,12 @@ export default function index({
       defaultFilterHeight.current = filterRef.current.clientHeight;
       setFilterHeight(filterRef.current.clientHeight);
     }
-  }, [filterRef.current, listRef.current]);
+  }, [
+    filterRef.current,
+    listRef.current,
+    defaultFilterHeight.current,
+    expandedListHeightDiff.current,
+  ]);
 
   useEffect(() => {
     if (values.length <= defaultSize) {
