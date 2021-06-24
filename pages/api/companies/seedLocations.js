@@ -6,6 +6,12 @@ export default async function handler(req, res) {
   const locationsSet = new Set();
   const companies = await Company.findAll({});
 
+  await Location.destroy({
+    where: {},
+    truncate: true,
+    cascade: true,
+  });
+
   companies.forEach((company) => {
     if (company.locations) {
       locationsStrings.push(company.locations);

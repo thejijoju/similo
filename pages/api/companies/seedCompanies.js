@@ -18,7 +18,6 @@ function convertRevenueToNumber(revenue) {
   let value = revenue.split(' ')[0];
   value = value.replace(/€/g, '');
   value = parseFloat(value);
-  console.log(revenue, value, multiplier);
   return value * multiplier;
 }
 
@@ -43,6 +42,7 @@ export default async function handler(req, res) {
   await Company.destroy({
     where: {},
     truncate: true,
+    cascade: true,
   });
 
   const promises = [];
