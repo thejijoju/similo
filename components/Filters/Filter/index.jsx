@@ -29,8 +29,10 @@ export default function index({
     if (filterRef.current && listRef.current) {
       /* expandedListHeightDiff.current =
         listRef.current.scrollHeight - listRef.current.clientHeight; */
-      defaultFilterHeight.current = filterRef.current.clientHeight;
-      setFilterHeight(filterRef.current.clientHeight);
+      setTimeout(() => {
+        defaultFilterHeight.current = filterRef.current.clientHeight;
+        setFilterHeight(filterRef.current.clientHeight);
+      }, 100);
     }
   }, [filterRef.current, listRef.current, defaultFilterHeight.current]);
 
