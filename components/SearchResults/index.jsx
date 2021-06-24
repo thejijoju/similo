@@ -351,7 +351,7 @@ export default function SearchResults({ searchResults }) {
       </div>
       <div className={classes.resultsContainer}>
         {innerSearchResults.data.companies.map((company) => {
-          return <SearchResult company={company} key={company.id} />;
+          return <SearchResult company={company} key={company.companyId} />;
         })}
       </div>
       {isSearchResultsLoading && (

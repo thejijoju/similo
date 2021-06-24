@@ -11,6 +11,7 @@ fs.readdirSync(path.join(process.cwd(), 'models'))
   .filter((fileName) => /\.js$/.test(fileName) && fileName !== 'index.js')
   .forEach((fileName) => {
     const model = require(`./${fileName}`)(sequelize, Sequelize.DataTypes);
+    console.log(model.name);
     models[model.name] = model;
   });
 

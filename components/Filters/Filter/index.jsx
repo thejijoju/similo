@@ -1,11 +1,15 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 
+import axios from 'axios';
 import classnames from 'classnames';
 
+import { SearchResultsContext } from '@/context/index';
 import classes from './styles.module.scss';
+import { API_URL } from '../../../constants/index';
 
 const CHECKBOX_HEIGHT = 27;
+let timer;
 
 export default function index({
   title,
@@ -18,15 +22,17 @@ export default function index({
   const [filterHeight, setFilterHeight] = useState('auto');
   const [isListExpanded, setIsListExpanded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [locationValue, setLocationValue] = useState('');
 
   const filterRef = useRef();
   const listRef = useRef();
   const defaultFilterHeight = useRef();
 
-  // const expandedListHeightDiff = useRef();
+  const { setCompanyLocationFilter } = useContext(SearchResultsContext);
 
   useEffect(() => {
-    if (filterRef.current && listRef.current && typeof window !== undefined) {
+    if (filterRef.current && listRef.current && typeof window !== 'undefined') {
       /* expandedListHeightDiff.current =
         listRef.current.scrollHeight - listRef.current.clientHeight; */
       setTimeout(() => {
@@ -69,6 +75,24 @@ export default function index({
   const collapseList = () => {
     setFilterHeight(defaultFilterHeight.current);
     setIsListExpanded(false);
+  };
+
+  const getLocationSuggestions = () => {
+    if (locationValue.trim() === '') {
+      setLocationSuggestions([]);
+      return;
+    }
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/companies/locations?suggestLocation=${locationValue}`
+        );
+        setLocationSuggestions(response.data.data.locations);
+      } catch (error) {
+        console.log(error);
+      }
+    }, 1000);
   };
 
   useEffect(() => {
@@ -117,10 +141,34 @@ export default function index({
       </div>
       {search && (
         <div className={classes.searchContainer}>
+          {locationSuggestions.length ? (
+            <div className={classes.searchSuggestions}>
+              {locationSuggestions.map((location) => {
+                return (
+                  <span
+                    className={classes.suggestion}
+                    onClick={() => {
+                      setCompanyLocationFilter((prevState) => {
+                        return [...prevState, location.country];
+                      });
+                      setLocationSuggestions([]);
+                      setLocationValue('');
+                    }}
+                    key={location.id}
+                  >
+                    {location.city}, {location.country}
+                  </span>
+                );
+              })}
+            </div>
+          ) : null}
           <input
             type="text"
             className={classes.search}
             placeholder="enter a location..."
+            value={locationValue}
+            onChange={(event) => setLocationValue(event.target.value)}
+            onKeyUp={getLocationSuggestions}
           />
         </div>
       )}

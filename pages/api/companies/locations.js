@@ -9,28 +9,26 @@ export default async function handler(req, res) {
       .json({ message: `Method ${req.method} not allowed` });
   }
 
-  const queryString = `SELECT locations FROM "Companies"`;
+  let queryString;
+
+  if (req.query.suggestLocation) {
+    const suggestion = req.query.suggestLocation;
+    queryString = `SELECT * FROM "Locations"
+                    WHERE LOWER(country) LIKE '%${suggestion}%'
+                    OR LOWER(city) LIKE '%${suggestion}%'
+                    LIMIT 3`;
+  } else {
+    queryString = `SELECT DISTINCT(country) FROM "Locations"`;
+  }
 
   const locations = await sequelize.query(queryString, {
     type: QueryTypes.SELECT,
   });
 
-  const locationsSet = new Set();
-
-  locations.forEach((elem) => {
-    if (elem.locations) {
-      const locationsArray = elem.locations.split(';');
-      locationsArray.forEach((location) => {
-        if (location.trim() === '') {
-          return;
-        }
-        locationsSet.add(location.trim().split(' -- ')[0]);
-      });
-    }
-  });
+  const locationsArray = locations.map((location) => location.country);
 
   return res.json({
     status: 'success',
-    data: { locations: Array.from(locationsSet) },
+    data: { locations: req.query.suggestLocation ? locations : locationsArray },
   });
 }

@@ -100,7 +100,7 @@ export default async function handler(req, res) {
     });
   }
 
-  let locationsQuery = '';
+  /* let locationsQuery = '';
   if (locations[0] !== '') {
     locationsQuery = `AND \n(`;
     locations.forEach((location, index) => {
@@ -110,9 +110,21 @@ export default async function handler(req, res) {
         locationsQuery += ` "locations" LIKE '%${location}%' )`;
       }
     });
+  } */
+
+  let locationsQuery = '';
+  if (locations[0] !== '') {
+    locationsQuery = `AND \n(`;
+    locations.forEach((location, index) => {
+      if (index !== locations.length - 1) {
+        locationsQuery += ` l.country = '${location}' OR`;
+      } else {
+        locationsQuery += ` l.country = '${location}' )`;
+      }
+    });
   }
 
-  const sortQuery =
+  /* const sortQuery =
     sort === 'relevant'
       ? `ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name`
       : `ORDER BY "createdAt" DESC, name`;
@@ -124,19 +136,52 @@ export default async function handler(req, res) {
   ${companyRevenueQuery}
   ${locationsQuery}
   ${sortQuery}
-  LIMIT ${perPage} OFFSET ${page * perPage}`;
+  LIMIT ${perPage} OFFSET ${page * perPage}`; */
 
-  const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
+  const sortQuery =
+    sort === 'relevant'
+      ? `ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name`
+      : `ORDER BY "creationDate" DESC, name`;
+
+  const query = `SELECT *
+  FROM (SELECT DISTINCT ON(name) *, c."createdAt" as "creationDate", c.id as "companyId" 
+  FROM "Companies" c
+  FULL JOIN "CompanyLocations" cl ON cl."companyId" = c.id
+  FULL JOIN "Locations" l ON l.id = cl."locationId"
+  WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
   ${companySizeQuery}
   ${expertiseQuery}
   ${companyTypeQuery}
   ${companyRevenueQuery}
-  ${locationsQuery}`;
+  ${locationsQuery}) p
+  ${sortQuery}
+  LIMIT ${perPage} OFFSET ${page * perPage}`;
+
+  /* const countQuery = `SELECT COUNT(*) FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
+  ${companySizeQuery}
+  ${expertiseQuery}
+  ${companyTypeQuery}
+  ${companyRevenueQuery}
+  ${locationsQuery}`; */
+
+  const countQuery = `SELECT COUNT (*)
+  FROM (SELECT DISTINCT ON(name) *, c."createdAt" as "creationDate" 
+  FROM "Companies" c
+  FULL JOIN "CompanyLocations" cl ON cl."companyId" = c.id
+  FULL JOIN "Locations" l ON l.id = cl."locationId"
+  WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
+  ${companySizeQuery}
+  ${expertiseQuery}
+  ${companyTypeQuery}
+  ${companyRevenueQuery}
+  ${locationsQuery}) p`;
 
   const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
   });
+
+  console.log(rows.length);
 
   return res.json({
     status: 'success',
