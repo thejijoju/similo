@@ -78,11 +78,11 @@ export default function index({
   };
 
   const getLocationSuggestions = () => {
+    clearTimeout(timer);
     if (locationValue.trim() === '') {
       setLocationSuggestions([]);
       return;
     }
-    clearTimeout(timer);
     timer = setTimeout(async () => {
       try {
         const response = await axios.get(

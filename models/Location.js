@@ -12,6 +12,8 @@ module.exports = (sequelize, DataTypes) => {
         through: 'CompanyLocations',
         foreignKey: 'locationId',
         otherKey: 'companyId',
+        onDelete: 'cascade',
+        hooks: true,
       });
     }
   }
