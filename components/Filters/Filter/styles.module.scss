@@ -33,17 +33,26 @@
       }
     }
   }
-  .search {
-    width: 100%;
-    margin-bottom: 10px;
-    padding-bottom: 6px;
-    font-family: LucidaGrande;
-    font-size: 14px;
-    line-height: 16px;
-    color: #605f5c;
-    border: none;
-    border-bottom: 2px solid #14a2b8;
-    outline: none;
+  .searchContainer {
+    .search {
+      width: 100%;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      font-family: LucidaGrande;
+      font-size: 14px;
+      line-height: 16px;
+      color: #605f5c;
+      border: none;
+      border-bottom: 2px solid #14a2b8;
+      outline: none;
+      &::placeholder {
+        font-family: arial;
+        font-size: 14px;
+        line-height: 16px;
+        font-weight: normal !important;
+        color: #605f5c;
+      }
+    }
   }
   .checkBoxes {
     display: flex;

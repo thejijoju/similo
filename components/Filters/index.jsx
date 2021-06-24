@@ -187,7 +187,7 @@ export default function Filters({ expertise, locations }) {
           <Filter
             title="Location"
             values={locations}
-            defaultSize={4}
+            defaultSize={5}
             search
             state={companyLocationFilter}
             setState={setCompanyLocationFilter}
