@@ -149,6 +149,9 @@ export default function index({
                     className={classes.suggestion}
                     onClick={() => {
                       setCompanyLocationFilter((prevState) => {
+                        if (prevState.includes(location.country)) {
+                          return prevState;
+                        }
                         return [...prevState, location.country];
                       });
                       setLocationSuggestions([]);
