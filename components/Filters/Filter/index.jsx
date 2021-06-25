@@ -88,7 +88,11 @@ export default function index({
         const response = await axios.get(
           `${API_URL}/companies/locations?suggestLocation=${locationValue}`
         );
-        setLocationSuggestions(response.data.data.locations);
+        if (!response.data.data.locations.length) {
+          setLocationSuggestions([{ city: 'not found' }]);
+        } else {
+          setLocationSuggestions(response.data.data.locations);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -148,6 +152,10 @@ export default function index({
                   <span
                     className={classes.suggestion}
                     onClick={() => {
+                      if (location.city === 'not found') {
+                        setLocationSuggestions([]);
+                        return;
+                      }
                       setCompanyLocationFilter((prevState) => {
                         if (prevState.includes(location.country)) {
                           return prevState;
@@ -159,7 +167,8 @@ export default function index({
                     }}
                     key={location.id}
                   >
-                    {location.city}, {location.country}
+                    {location.city}
+                    {location.city !== 'not found' && ','} {location.country}
                   </span>
                 );
               })}

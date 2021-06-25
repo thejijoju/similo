@@ -46,7 +46,6 @@
     .btnSend {
       background: #d8d8d8;
       mix-blend-mode: normal;
-      opacity: 0.56;
       border: 1px solid #e5e2e2;
       box-sizing: border-box;
       border-radius: 13px;
@@ -80,6 +79,9 @@
         &:last-child {
           margin-left: 9px;
         }
+      }
+      .btnSend {
+        opacity: 1;
       }
     }
   }

@@ -5,20 +5,15 @@ import classnames from 'classnames';
 import classes from './styles.module.scss';
 
 export const FeedbackForm = ({ company, onClose }) => {
-  const [state, setState] = useState({
-    feedback: '',
-  });
+  const [feedback, setFeedback] = useState('');
 
-  const onChange = (e) => {
-    setState((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+  const onChange = (event) => {
+    setFeedback(event.target.value);
   };
   const onSave = (e) => {
     e.preventDefault();
     console.log('Company', company);
-    console.log('Feedback', state);
+    console.log('Feedback', feedback);
     onClose();
   };
 
@@ -34,7 +29,7 @@ export const FeedbackForm = ({ company, onClose }) => {
           <textarea
             className={classes.textarea}
             name="feedback"
-            value={state.feedback}
+            value={feedback}
             onChange={onChange}
             placeholder="Please write comments and suggestions here. (Mandatory)"
           />
@@ -61,6 +56,7 @@ export const FeedbackForm = ({ company, onClose }) => {
               className={classnames(classes.btn, classes.btnSend)}
               onClick={onSave}
               type="submit"
+              disabled={!feedback.trim()}
             >
               Send
             </button>
