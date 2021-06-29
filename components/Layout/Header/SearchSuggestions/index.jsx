@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { COMPANIES_PER_PAGE } from 'constants/index';
+import { SearchResultsContext } from '@/context/index';
 import classes from './styles.module.scss';
 
 function highlightMatchingText(searchTerm, text) {
@@ -26,6 +27,8 @@ export default function SearchSuggestions({
 }) {
   const router = useRouter();
 
+  const { setLastSearchTerm } = useContext(SearchResultsContext);
+
   const search = (term, type) => {
     setSearchTerm(term);
     onHide();
@@ -47,7 +50,12 @@ export default function SearchSuggestions({
           <div
             className={classes.suggestion}
             key={suggestion.name}
-            onClick={() => search(suggestion.name, suggestion.type)}
+            onClick={() => {
+              setTimeout(() => {
+                setLastSearchTerm('');
+              }, 100);
+              search(suggestion.name, suggestion.type);
+            }}
           >
             <p
               className={classes.title}

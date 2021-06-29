@@ -140,13 +140,18 @@ export default async function handler(req, res) {
   }
 
   if (suggestionType === 'company') {
+    const sortQuery =
+      sort === 'relevant'
+        ? `ORDER BY name`
+        : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
+
     query = `SELECT * FROM "Companies" WHERE (industry='${company.industry}')
     ${companySizeQuery}
     ${expertiseQuery}
     ${companyTypeQuery}
     ${companyRevenueQuery}
     ${locationsQuery}
-    ORDER by name
+    ${sortQuery}
     LIMIT ${perPage} OFFSET ${page * perPage}`;
 
     countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${company.industry}')

@@ -70,10 +70,10 @@ export default function SearchResults({ searchResults }) {
     }
   }, [searchResults]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     console.log('TOP PAGE', currentTopPage);
     console.log('BOTTOM PAGE', currentBottomPage);
-  }, [currentTopPage, currentBottomPage]);
+  }, [currentTopPage, currentBottomPage]); */
 
   useEffect(() => {
     if (searchResults) {

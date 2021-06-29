@@ -141,7 +141,7 @@ export default async function handler(req, res) {
   const sortQuery =
     sort === 'relevant'
       ? `ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name`
-      : `ORDER BY "creationDate" DESC, name`;
+      : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
 
   const query = `SELECT *
   FROM (SELECT DISTINCT ON(name) *, c."createdAt" as "creationDate", c.id as "companyId" 

@@ -18,6 +18,7 @@ function MyApp({ Component, pageProps }) {
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [isSearchResultsMode, setIsSearchResultsMode] = useState(false);
   const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(false);
+  const [lastSearchTerm, setLastSearchTerm] = useState('');
 
   return (
     <SearchResultsContext.Provider
@@ -38,6 +39,8 @@ function MyApp({ Component, pageProps }) {
         setCompanyTypeFilter,
         sortOption,
         setSortOption,
+        lastSearchTerm,
+        setLastSearchTerm,
       }}
     >
       <UIContext.Provider

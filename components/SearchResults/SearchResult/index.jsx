@@ -44,6 +44,8 @@ export default function SearchResult({ company }) {
     areCompanyCardsExpanded,
     companyExpertiseFilter,
     setCompanyExpertiseFilter,
+    lastSearchTerm,
+    setLastSearchTerm,
   } = useContext(SearchResultsContext);
 
   const openModal = () => {
@@ -120,15 +122,27 @@ export default function SearchResult({ company }) {
   }, [areCompanyCardsExpanded]);
 
   useEffect(() => {
+    collapseCompanyCard();
+    setTimeout(() => {
+      setLastSearchTerm(decodeURI(router.query.term));
+    }, 100);
+  }, [router.query.term]);
+
+  useEffect(() => {
+    console.log('last search', lastSearchTerm);
+  }, [lastSearchTerm]);
+
+  useEffect(() => {
     if (
       router.query.fromSuggestions &&
-      decodeURI(router.query.term) === company.name
+      decodeURI(router.query.term) === company.name &&
+      lastSearchTerm !== decodeURI(router.query.term)
     ) {
       setTimeout(() => {
         expandCompanyCard();
+        setLastSearchTerm(decodeURI(router.query.term));
       }, 800);
       setTimeout(() => {
-        /* companyCardRef.current.scrollIntoView({ behavior: 'smooth' }); */
         const yOffset = -140;
         const y =
           companyCardRef.current.getBoundingClientRect().top +
@@ -137,8 +151,10 @@ export default function SearchResult({ company }) {
 
         window.scrollTo({ top: y, behavior: 'smooth' });
       }, 600);
+    } else {
+      collapseCompanyCard();
     }
-  }, [router.query.term]);
+  }, [router.query.term, company.name, lastSearchTerm]);
 
   useEffect(() => {
     if (isOpenModal && window.innerWidth <= 748) {
