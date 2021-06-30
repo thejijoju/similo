@@ -16,7 +16,7 @@ export default function SearchResults({ searchResults }) {
   const [innerSearchResults, setInnerSearchResults] = useState({
     ...searchResults,
   });
-  const [isSearchResultsLoading, setIsSearchResultsLoading] = useState(false);
+
   const [isAllowedToLoadPreviousPage, setIsAllowedToLoadPreviousPage] =
     useState(false);
   const [currentTopPage, setCurrentTopPage] = useState(0);
@@ -24,6 +24,8 @@ export default function SearchResults({ searchResults }) {
   const [noResultInitialHeight, setNoResultInitalHeight] = useState('');
   const [searchResultsInitialHeight, setSearchResultsInitalHeight] =
     useState('');
+  const [addSearchResultsDirection, setAddSearchResultsDirection] =
+    useState('bottom');
 
   const router = useRouter();
 
@@ -37,6 +39,8 @@ export default function SearchResults({ searchResults }) {
     setCompanyRevenueFilter,
     setCompanyTypeFilter,
     setCompanyLocationFilter,
+    isSearchResultsLoading,
+    setIsSearchResultsLoading,
   } = useContext(SearchResultsContext);
 
   const { setIsSearchResultsMode, setIsFiltersPanelVisible } =
@@ -101,6 +105,7 @@ export default function SearchResults({ searchResults }) {
     // const oldScroll = document.documentElement.scrollHeight;
 
     setIsSearchResultsLoading(true);
+    setAddSearchResultsDirection(direction === 'forward' ? 'bottom' : 'top');
     if (direction === 'back') {
       setIsAllowedToLoadPreviousPage(false);
     }
@@ -119,7 +124,7 @@ export default function SearchResults({ searchResults }) {
               : currentTopPage - 1,
         },
       });
-      console.log(direction);
+
       if (direction === 'forward') {
         setCurrentBottomPage((prevState) => prevState + 1);
       } else {
@@ -140,6 +145,7 @@ export default function SearchResults({ searchResults }) {
       }
       setInnerSearchResults(updatedResults);
       setIsSearchResultsLoading(false);
+      setAddSearchResultsDirection('bottom');
       // const newScroll = document.documentElement.scrollHeight;
       if (direction === 'back') {
         const searchResultsElements = document.querySelectorAll(
@@ -204,6 +210,8 @@ export default function SearchResults({ searchResults }) {
   };
 
   const getSearchResults = async () => {
+    setIsSearchResultsLoading(true);
+    setAddSearchResultsDirection('bottom');
     setCurrentPage(0);
     const url = router.query.fromSuggestions
       ? `${API_URL}/companies/search/searchFromSuggestions`
@@ -216,11 +224,12 @@ export default function SearchResults({ searchResults }) {
             router.query.suggestionType === 'company' ? undefined : currentPage,
         },
       });
-      console.log(response.data);
+
       setInnerSearchResults(response.data);
       // setCurrentPage(response.data.page);
       setCurrentTopPage(response.data.page);
       setCurrentBottomPage(response.data.page);
+      setIsSearchResultsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -246,7 +255,11 @@ export default function SearchResults({ searchResults }) {
   }, [router.query]);
 
   const switchPage = () => {
-    if (!router.query.fromSuggestions || isSearchResultsLoading) {
+    if (
+      router.query.suggestionType === 'industry' ||
+      !router.query.fromSuggestions ||
+      isSearchResultsLoading
+    ) {
       return;
     }
     if (
@@ -349,18 +362,23 @@ export default function SearchResults({ searchResults }) {
           {areCompanyCardsExpanded ? 'Close all cards' : 'Open all cards'}
         </span>
       </div>
+      {isSearchResultsLoading && addSearchResultsDirection === 'top' && (
+        <SkeletonLoader totalCount={innerSearchResults.totalCount} />
+      )}
       <div className={classes.resultsContainer}>
-        {innerSearchResults.data.companies.map((company) => {
-          return <SearchResult company={company} key={company.companyId} />;
+        {innerSearchResults.data.companies.map((company, i) => {
+          return (
+            <SearchResult company={company} key={company.companyId} id={i} />
+          );
         })}
       </div>
-      {isSearchResultsLoading && (
-        <SkeletonLoader totalCount={innerSearchResults.totalCount} />
+      {isSearchResultsLoading && addSearchResultsDirection !== 'top' && (
+        <SkeletonLoader totalCount={9999} />
       )}
       {COMPANIES_PER_PAGE * (currentPage + 1) <
         +innerSearchResults.totalCount &&
         !isSearchResultsLoading &&
-        !router.query.fromSuggestions && (
+        router.query.suggestionType !== 'company' && (
           <div className={classes.displayMore}>
             <button type="button" onClick={getMoreSearchResults}>
               Display more results

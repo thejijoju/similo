@@ -10,6 +10,46 @@ import Modal from '../../Modal';
 import classes from './styles.module.scss';
 import { SearchResultsContext } from '../../../context/index';
 
+function setBorderAndShadowColor(id) {
+  switch (true) {
+    case id === 0 || id % 6 === 0:
+      return {
+        border: '1px solid rgba(193, 80, 80, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(193, 80, 80, 0.06)',
+      };
+    case id === 1 || id % 6 === 1:
+      return {
+        border: '1px solid rgba(238, 194, 171, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(238, 194, 171, 0.06)',
+      };
+    case id === 2 || id % 6 === 2:
+      return {
+        border: '1px solid rgba(84, 191, 207, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(84, 191, 207, 0.06)',
+      };
+    case id === 3 || id % 6 === 3:
+      return {
+        border: '1px solid rgba(150, 146, 239, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(150, 146, 239, 0.06)',
+      };
+    case id === 4 || id % 6 === 4:
+      return {
+        border: '1px solid rgba(105, 60, 114, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(105, 60, 114, 0.06)',
+      };
+    case id === 5 || id % 6 === 5:
+      return {
+        border: '1px solid rgba(193, 80, 80, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(193, 80, 80, 0.06)',
+      };
+    default:
+      return {
+        border: '1px solid rgba(193, 80, 80, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(193, 80, 80, 0.06)',
+      };
+  }
+}
+
 function convertNumberToString(number) {
   if (!number) {
     return null;
@@ -25,7 +65,7 @@ function convertNumberToString(number) {
   }
 }
 
-export default function SearchResult({ company }) {
+export default function SearchResult({ company, id }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCompanyCardExpanded, setIsCompanyCardExpanded] = useState(false);
   const [companyCardHeight, setCompanyCardHeight] = useState('');
@@ -141,7 +181,7 @@ export default function SearchResult({ company }) {
       setTimeout(() => {
         expandCompanyCard();
         setLastSearchTerm(decodeURI(router.query.term));
-      }, 800);
+      }, 600);
       setTimeout(() => {
         const yOffset = -140;
         const y =
@@ -150,7 +190,7 @@ export default function SearchResult({ company }) {
           yOffset;
 
         window.scrollTo({ top: y, behavior: 'smooth' });
-      }, 600);
+      }, 800);
     } else {
       collapseCompanyCard();
     }
@@ -180,7 +220,7 @@ export default function SearchResult({ company }) {
         data-element="search-result"
         className={classes.SearchResult}
         ref={companyCardRef}
-        style={{ height: companyCardHeight }}
+        style={{ height: companyCardHeight, ...setBorderAndShadowColor(id) }}
         onClick={() => {
           if (window.innerWidth <= 1200) {
             if (isCompanyCardExpanded) {

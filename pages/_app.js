@@ -14,6 +14,7 @@ function MyApp({ Component, pageProps }) {
   const [companyRevenueFilter, setCompanyRevenueFilter] = useState([]);
   const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
   const [sortOption, setSortOption] = useState('relevant');
+  const [isSearchResultsLoading, setIsSearchResultsLoading] = useState(false);
 
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [isSearchResultsMode, setIsSearchResultsMode] = useState(false);
@@ -41,6 +42,8 @@ function MyApp({ Component, pageProps }) {
         setSortOption,
         lastSearchTerm,
         setLastSearchTerm,
+        isSearchResultsLoading,
+        setIsSearchResultsLoading,
       }}
     >
       <UIContext.Provider

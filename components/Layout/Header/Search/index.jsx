@@ -24,6 +24,7 @@ export default function Search({
     companyRevenueFilter,
     companyLocationFilter,
     sortOption,
+    setIsSearchResultsLoading,
   } = useContext(SearchResultsContext);
   const { setIsSearchMode } = useContext(UIContext);
 
@@ -60,10 +61,6 @@ export default function Search({
     const queryObject = {
       term: encodeURIComponent(searchTerm),
       perPage: COMPANIES_PER_PAGE,
-      /*    companySize: companySizeFilter.join(',|'),
-      expertise: companyExpertiseFilter.join(','),
-      companyType: companyTypeFilter.join(','),
-      revenue: companyRevenueFilter.join(',|'), */
     };
 
     if (companySizeFilter.length) {

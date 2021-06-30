@@ -221,43 +221,6 @@
   cursor: pointer;
 }
 
-/* @media (max-width: 1367px) {
-  .SearchResult {
-    .details {
-      .mainDetails {
-        .infoBlock {
-          padding-right: 25px;
-          &:nth-child(2n) {
-            padding-right: 0;
-            padding-left: 25px;
-          }
-        }
-      }
-      .additionalDetails {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        .keyPeople {
-          .title {
-          }
-          .content {
-            position: relative;
-            min-width: calc(50% + 25px + var(--keyPeopleOffset));
-            margin-left: -25px;
-          }
-        }
-        .infoBlock {
-          padding-right: 25px;
-          &:nth-child(3) {
-            padding-right: 0;
-            padding-left: 25px;
-          }
-        }
-      }
-    }
-  }
-} */
-
 @media (max-width: 1200px) {
   .SearchResult {
     flex-direction: column;
