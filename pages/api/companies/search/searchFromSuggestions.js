@@ -40,7 +40,9 @@ export default async function handler(req, res) {
 
   if (suggestionType === 'company') {
     try {
-      company = await Company.findOne({ where: { name: searchTerm } });
+      company = await Company.findOne({
+        where: { name: searchTerm[0].toUpperCase() + searchTerm.slice(1) },
+      });
     } catch (error) {
       return res
         .status(400)
@@ -62,6 +64,7 @@ export default async function handler(req, res) {
     }
 
     if (!page) {
+      console.log('NO PAGE');
       const companyRowNumber = await sequelize.query(
         `SELECT rnum FROM 
   (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry='${company.industry}') a

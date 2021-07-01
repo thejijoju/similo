@@ -24,7 +24,7 @@ export default function Search({
     companyRevenueFilter,
     companyLocationFilter,
     sortOption,
-    setIsSearchResultsLoading,
+    // setIsSearchResultsLoading,
   } = useContext(SearchResultsContext);
   const { setIsSearchMode } = useContext(UIContext);
 
@@ -50,7 +50,7 @@ export default function Search({
     }, 1000);
   };
 
-  const search = (event) => {
+  const search = async (event) => {
     if (event) {
       event.preventDefault();
     }
@@ -58,8 +58,23 @@ export default function Search({
       return;
     }
 
+    let isCompany;
+    try {
+      const response = await axios.get(
+        `${API_URL}/companies/search/isCompany?term=${encodeURIComponent(
+          searchTerm
+        )}`
+      );
+      isCompany = response.data.data.isCompany;
+    } catch (error) {
+      console.log(error);
+      isCompany = false;
+    }
+
     const queryObject = {
-      term: encodeURIComponent(searchTerm),
+      term: isCompany
+        ? searchTerm[0].toUpperCase() + searchTerm.slice(1)
+        : encodeURIComponent(searchTerm),
       perPage: COMPANIES_PER_PAGE,
     };
 
@@ -86,6 +101,11 @@ export default function Search({
     if (router.query.fromSuggestions && !event) {
       queryObject.fromSuggestions = 'true';
       queryObject.suggestionType = router.query.suggestionType;
+    }
+
+    if (isCompany) {
+      queryObject.fromSuggestions = 'true';
+      queryObject.suggestionType = 'company';
     }
 
     queryObject.sort = sortOption;

@@ -100,18 +100,6 @@ export default async function handler(req, res) {
     });
   }
 
-  /* let locationsQuery = '';
-  if (locations[0] !== '') {
-    locationsQuery = `AND \n(`;
-    locations.forEach((location, index) => {
-      if (index !== locations.length - 1) {
-        locationsQuery += ` "locations" LIKE '%${location}%' OR`;
-      } else {
-        locationsQuery += ` "locations" LIKE '%${location}%' )`;
-      }
-    });
-  } */
-
   let locationsQuery = '';
   if (locations[0] !== '') {
     locationsQuery = `AND \n(`;
@@ -123,20 +111,6 @@ export default async function handler(req, res) {
       }
     });
   }
-
-  /* const sortQuery =
-    sort === 'relevant'
-      ? `ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name`
-      : `ORDER BY "createdAt" DESC, name`;
-
-  const query = `SELECT * FROM "Companies" WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
-  ${companySizeQuery}
-  ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${locationsQuery}
-  ${sortQuery}
-  LIMIT ${perPage} OFFSET ${page * perPage}`; */
 
   const sortQuery =
     sort === 'relevant'
@@ -180,8 +154,6 @@ export default async function handler(req, res) {
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
   });
-
-  console.log(rows.length);
 
   return res.json({
     status: 'success',
