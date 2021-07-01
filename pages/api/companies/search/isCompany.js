@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     if (company.length) {
       res.json({
         status: 'success',
-        data: { isCompany: true },
+        data: { isCompany: true, name: company[0].name },
       });
     } else {
       res.json({

@@ -59,22 +59,23 @@ export default function Search({
     }
 
     let isCompany;
+    let companyName;
     try {
       const response = await axios.get(
         `${API_URL}/companies/search/isCompany?term=${encodeURIComponent(
           searchTerm
         )}`
       );
+      console.log(response.data);
       isCompany = response.data.data.isCompany;
+      companyName = response.data.data.name;
     } catch (error) {
       console.log(error);
       isCompany = false;
     }
 
     const queryObject = {
-      term: isCompany
-        ? searchTerm[0].toUpperCase() + searchTerm.slice(1)
-        : encodeURIComponent(searchTerm),
+      term: isCompany ? companyName : encodeURIComponent(searchTerm),
       perPage: COMPANIES_PER_PAGE,
     };
 
