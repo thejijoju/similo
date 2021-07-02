@@ -24,6 +24,11 @@ export default function Search({
     companyRevenueFilter,
     companyLocationFilter,
     sortOption,
+    setCompanySizeFilter,
+    setCompanyLocationFilter,
+    setCompanyExpertiseFilter,
+    setCompanyRevenueFilter,
+    setCompanyTypeFilter,
     // setIsSearchResultsLoading,
   } = useContext(SearchResultsContext);
   const { setIsSearchMode } = useContext(UIContext);
@@ -59,7 +64,8 @@ export default function Search({
     }
 
     let isCompany;
-    let companyName;
+    let isIndustry;
+    let entityName;
     try {
       const response = await axios.get(
         `${API_URL}/companies/search/isCompany?term=${encodeURIComponent(
@@ -68,14 +74,16 @@ export default function Search({
       );
       console.log(response.data);
       isCompany = response.data.data.isCompany;
-      companyName = response.data.data.name;
+      isIndustry = response.data.data.isIndustry;
+      entityName = response.data.data.name;
     } catch (error) {
       console.log(error);
       isCompany = false;
     }
 
     const queryObject = {
-      term: isCompany ? companyName : encodeURIComponent(searchTerm),
+      term:
+        isCompany || isIndustry ? entityName : encodeURIComponent(searchTerm),
       perPage: COMPANIES_PER_PAGE,
     };
 
@@ -104,9 +112,12 @@ export default function Search({
       queryObject.suggestionType = router.query.suggestionType;
     }
 
-    if (isCompany) {
+    if (isCompany || isIndustry) {
       queryObject.fromSuggestions = 'true';
-      queryObject.suggestionType = 'company';
+      queryObject.suggestionType = isCompany ? 'company' : 'industry';
+    } else {
+      delete queryObject.fromSuggestions;
+      delete queryObject.suggestionType;
     }
 
     queryObject.sort = sortOption;
@@ -146,7 +157,17 @@ export default function Search({
   }, [router.query.term]);
 
   return (
-    <form onSubmit={search} className={classes.Search}>
+    <form
+      onSubmit={(event) => {
+        setCompanySizeFilter([]);
+        setCompanyLocationFilter([]);
+        setCompanyExpertiseFilter([]);
+        setCompanyRevenueFilter([]);
+        setCompanyTypeFilter([]);
+        search(event);
+      }}
+      className={classes.Search}
+    >
       <input
         onFocus={() => setIsSearchMode(true)}
         type="text"

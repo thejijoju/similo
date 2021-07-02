@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     expertiseQuery = `AND \n(`;
     expertise.forEach((tag, index) => {
       if (index !== expertise.length - 1) {
-        expertiseQuery += ` "expertise" LIKE '%${tag}%' OR`;
+        expertiseQuery += ` "expertise" LIKE '%${tag}%' AND`;
       } else {
         expertiseQuery += ` "expertise" LIKE '%${tag}%' )`;
       }

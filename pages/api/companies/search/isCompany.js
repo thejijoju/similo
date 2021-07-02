@@ -24,13 +24,31 @@ export default async function handler(req, res) {
     if (company.length) {
       res.json({
         status: 'success',
-        data: { isCompany: true, name: company[0].name },
+        data: { isCompany: true, name: company[0].name, isIndustry: false },
       });
     } else {
-      res.json({
-        status: 'success',
-        data: { isCompany: false },
-      });
+      const industry = await sequelize.query(
+        `SELECT * FROM "Companies" WHERE LOWER(industry) = '${searchTerm.toLowerCase()}'
+      LIMIT 1`,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
+      if (industry.length) {
+        res.json({
+          status: 'success',
+          data: {
+            isCompany: false,
+            isIndustry: true,
+            name: industry[0].industry,
+          },
+        });
+      } else {
+        res.json({
+          status: 'success',
+          data: { isCompany: false, isIndustry: false },
+        });
+      }
     }
   } catch (error) {
     console.log(error);

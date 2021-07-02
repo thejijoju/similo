@@ -210,6 +210,7 @@ export default function SearchResults({ searchResults }) {
   };
 
   const getSearchResults = async () => {
+    console.log('GETTING SEARCH RESULTS');
     setIsSearchResultsLoading(true);
     setAddSearchResultsDirection('bottom');
     setCurrentPage(0);
@@ -236,12 +237,6 @@ export default function SearchResults({ searchResults }) {
   };
 
   useEffect(() => {
-    /* if (
-      router.query.fromSuggestions &&
-      router.query.suggestionType === 'company'
-    ) {
-      return;
-    } */
     if (router.query.term) {
       getSearchResults();
     } else {

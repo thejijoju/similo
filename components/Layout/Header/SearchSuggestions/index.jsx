@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 
-import { COMPANIES_PER_PAGE } from 'constants/index';
+// import { COMPANIES_PER_PAGE } from 'constants/index';
 import { SearchResultsContext } from '@/context/index';
 import classes from './styles.module.scss';
 
@@ -12,7 +12,7 @@ function highlightMatchingText(searchTerm, text) {
   const finalStr = text.replace(reg, (str) => {
     return `<b>${str}</b>`;
   });
-  console.log(finalStr);
+
   return {
     __html: finalStr,
   };
@@ -25,14 +25,27 @@ export default function SearchSuggestions({
   setSearchTerm,
   searchTerm,
 }) {
-  const router = useRouter();
+  // const router = useRouter();
 
-  const { setLastSearchTerm } = useContext(SearchResultsContext);
+  const {
+    setLastSearchTerm,
+    setCompanySizeFilter,
+    setCompanyLocationFilter,
+    setCompanyExpertiseFilter,
+    setCompanyRevenueFilter,
+    setCompanyTypeFilter,
+  } = useContext(SearchResultsContext);
 
-  const search = (term, type) => {
+  const search = (term) => {
     setSearchTerm(term);
     onHide();
-    router.push(
+    setCompanySizeFilter([]);
+    setCompanyLocationFilter([]);
+    setCompanyExpertiseFilter([]);
+    setCompanyRevenueFilter([]);
+    setCompanyTypeFilter([]);
+
+    /* router.push(
       `/?term=${encodeURIComponent(
         term
       )}&perPage=${COMPANIES_PER_PAGE}&fromSuggestions=true&suggestionType=${
@@ -40,7 +53,7 @@ export default function SearchSuggestions({
       }`,
       undefined,
       { shallow: true }
-    );
+    ); */
   };
 
   return show ? (
@@ -54,7 +67,7 @@ export default function SearchSuggestions({
               setTimeout(() => {
                 setLastSearchTerm('');
               }, 100);
-              search(suggestion.name, suggestion.type);
+              search(suggestion.name);
             }}
           >
             <p
