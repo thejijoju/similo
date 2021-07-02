@@ -2,9 +2,15 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 const fs = require('fs');
+const path = require('path');
+
+const fsExtra = require('fs-extra');
 const { QueryTypes } = require('sequelize');
+
 const { Company } = require('../../../models');
 const sequelize = require('../../../config/db');
+const importLogo = require('../../../helpers/importLogo');
+const { UPLOADS_PATH, LOGOS_PATH } = require('../../../constants/index');
 
 function convertRevenueToNumber(revenue) {
   let multiplier = 1000;
@@ -45,11 +51,13 @@ export default async function handler(req, res) {
     cascade: true,
   });
 
+  fsExtra.emptyDirSync(path.join(UPLOADS_PATH, LOGOS_PATH));
+
   const promises = [];
   const data = JSON.parse(
     fs.readFileSync(`${process.cwd()}/pages/api/companies/output.json`, 'utf8')
   );
-  data.forEach((company) => {
+  data.forEach(async (company) => {
     const companyData = company;
 
     for (const key in companyData) {
@@ -71,6 +79,10 @@ export default async function handler(req, res) {
           .split(',')
           .map((tag) => tag.toLowerCase());
         companyData[key] = tags.join(',');
+      }
+      if (key === 'logoPath' && companyData[key] !== null) {
+        // eslint-disable-next-line no-await-in-loop
+        companyData.logoLocalPath = await importLogo(companyData.logoPath);
       }
     }
     promises.push(Company.create(companyData));

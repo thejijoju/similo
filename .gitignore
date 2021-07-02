@@ -12,6 +12,7 @@
 /build
 /dist
 .next
+/public/uploads
 
 # misc
 .DS_Store

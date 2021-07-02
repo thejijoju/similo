@@ -21,9 +21,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "classnames": "^2.3.1",
+    "crypto-random-string": "^4.0.0",
     "dotenv-flow": "^3.2.0",
+    "fs-extra": "^10.0.0",
     "next": "10.2.3",
     "next-auth": "^3.26.1",
+    "nodejs-file-downloader": "^4.7.1",
     "pg": "^8.6.0",
     "qs": "^6.10.1",
     "react": "17.0.2",

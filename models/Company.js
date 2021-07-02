@@ -75,6 +75,9 @@ module.exports = (sequelize, DataTypes) => {
       subsidiaries: {
         type: DataTypes.STRING(2048),
       },
+      logoLocalPath: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,

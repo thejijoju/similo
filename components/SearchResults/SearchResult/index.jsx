@@ -235,7 +235,11 @@ export default function SearchResult({ company, id }) {
           <div
             className={classes.logo}
             style={{
-              backgroundImage: `url(${company.logoPath})`,
+              backgroundImage: `url(${
+                company.logoLocalPath
+                  ? `uploads/${company.logoLocalPath}`
+                  : company.logoPath
+              })`,
             }}
           />
           <h1 className={classes.mobileTitle}>{company.name}</h1>
