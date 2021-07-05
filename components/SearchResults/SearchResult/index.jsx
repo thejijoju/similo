@@ -8,7 +8,7 @@ import { FeedbackForm } from '../../Forms/FeedbackForm';
 import Modal from '../../Modal';
 
 import classes from './styles.module.scss';
-import { SearchResultsContext } from '../../../context/index';
+import { SearchResultsContext, UIContext } from '../../../context/index';
 
 function setBorderAndShadowColor(id) {
   switch (true) {
@@ -88,6 +88,9 @@ export default function SearchResult({ company, id }) {
     setLastSearchTerm,
   } = useContext(SearchResultsContext);
 
+  const { currentlyOpenedCompanyCard, setCurrentlyOpenedCompanyCard } =
+    useContext(SearchResultsContext);
+
   const openModal = () => {
     setIsOpenModal(true);
   };
@@ -162,15 +165,11 @@ export default function SearchResult({ company, id }) {
   }, [areCompanyCardsExpanded]);
 
   useEffect(() => {
-    collapseCompanyCard();
+    // collapseCompanyCard();
     setTimeout(() => {
       setLastSearchTerm(decodeURI(router.query.term));
     }, 100);
   }, [router.query.term]);
-
-  useEffect(() => {
-    console.log('last search', lastSearchTerm);
-  }, [lastSearchTerm]);
 
   useEffect(() => {
     if (
@@ -220,7 +219,11 @@ export default function SearchResult({ company, id }) {
         data-element="search-result"
         className={classes.SearchResult}
         ref={companyCardRef}
-        style={{ height: companyCardHeight, ...setBorderAndShadowColor(id) }}
+        style={{
+          height: companyCardHeight,
+          visibility: company.hidden ? 'hidden' : 'visible',
+          ...setBorderAndShadowColor(id),
+        }}
         onClick={() => {
           if (window.innerWidth <= 1200) {
             if (isCompanyCardExpanded) {

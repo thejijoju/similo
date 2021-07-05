@@ -38,50 +38,6 @@ export default async function handler(req, res) {
   let query;
   let countQuery;
 
-  if (suggestionType === 'company') {
-    try {
-      company = await Company.findOne({
-        where: { name: searchTerm[0].toUpperCase() + searchTerm.slice(1) },
-      });
-    } catch (error) {
-      return res
-        .status(400)
-        .json({ status: 'fail', message: 'No such company exists' });
-    }
-
-    if (!company) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'No such company exists',
-      });
-    }
-
-    if (!company.industry) {
-      return res.json({
-        status: 'success',
-        data: { companies: company },
-      });
-    }
-
-    if (!page) {
-      const companyRowNumber = await sequelize.query(
-        `SELECT rnum FROM 
-  (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry = ?) a
-  WHERE a.name = ?`,
-        {
-          type: QueryTypes.SELECT,
-          replacements: [`${company.industry}`, `${company.name}`],
-        }
-      );
-
-      page = Math.floor((companyRowNumber[0].rnum - 0.1) / perPage);
-    }
-  } else if (suggestionType === 'industry') {
-    if (!page) {
-      page = 0;
-    }
-  }
-
   const replacements = [];
 
   let expertiseQuery = '';
@@ -153,6 +109,59 @@ export default async function handler(req, res) {
       }
       replacements.push(`%${location}%`);
     });
+  }
+
+  if (suggestionType === 'company') {
+    try {
+      company = await Company.findOne({
+        where: { name: searchTerm[0].toUpperCase() + searchTerm.slice(1) },
+      });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'No such company exists' });
+    }
+
+    if (!company) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'No such company exists',
+      });
+    }
+
+    if (!company.industry) {
+      return res.json({
+        status: 'success',
+        data: { companies: company },
+      });
+    }
+
+    if (!page) {
+      const companyRowNumber = await sequelize.query(
+        `SELECT rnum FROM 
+  (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry = ? ${expertiseQuery}
+  ${companyTypeQuery}
+  ${companyRevenueQuery}
+  ${companySizeQuery}
+  ${locationsQuery}) a
+  WHERE a.name = ?`,
+        {
+          type: QueryTypes.SELECT,
+          replacements: [
+            `${company.industry}`,
+            ...replacements,
+            `${company.name}`,
+          ],
+        }
+      );
+
+      page = Math.floor((companyRowNumber[0].rnum - 0.1) / perPage);
+      console.log('PAGE', page);
+    }
+  } else if (suggestionType === 'industry') {
+    if (!page) {
+      page = 0;
+    }
   }
 
   if (suggestionType === 'company') {

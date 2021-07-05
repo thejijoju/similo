@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
+import arrayMove from 'array-move';
 
 import { COMPANIES_PER_PAGE, API_URL } from 'constants/index';
 import SkeletonLoader from '@/components/SkeletonLoader';
@@ -41,7 +42,12 @@ export default function SearchResults({ searchResults }) {
     setCompanyLocationFilter,
     isSearchResultsLoading,
     setIsSearchResultsLoading,
+    lastSearchTerm,
   } = useContext(SearchResultsContext);
+
+  useEffect(() => {
+    console.log('last search', lastSearchTerm);
+  }, [lastSearchTerm]);
 
   const { setIsSearchResultsMode, setIsFiltersPanelVisible } =
     useContext(UIContext);
@@ -64,7 +70,7 @@ export default function SearchResults({ searchResults }) {
     setIsAllowedToLoadPreviousPage(false);
     timer = setTimeout(() => {
       setIsAllowedToLoadPreviousPage(true);
-    }, 1000);
+    }, 1400);
   }, [searchResults, innerSearchResults]);
 
   useEffect(() => {
@@ -181,6 +187,7 @@ export default function SearchResults({ searchResults }) {
   };
 
   const getMoreSearchResults = async () => {
+    console.log('GETTING MORE');
     setIsSearchResultsLoading(true);
 
     const url = router.query.fromSuggestions
@@ -211,6 +218,12 @@ export default function SearchResults({ searchResults }) {
 
   const getSearchResults = async () => {
     console.log('GETTING SEARCH RESULTS');
+
+    const companyPreviousPosition =
+      innerSearchResults?.data?.companies.findIndex(
+        (company) => company.name === router.query.term
+      );
+
     setIsSearchResultsLoading(true);
     setAddSearchResultsDirection('bottom');
     setCurrentPage(0);
@@ -226,8 +239,48 @@ export default function SearchResults({ searchResults }) {
         },
       });
 
-      setInnerSearchResults(response.data);
-      // setCurrentPage(response.data.page);
+      if (
+        companyPreviousPosition !== -1 &&
+        companyPreviousPosition !== undefined
+      ) {
+        const companyCurrentPosition = response.data.data.companies.findIndex(
+          (company) => company.name === router.query.term
+        );
+
+        if (companyCurrentPosition === -1) {
+          setInnerSearchResults(response.data);
+        } else {
+          console.log('REBUILDING');
+          console.log('LENGTH', response.data.data.companies.length);
+          if (response.data.data.companies.length < 10) {
+            const count = 10 - response.data.data.companies.length;
+            for (let i = 0; i < count; i++) {
+              response.data.data.companies.push({
+                ...response.data.data.companies[0],
+                id: Math.random(),
+                hidden: true,
+                name: 'Noname',
+              });
+            }
+          }
+
+          arrayMove.mutate(
+            response.data.data.companies,
+            companyCurrentPosition,
+            companyPreviousPosition
+          );
+          response.data.data.companies.forEach((company, i) => {
+            if (company.hidden && i < companyPreviousPosition) {
+              response.data.data.companies.splice(i, 1);
+              response.data.data.companies.unshift(company);
+            }
+          });
+          setInnerSearchResults(response.data);
+        }
+      } else {
+        setInnerSearchResults(response.data);
+      }
+
       setCurrentTopPage(response.data.page);
       setCurrentBottomPage(response.data.page);
       setIsSearchResultsLoading(false);

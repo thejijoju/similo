@@ -15,11 +15,12 @@ function MyApp({ Component, pageProps }) {
   const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
   const [sortOption, setSortOption] = useState('relevant');
   const [isSearchResultsLoading, setIsSearchResultsLoading] = useState(false);
-
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [isSearchResultsMode, setIsSearchResultsMode] = useState(false);
   const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(false);
   const [lastSearchTerm, setLastSearchTerm] = useState('');
+  const [currentlyOpenedCompanyCard, setCurrentlyOpenedCompanyCard] =
+    useState('');
 
   return (
     <SearchResultsContext.Provider
@@ -54,6 +55,8 @@ function MyApp({ Component, pageProps }) {
           setIsSearchResultsMode,
           isFiltersPanelVisible,
           setIsFiltersPanelVisible,
+          currentlyOpenedCompanyCard,
+          setCurrentlyOpenedCompanyCard,
         }}
       >
         <Layout>
