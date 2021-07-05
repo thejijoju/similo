@@ -11,11 +11,12 @@ export default async function handler(req, res) {
 
   let queryString;
 
+  const suggestion = req.query.suggestLocation;
+
   if (req.query.suggestLocation) {
-    const suggestion = req.query.suggestLocation;
     queryString = `SELECT * FROM "Locations"
-                    WHERE LOWER(country) LIKE '%${suggestion}%'
-                    OR LOWER(city) LIKE '%${suggestion}%'
+                    WHERE LOWER(country) LIKE ?
+                    OR LOWER(city) LIKE ? 
                     LIMIT 3`;
   } else {
     queryString = `SELECT DISTINCT(country) FROM "Locations"`;
@@ -23,6 +24,7 @@ export default async function handler(req, res) {
 
   const locations = await sequelize.query(queryString, {
     type: QueryTypes.SELECT,
+    replacements: [`%${suggestion}%`, `%${suggestion}%`],
   });
 
   const locationsArray = locations.map((location) => location.country);

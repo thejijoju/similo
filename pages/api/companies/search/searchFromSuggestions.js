@@ -66,10 +66,11 @@ export default async function handler(req, res) {
     if (!page) {
       const companyRowNumber = await sequelize.query(
         `SELECT rnum FROM 
-  (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry='${company.industry}') a
-  WHERE a.name='${company.name}'`,
+  (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry = ?) a
+  WHERE a.name = ?`,
         {
           type: QueryTypes.SELECT,
+          replacements: [`${company.industry}`, `${company.name}`],
         }
       );
 
@@ -81,15 +82,18 @@ export default async function handler(req, res) {
     }
   }
 
+  const replacements = [];
+
   let expertiseQuery = '';
   if (expertise[0] !== '') {
     expertiseQuery = `AND \n(`;
     expertise.forEach((tag, index) => {
       if (index !== expertise.length - 1) {
-        expertiseQuery += ` "expertise" LIKE '%${tag}%' AND`;
+        expertiseQuery += ` "expertise" LIKE ? AND`;
       } else {
-        expertiseQuery += ` "expertise" LIKE '%${tag}%' )`;
+        expertiseQuery += ` "expertise" LIKE ? )`;
       }
+      replacements.push(`%${tag}%`);
     });
   }
 
@@ -98,10 +102,11 @@ export default async function handler(req, res) {
     companyTypeQuery = `AND \n(`;
     companyType.forEach((type, index) => {
       if (index !== companyType.length - 1) {
-        companyTypeQuery += ` "type" LIKE '%${type}%' OR`;
+        companyTypeQuery += ` "type" LIKE ? OR`;
       } else {
-        companyTypeQuery += ` "type" LIKE '%${type}%' )`;
+        companyTypeQuery += ` "type" LIKE ? )`;
       }
+      replacements.push(`%${type}%`);
     });
   }
 
@@ -110,9 +115,13 @@ export default async function handler(req, res) {
     companyRevenueQuery = `AND \n(`;
     revenueRanges.forEach((range, index) => {
       if (index !== revenueRanges.length - 1) {
-        companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} OR`;
+        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? OR`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       } else {
-        companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} )`;
+        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? )`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       }
     });
   }
@@ -122,9 +131,13 @@ export default async function handler(req, res) {
     companySizeQuery = `AND \n(`;
     sizeRanges.forEach((range, index) => {
       if (index !== sizeRanges.length - 1) {
-        companySizeQuery += ` "employeesCount" BETWEEN ${range[0]} AND ${range[1]} OR`;
+        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? OR`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       } else {
-        companySizeQuery += ` "employeesCount" BETWEEN ${range[0]} AND ${range[1]} )`;
+        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? )`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       }
     });
   }
@@ -134,10 +147,11 @@ export default async function handler(req, res) {
     locationsQuery = `AND \n(`;
     locations.forEach((location, index) => {
       if (index !== locations.length - 1) {
-        locationsQuery += ` "locations" LIKE '%${location}%' OR`;
+        locationsQuery += ` "locations" LIKE ? OR`;
       } else {
-        locationsQuery += ` "locations" LIKE '%${location}%' )`;
+        locationsQuery += ` "locations" LIKE ? )`;
       }
+      replacements.push(`%${location}%`);
     });
   }
 
@@ -148,41 +162,46 @@ export default async function handler(req, res) {
         : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
 
     query = `SELECT * FROM "Companies" WHERE (industry='${company.industry}')
-    ${companySizeQuery}
     ${expertiseQuery}
     ${companyTypeQuery}
     ${companyRevenueQuery}
+    ${companySizeQuery}
     ${locationsQuery}
     ${sortQuery}
     LIMIT ${perPage} OFFSET ${page * perPage}`;
 
     countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${company.industry}')
-    ${companySizeQuery}
     ${expertiseQuery}
     ${companyTypeQuery}
     ${companyRevenueQuery}
+    ${companySizeQuery}
     ${locationsQuery}`;
   } else if (suggestionType === 'industry') {
-    query = `SELECT * FROM "Companies" WHERE (industry='${searchTerm}')
-    ${companySizeQuery}
+    replacements.unshift(`${searchTerm}`);
+    query = `SELECT * FROM "Companies" WHERE (industry = ?)
     ${expertiseQuery}
     ${companyTypeQuery}
     ${companyRevenueQuery}
+    ${companySizeQuery}
     ${locationsQuery}
     ORDER by ${sort === 'relevant' ? 'name' : '"createdAt"'} ASC
     LIMIT ${perPage} OFFSET ${page * perPage}`;
 
-    countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${searchTerm}')
-    ${companySizeQuery}
+    countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry = ?)
     ${expertiseQuery}
     ${companyTypeQuery}
     ${companyRevenueQuery}
+    ${companySizeQuery}
     ${locationsQuery}`;
   }
 
-  const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
+  const rows = await sequelize.query(query, {
+    type: QueryTypes.SELECT,
+    replacements,
+  });
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
+    replacements,
   });
 
   return res.json({

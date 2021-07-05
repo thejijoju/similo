@@ -1,5 +1,4 @@
-const { QueryTypes } = require('sequelize');
-const sequelize = require('../../../config/db');
+const { Company } = require('../../../models/index');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -9,11 +8,7 @@ export default async function handler(req, res) {
       .json({ message: `Method ${req.method} not allowed` });
   }
 
-  const queryString = `SELECT expertise FROM "Companies"`;
-
-  const expertise = await sequelize.query(queryString, {
-    type: QueryTypes.SELECT,
-  });
+  const expertise = await Company.findAll({ attributes: ['expertise'] });
 
   const tagsSet = new Set();
 

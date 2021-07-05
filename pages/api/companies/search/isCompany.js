@@ -15,10 +15,11 @@ export default async function handler(req, res) {
 
   try {
     const company = await sequelize.query(
-      `SELECT * FROM "Companies" WHERE LOWER(name) = '${searchTerm.toLowerCase()}'
+      `SELECT * FROM "Companies" WHERE LOWER(name) = ?
       LIMIT 1`,
       {
         type: QueryTypes.SELECT,
+        replacements: [`${searchTerm.toLowerCase()}`],
       }
     );
     if (company.length) {
@@ -28,10 +29,11 @@ export default async function handler(req, res) {
       });
     } else {
       const industry = await sequelize.query(
-        `SELECT * FROM "Companies" WHERE LOWER(industry) = '${searchTerm.toLowerCase()}'
+        `SELECT * FROM "Companies" WHERE LOWER(industry) = ?
       LIMIT 1`,
         {
           type: QueryTypes.SELECT,
+          replacements: [`${searchTerm.toLowerCase()}`],
         }
       );
       if (industry.length) {

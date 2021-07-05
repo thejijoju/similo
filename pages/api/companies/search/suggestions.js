@@ -22,8 +22,9 @@ export default async function handler(req, res) {
   if (!companies.length) {
     const industries = await sequelize.query(
       `SELECT DISTINCT("industry") FROM "Companies"
-       WHERE industry IS NOT NULL AND LOWER(industry) LIKE LOWER('%${searchTerm}%')`,
+       WHERE industry IS NOT NULL AND LOWER(industry) LIKE LOWER(?)`,
       {
+        replacements: [`%${searchTerm}%`],
         type: QueryTypes.SELECT,
       }
     );
