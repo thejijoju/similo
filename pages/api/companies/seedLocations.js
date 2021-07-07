@@ -1,5 +1,4 @@
-const { Company } = require('../../../models');
-const { Location } = require('../../../models');
+const { Company, Location } = require('../../../models');
 
 export default async function handler(req, res) {
   const locationsStrings = [];

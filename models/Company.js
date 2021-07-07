@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Company.belongsToMany(models.Location, {
-        through: 'CompanyLocations',
+        through: models.CompanyLocation,
         foreignKey: 'companyId',
         otherKey: 'locationId',
         onDelete: 'cascade',
         hooks: true,
       });
       Company.belongsToMany(models.Expertise, {
-        through: 'CompanyExpertises',
+        through: models.CompanyExpertise,
         foreignKey: 'companyId',
         otherKey: 'expertiseId',
         onDelete: 'cascade',

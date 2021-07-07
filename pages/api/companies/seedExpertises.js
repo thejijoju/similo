@@ -1,5 +1,4 @@
-const { Company } = require('../../../models');
-const { Expertise } = require('../../../models');
+const { Company, Expertise } = require('../../../models');
 
 export default async function handler(req, res) {
   const expertisesStrings = [];

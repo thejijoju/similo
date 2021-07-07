@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Expertise.belongsToMany(models.Company, {
-        through: 'CompanyLocations',
+        through: models.CompanyLocation,
         foreignKey: 'expertiseId',
         otherKey: 'companyId',
         onDelete: 'cascade',

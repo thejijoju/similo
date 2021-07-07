@@ -1,7 +1,5 @@
 const { Op } = require('sequelize');
-const { Company } = require('../../../models');
-const { Location } = require('../../../models');
-const { CompanyLocation } = require('../../../models');
+const { Company, Location, CompanyLocation } = require('../../../models');
 
 export default async function handler(req, res) {
   const companies = await Company.findAll({
