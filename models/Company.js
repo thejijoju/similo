@@ -15,6 +15,13 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         hooks: true,
       });
+      Company.belongsToMany(models.Expertise, {
+        through: 'CompanyExpertises',
+        foreignKey: 'companyId',
+        otherKey: 'expertiseId',
+        onDelete: 'cascade',
+        hooks: true,
+      });
     }
   }
   Company.init(

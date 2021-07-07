@@ -1,4 +1,4 @@
-const { Company } = require('../../../models/index');
+const { Expertise } = require('../../../models/index');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -8,24 +8,14 @@ export default async function handler(req, res) {
       .json({ message: `Method ${req.method} not allowed` });
   }
 
-  const expertise = await Company.findAll({ attributes: ['expertise'] });
-
-  const tagsSet = new Set();
-
-  expertise.forEach((elem) => {
-    if (elem.expertise) {
-      const tagsArray = elem.expertise.split(',');
-      tagsArray.forEach((tag) => {
-        if (tag === '') {
-          return;
-        }
-        tagsSet.add(tag.trim());
-      });
-    }
+  const expertise = await Expertise.findAll({
+    attributes: ['expertiseName'],
   });
+
+  const expertiseArray = expertise.map((tag) => tag.expertiseName);
 
   return res.json({
     status: 'success',
-    data: { expertise: Array.from(tagsSet) },
+    data: { expertise: expertiseArray },
   });
 }

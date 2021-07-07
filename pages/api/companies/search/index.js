@@ -56,15 +56,16 @@ export default async function handler(req, res) {
 
   let expertiseQuery = '';
   if (expertise[0] !== '') {
-    expertiseQuery = `AND \n(`;
+    let tagsString = '';
     expertise.forEach((tag, index) => {
       if (index !== expertise.length - 1) {
-        expertiseQuery += ` "expertise" LIKE ? AND`;
+        tagsString += ` ?,`;
       } else {
-        expertiseQuery += ` "expertise" LIKE ? )`;
+        tagsString += ` ?`;
       }
-      replacements.push(`%${tag}%`);
+      replacements.push(tag);
     });
+    expertiseQuery = `AND string_to_array(expertise, ', ') @> ARRAY[${tagsString}]`;
   }
 
   let companyTypeQuery = '';

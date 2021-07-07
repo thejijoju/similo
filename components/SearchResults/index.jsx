@@ -137,6 +137,10 @@ export default function SearchResults({ searchResults }) {
         setCurrentTopPage((prevState) => prevState - 1);
       }
       const updatedResults = { ...innerSearchResults };
+      updatedResults.data.companies = updatedResults.data.companies.filter(
+        (company) => !company.hidden
+      );
+      console.log(updatedResults.data.companies);
 
       if (direction === 'forward') {
         updatedResults.data.companies = [
@@ -238,6 +242,8 @@ export default function SearchResults({ searchResults }) {
             router.query.suggestionType === 'company' ? undefined : currentPage,
         },
       });
+
+      console.log(response.data);
 
       if (
         companyPreviousPosition !== -1 &&

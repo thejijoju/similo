@@ -52,17 +52,18 @@ export default async function handler(req, res) {
 
   const locations = (req.query.locations || '').split(',');
 
-  const replacements = [];
+  const replacements = [`${searchTerm}`];
 
   let expertiseQuery = '';
   if (expertise[0] !== '') {
     expertiseQuery = `AND \n(`;
     expertise.forEach((tag, index) => {
       if (index !== expertise.length - 1) {
-        expertiseQuery += ` "expertise" LIKE '%${tag}%' AND`;
+        expertiseQuery += ` e."expertiseName" = ? AND`;
       } else {
-        expertiseQuery += ` "expertise" LIKE '%${tag}%' )`;
+        expertiseQuery += ` e."expertiseName" = ? )`;
       }
+      replacements.push(tag);
     });
   }
 
@@ -71,10 +72,11 @@ export default async function handler(req, res) {
     companyTypeQuery = `AND \n(`;
     companyType.forEach((type, index) => {
       if (index !== companyType.length - 1) {
-        companyTypeQuery += ` "type" LIKE '%${type}%' OR`;
+        companyTypeQuery += ` "type" LIKE ? OR`;
       } else {
-        companyTypeQuery += ` "type" LIKE '%${type}%' )`;
+        companyTypeQuery += ` "type" LIKE ? )`;
       }
+      replacements.push(`%${type}%`);
     });
   }
 
@@ -83,9 +85,13 @@ export default async function handler(req, res) {
     companyRevenueQuery = `AND \n(`;
     revenueRanges.forEach((range, index) => {
       if (index !== revenueRanges.length - 1) {
-        companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} OR`;
+        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? OR`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       } else {
-        companyRevenueQuery += ` "revenue" BETWEEN ${range[0]} AND ${range[1]} )`;
+        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? )`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       }
     });
   }
@@ -95,9 +101,13 @@ export default async function handler(req, res) {
     companySizeQuery = `AND \n(`;
     sizeRanges.forEach((range, index) => {
       if (index !== sizeRanges.length - 1) {
-        companySizeQuery += ` "employeesCount" BETWEEN ${range[0]} AND ${range[1]} OR`;
+        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? OR`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       } else {
-        companySizeQuery += ` "employeesCount" BETWEEN ${range[0]} AND ${range[1]} )`;
+        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? )`;
+        replacements.push(`${range[0]}`);
+        replacements.push(`${range[1]}`);
       }
     });
   }
@@ -107,16 +117,19 @@ export default async function handler(req, res) {
     locationsQuery = `AND \n(`;
     locations.forEach((location, index) => {
       if (index !== locations.length - 1) {
-        locationsQuery += ` l.country = '${location}' OR`;
+        locationsQuery += ` l.country = ? OR`;
       } else {
-        locationsQuery += ` l.country = '${location}' )`;
+        locationsQuery += ` l.country = ? )`;
       }
+      replacements.push(`${location}`);
     });
   }
 
+  replacements.push(`${searchTerm}`);
+
   const sortQuery =
     sort === 'relevant'
-      ? `ORDER BY ts_rank("searchVector", to_tsquery('english', '${searchTerm}')) DESC, name`
+      ? `ORDER BY ts_rank("searchVector", to_tsquery('english', ?)) DESC, name`
       : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
 
   const query = `SELECT *
@@ -124,11 +137,13 @@ export default async function handler(req, res) {
   FROM "Companies" c
   FULL JOIN "CompanyLocations" cl ON cl."companyId" = c.id
   FULL JOIN "Locations" l ON l.id = cl."locationId"
-  WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
-  ${companySizeQuery}
+  FULL JOIN "CompanyExpertises" ce ON ce."companyId" = c.id
+  FULL JOIN "Expertises" e ON e.id = ce."expertiseId"
+  WHERE "searchVector" @@ to_tsquery('english', ?)
   ${expertiseQuery}
   ${companyTypeQuery}
   ${companyRevenueQuery}
+  ${companySizeQuery}
   ${locationsQuery}) p
   ${sortQuery}
   LIMIT ${perPage} OFFSET ${page * perPage}`;
@@ -138,16 +153,22 @@ export default async function handler(req, res) {
   FROM "Companies" c
   FULL JOIN "CompanyLocations" cl ON cl."companyId" = c.id
   FULL JOIN "Locations" l ON l.id = cl."locationId"
-  WHERE "searchVector" @@ to_tsquery('english', '${searchTerm}')
-  ${companySizeQuery}
+  FULL JOIN "CompanyExpertises" ce ON ce."companyId" = c.id
+  FULL JOIN "Expertises" e ON e.id = ce."expertiseId"
+  WHERE "searchVector" @@ to_tsquery('english', ?)
   ${expertiseQuery}
   ${companyTypeQuery}
   ${companyRevenueQuery}
+  ${companySizeQuery}
   ${locationsQuery}) p`;
 
-  const rows = await sequelize.query(query, { type: QueryTypes.SELECT });
+  const rows = await sequelize.query(query, {
+    type: QueryTypes.SELECT,
+    replacements,
+  });
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
+    replacements,
   });
 
   return res.json({
