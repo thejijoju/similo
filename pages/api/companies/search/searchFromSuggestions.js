@@ -156,7 +156,9 @@ export default async function handler(req, res) {
         }
       );
 
-      page = Math.floor((companyRowNumber[0].rnum - 0.1) / perPage);
+      page = companyRowNumber[0]
+        ? Math.floor((companyRowNumber[0].rnum - 0.1) / perPage)
+        : 0;
       console.log('PAGE', page);
     }
   } else if (suggestionType === 'industry') {
@@ -209,6 +211,13 @@ export default async function handler(req, res) {
     type: QueryTypes.SELECT,
     replacements,
   });
+
+  if (suggestionType === 'company') {
+    if (!rows.some((elem) => elem.name === company.name)) {
+      rows.push(company);
+    }
+  }
+
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,
     replacements,
