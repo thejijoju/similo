@@ -26,6 +26,7 @@ export default function Header() {
     isSearchResultsMode,
     setIsSearchMode,
     setIsSearchResultsMode,
+    isFiltersPanelVisible,
   } = useContext(UIContext);
 
   /* const {
@@ -98,7 +99,10 @@ export default function Header() {
         isSearchResultsMode && classes.searchMode
       )}
       ref={headerRef}
-      style={{ height: initialHeight }}
+      style={{
+        height: initialHeight,
+        minHeight: isFiltersPanelVisible ? 69 : 'unset',
+      }}
     >
       <div
         className={classes.logo}

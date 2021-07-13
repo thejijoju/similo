@@ -49,8 +49,11 @@ export default function SearchResults({ searchResults }) {
     console.log('last search', lastSearchTerm);
   }, [lastSearchTerm]);
 
-  const { setIsSearchResultsMode, setIsFiltersPanelVisible } =
-    useContext(UIContext);
+  const {
+    setIsSearchResultsMode,
+    setIsFiltersPanelVisible,
+    isFiltersPanelVisible,
+  } = useContext(UIContext);
 
   const noResultsRef = useRef();
   const searchResultsRef = useRef();
@@ -401,7 +404,10 @@ export default function SearchResults({ searchResults }) {
       style={{ minHeight: searchResultsInitialHeight }}
       ref={searchResultsRef}
     >
-      <div className={classes.header}>
+      <div
+        className={classes.header}
+        style={{ zIndex: isFiltersPanelVisible ? 0 : 1 }}
+      >
         <button type="button" onClick={() => setIsFiltersPanelVisible(true)}>
           <i>lines</i>Filter
         </button>

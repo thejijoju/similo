@@ -33,6 +33,9 @@ export default function index({
 
   useEffect(() => {
     if (filterRef.current && listRef.current && typeof window !== 'undefined') {
+      if (window.innerWidth <= 748) {
+        return;
+      }
       /* expandedListHeightDiff.current =
         listRef.current.scrollHeight - listRef.current.clientHeight; */
       setTimeout(() => {
