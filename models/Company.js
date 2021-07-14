@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         hooks: true,
       });
+      Company.belongsTo(models.Industry, {
+        foreignKey: 'industryId',
+      });
     }
   }
   Company.init(
@@ -84,6 +87,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       logoLocalPath: {
         type: DataTypes.STRING,
+      },
+      industryId: {
+        type: DataTypes.UUID,
       },
     },
     {

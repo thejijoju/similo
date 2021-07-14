@@ -33,13 +33,18 @@ export default async function handler(req, res) {
       });
 
       if (locationFromDB) {
-        await CompanyLocation.create({
-          companyId: company.id,
-          locationId: locationFromDB.id,
-        });
+        await CompanyLocation.bulkCreate(
+          [
+            {
+              companyId: company.id,
+              locationId: locationFromDB.id,
+            },
+          ],
+          { returning: false }
+        );
       }
     });
   });
 
-  res.json({ message: 'success' });
+  res.json({ status: 'success' });
 }
