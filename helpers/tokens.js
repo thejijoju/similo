@@ -18,6 +18,7 @@ const createAndSaveAuthTokens = async (user, req) => {
   const payload = {
     id: user.id,
     role: user.role,
+    email: user.email,
   };
   const token = jsonWebToken.sign(payload, SECRET_KEY, {
     expiresIn: AUTH_TOKEN_EXPIRATION_TIME,
