@@ -11,21 +11,7 @@ const { Company } = require('../../../models');
 const sequelize = require('../../../config/db');
 const importLogo = require('../../../helpers/importLogo');
 const { UPLOADS_PATH, LOGOS_PATH } = require('../../../constants/index');
-
-function convertRevenueToNumber(revenue) {
-  let multiplier = 1000;
-  const stringMultiplier = revenue.trim().split(' ')[1];
-  if (stringMultiplier === 'million') {
-    multiplier = 1000000;
-  } else if (stringMultiplier === 'billion') {
-    multiplier = 1000000000;
-  }
-
-  let value = revenue.split(' ')[0];
-  value = value.replace(/€/g, '');
-  value = parseFloat(value);
-  return value * multiplier;
-}
+const convertRevenueToNumber = require('../../../helpers/convertRevenueToNumber');
 
 export default async function handler(req, res) {
   if (req.query.addVector) {

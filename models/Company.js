@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       logoPath: {
-        type: DataTypes.STRING(2048),
+        type: DataTypes.STRING(10240),
       },
       websiteUrl: {
         type: DataTypes.STRING,
