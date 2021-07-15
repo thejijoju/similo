@@ -11,7 +11,10 @@ export default async function handler(req, res) {
 
   let queryString;
 
-  const suggestion = req.query.suggestLocation;
+  let suggestion = req.query.suggestLocation;
+  if (suggestion) {
+    suggestion = suggestion.toLowerCase();
+  }
 
   if (req.query.suggestLocation) {
     queryString = `SELECT * FROM "Locations"

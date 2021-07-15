@@ -170,8 +170,8 @@ export default function index({
                     }}
                     key={location.id}
                   >
-                    {location.city}
-                    {location.city !== 'not found' && ','} {location.country}
+                    {location.country}
+                    {location.city === 'not found' && location.city}
                   </span>
                 );
               })}

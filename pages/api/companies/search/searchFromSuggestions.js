@@ -212,11 +212,11 @@ export default async function handler(req, res) {
     replacements,
   });
 
-  if (suggestionType === 'company') {
+  /* if (suggestionType === 'company') {
     if (!rows.some((elem) => elem.name === company.name)) {
       rows.push(company);
     }
-  }
+  } */
 
   const totalCompaniesCount = await sequelize.query(countQuery, {
     type: QueryTypes.SELECT,

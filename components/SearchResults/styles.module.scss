@@ -7,6 +7,7 @@
     font-size: 16px;
     line-height: 19px;
     color: #1e1c1c;
+    padding-left: 62px;
   }
   .header {
     margin-bottom: 9px;
@@ -62,7 +63,6 @@
     padding-right: 100px;
     .noResults {
       position: relative;
-
       font-weight: bold;
     }
     .header {
@@ -80,7 +80,7 @@
         &:first-child {
         }
         &.openAllCards {
-          display: none;
+          //display: none;
         }
       }
       button {
@@ -121,21 +121,9 @@
   .SearchResults {
     padding-left: 34px;
     padding-right: 34px;
-    .noResults {
-    }
     .header {
       span {
         margin-right: 0 !important;
-        &:first-child {
-        }
-        &.openAllCards {
-        }
-        i {
-        }
-      }
-    }
-    .displayMore {
-      button {
       }
     }
   }
