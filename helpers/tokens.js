@@ -48,7 +48,21 @@ const createAndSaveResetPasswordToken = async (user) => {
   return resetPasswordToken;
 };
 
+const createAndSaveVerifyEmailToken = async (user) => {
+  const payload = {
+    id: user.id,
+  };
+  const verifyEmailToken = jsonWebToken.sign(payload, SECRET_KEY, {
+    expiresIn: RESET_PASSWORD_TOKEN_EXPIRATION_TIME,
+  });
+  user.verifyEmailToken = verifyEmailToken;
+  await user.save();
+
+  return verifyEmailToken;
+};
+
 module.exports = {
   createAndSaveAuthTokens,
   createAndSaveResetPasswordToken,
+  createAndSaveVerifyEmailToken,
 };

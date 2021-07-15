@@ -1,11 +1,9 @@
 const { User } = require('../models');
 
 module.exports = async () => {
-  const adminUser = await User.findOne({
-    where: { email: process.env.ADMIN_EMAIL },
-  });
+  const user = await User.findOne();
 
-  if (!adminUser) {
+  if (!user) {
     User.create({
       email: process.env.ADMIN_EMAIL,
       password: process.env.ADMIN_PASSWORD,

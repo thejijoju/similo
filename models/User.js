@@ -35,6 +35,12 @@ module.exports = (sequelize, DataTypes) => {
           );
         },
       },
+      verifyEmailToken: {
+        type: DataTypes.STRING,
+      },
+      newEmail: {
+        type: DataTypes.STRING,
+      },
     },
     {
       indexes: [

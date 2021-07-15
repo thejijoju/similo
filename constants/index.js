@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
   API_URL: process.env.NEXT_PUBLIC_API_URL,
   FRONT_APP_URL: process.env.FRONT_APP_URL,
+  ADMIN_APP_URL: process.env.ADMIN_APP_URL,
 
   SECRET_KEY: process.env.SECRET_KEY,
 
