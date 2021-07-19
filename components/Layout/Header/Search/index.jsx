@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
 import qs from 'qs';
+import classnames from 'classnames';
 
 import { SearchResultsContext, UIContext } from '@/context/index';
 import classes from './styles.module.scss';
@@ -15,7 +16,10 @@ export default function Search({
   setSearchTerm,
   setSearchSuggestions,
   hideSearchSuggestions,
+  onClearSearch,
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   const {
     setCurrentPage,
     companySizeFilter,
@@ -32,6 +36,8 @@ export default function Search({
     // setIsSearchResultsLoading,
   } = useContext(SearchResultsContext);
   const { setIsSearchMode } = useContext(UIContext);
+
+  const searchBarRef = useRef();
 
   const router = useRouter();
 
@@ -169,14 +175,35 @@ export default function Search({
       className={classes.Search}
     >
       <input
-        onFocus={() => setIsSearchMode(true)}
+        onFocus={() => {
+          setIsSearchMode(true);
+          setIsHovered(true);
+        }}
+        onBlur={() => setIsHovered(false)}
         type="text"
         placeholder="What company or brand do you want to compare?"
         className={classes.searchBar}
         value={searchTerm}
         onChange={(event) => setSearchTerm(event.target.value)}
         onKeyUp={getSearchSuggestions}
+        onMouseOver={() => setIsHovered(true)}
+        onMouseOut={() => {
+          if (document.activeElement === searchBarRef.current) {
+            return;
+          }
+          setIsHovered(false);
+        }}
+        ref={searchBarRef}
       />
+      <i
+        className={classnames(classes.closeIcon, isHovered && classes.hover)}
+        onClick={() => {
+          console.log('nheo');
+          onClearSearch();
+        }}
+      >
+        Close
+      </i>
     </form>
   );
 }

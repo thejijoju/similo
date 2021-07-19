@@ -47,6 +47,12 @@
       box-sizing: border-box;
       border-radius: 2px;
       cursor: pointer;
+      &:hover {
+        background-color: #008192;
+      }
+      &:active {
+        background-color: #008192;
+      }
       i {
         display: block;
         width: 20px;

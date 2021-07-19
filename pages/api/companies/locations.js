@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   if (req.query.suggestLocation) {
-    queryString = `SELECT * FROM "Locations"
+    queryString = `SELECT DISTINCT ON(country) country, * FROM "Locations"
                     WHERE LOWER(country) LIKE ?
                     OR LOWER(city) LIKE ? 
                     LIMIT 3`;

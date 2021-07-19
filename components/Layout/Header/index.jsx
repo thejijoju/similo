@@ -123,6 +123,7 @@ export default function Header() {
           setSearchTerm={setSearchTerm}
           setSearchSuggestions={setSearchSuggestions}
           hideSearchSuggestions={hideSearchSuggestions}
+          onClearSearch={clearSearch}
         />
         <div className={classes.searchSuggestionsContainer}>
           <SearchSuggestions
@@ -133,9 +134,6 @@ export default function Header() {
             searchTerm={searchTerm}
           />
         </div>
-        <i className={classes.closeIcon} onClick={clearSearch}>
-          Close
-        </i>
       </div>
       <div className={classes.description}>
         <p>The european company directory.</p>

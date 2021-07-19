@@ -8,10 +8,29 @@
     box-sizing: border-box;
     border-radius: 25px;
     outline: none;
+
     &::placeholder {
       font-size: 16px;
       line-height: 46px;
       color: #928f8f;
+    }
+  }
+  .closeIcon {
+    position: absolute;
+    top: calc(50% - 15px);
+    right: 24px;
+    display: block;
+    width: 30px;
+    height: 30px;
+    font-size: 0;
+    background-image: url(../../../../public/images/closeIcon.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    &.hover {
+      background-color: red;
+      border-radius: 50%;
+      background-color: #fbf5f5;
     }
   }
 }
@@ -27,6 +46,9 @@
       font-size: 15px !important;
       line-height: 33px !important;
     }
+  }
+  .closeIcon {
+    right: 10px !important;
   }
 }
 

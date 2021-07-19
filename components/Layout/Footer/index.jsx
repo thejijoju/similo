@@ -22,7 +22,7 @@ export default function Footer() {
           <a>Terms</a>
         </Link>
         <Link href="/">
-          <a>About Simili</a>
+          <a>About Similo</a>
         </Link>
       </div>
     </footer>
