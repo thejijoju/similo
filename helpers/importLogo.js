@@ -10,6 +10,9 @@ const { LOGOS_PATH, UPLOADS_PATH } = require('../constants/index');
 
 // eslint-disable-next-line consistent-return
 module.exports = async function importLogo(company) {
+  if (!company.log) {
+    return;
+  }
   let fileName;
   if (company.logoLocalPath) {
     try {
@@ -31,6 +34,7 @@ module.exports = async function importLogo(company) {
 
   try {
     await downloader.download();
+    // eslint-disable-next-line consistent-return
     return company.update({ logoLocalPath: `${LOGOS_PATH}/${fileName}` });
   } catch (error) {
     console.log(error);

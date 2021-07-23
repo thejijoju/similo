@@ -300,7 +300,9 @@ nc.post('*', (req, res) => {
       await importLogos(createdOrUpdatedCompanies);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ status: 'fail', message: error.message });
+      return res
+        .status(500)
+        .json({ status: 'fail', message: error.message, error });
     }
     res.json({
       status: 'success',
@@ -309,6 +311,7 @@ nc.post('*', (req, res) => {
         companiesNotAddedCount:
           companies.length - createdOrUpdatedCompanies.length,
         companies: createdOrUpdatedCompanies,
+        rawCompanies: companies,
       },
     });
   });
