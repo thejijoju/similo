@@ -1,6 +1,6 @@
 const nc = require('next-connect')();
 const mailgun = require('../../../config/mailgun');
-const { FRONT_APP_URL, EMAIL_FROM } = require('../../../constants');
+const { ADMIN_APP_URL, EMAIL_FROM } = require('../../../constants');
 const { User } = require('../../../models');
 const { createAndSaveResetPasswordToken } = require('../../../helpers/tokens');
 
@@ -16,7 +16,7 @@ nc.post('*', async (req, res) => {
   } catch (e) {}
 
   if (!user) {
-    res.status(404).json({ key: 'error.email-was-not-registered' });
+    res.status(404).json({ message: 'Email was not registered' });
     return;
   }
 
@@ -25,7 +25,7 @@ nc.post('*', async (req, res) => {
     from: EMAIL_FROM,
     to: user.email,
     subject: 'Reset password for Similo',
-    text: `Follow the link to reset your password: ${FRONT_APP_URL}/reset-password?token=${token}`,
+    text: `Follow the link to reset your password: ${ADMIN_APP_URL}/#/set-new-password?token=${token}`,
   });
 
   res.json({ sent: true });

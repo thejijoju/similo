@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
       newEmail: {
         type: DataTypes.STRING,
       },
+      resetPasswordToken: {
+        type: DataTypes.STRING,
+      },
     },
     {
       indexes: [
