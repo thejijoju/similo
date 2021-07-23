@@ -51,7 +51,7 @@ function formatCompaniesData(companies) {
     formattedCompaniesData.push(JSON.parse(companyString));
   });
 
-  formattedCompaniesData = formattedCompaniesData.map(async (company) => {
+  formattedCompaniesData = formattedCompaniesData.map((company) => {
     const companyData = company;
     for (const key in companyData) {
       if (companyData[key] === '') {
@@ -280,33 +280,36 @@ nc.post('*', (req, res) => {
   stream.on('data', (data) => companies.push(data));
   stream.on('end', async () => {
     companies = formatCompaniesData(companies);
-
-    Promise.all(companies).then(async (formattedCompanies) => {
-      try {
-        const createdOrUpdatedCompanies = await Company.bulkCreate(
-          formattedCompanies,
-          {
-            updateOnDuplicate: Object.keys(Company.rawAttributes).filter(
-              (field) =>
-                field !== 'id' &&
-                field !== 'industryId' &&
-                field !== 'logoLocalPath'
-            ),
-            returning: true,
-          }
-        );
-        await addLocations(createdOrUpdatedCompanies);
-        await addSearchVector(createdOrUpdatedCompanies);
-        await addCompanyLocations(createdOrUpdatedCompanies);
-        await addExpertises(createdOrUpdatedCompanies);
-        await addCompanyExpertises(createdOrUpdatedCompanies);
-        await addIndustries(createdOrUpdatedCompanies);
-        await importLogos(createdOrUpdatedCompanies);
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: 'fail', message: error.message });
-      }
-      res.json({ status: 'success' });
+    let createdOrUpdatedCompanies = [];
+    try {
+      createdOrUpdatedCompanies = await Company.bulkCreate(companies, {
+        updateOnDuplicate: Object.keys(Company.rawAttributes).filter(
+          (field) =>
+            field !== 'id' &&
+            field !== 'industryId' &&
+            field !== 'logoLocalPath'
+        ),
+        returning: true,
+      });
+      await addLocations(createdOrUpdatedCompanies);
+      await addSearchVector(createdOrUpdatedCompanies);
+      await addCompanyLocations(createdOrUpdatedCompanies);
+      await addExpertises(createdOrUpdatedCompanies);
+      await addCompanyExpertises(createdOrUpdatedCompanies);
+      await addIndustries(createdOrUpdatedCompanies);
+      await importLogos(createdOrUpdatedCompanies);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ status: 'fail', message: error.message });
+    }
+    res.json({
+      status: 'success',
+      data: {
+        companiesAddedCount: createdOrUpdatedCompanies.length,
+        companiesNotAddedCount:
+          companies.length - createdOrUpdatedCompanies.length,
+        companies: createdOrUpdatedCompanies,
+      },
     });
   });
 });
