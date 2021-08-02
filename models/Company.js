@@ -90,6 +90,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       industryId: {
         type: DataTypes.UUID,
+        onDelete: 'SET NULL',
       },
     },
     {
