@@ -253,6 +253,7 @@ export default function SearchResult({ company, id }) {
         }}
         onClick={() => {
           if (window.innerWidth <= 1200) {
+            setIsTouched(true);
             if (isCompanyCardExpanded) {
               collapseCompanyCard();
             } else {
