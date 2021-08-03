@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+} from 'react';
 import { useRouter } from 'next/router';
 
 import classnames from 'classnames';
@@ -8,7 +14,7 @@ import { FeedbackForm } from '../../Forms/FeedbackForm';
 import Modal from '../../Modal';
 
 import classes from './styles.module.scss';
-import { SearchResultsContext, UIContext } from '../../../context/index';
+import { SearchResultsContext } from '../../../context/index';
 
 function setBorderAndShadowColor(id) {
   switch (true) {
@@ -66,6 +72,7 @@ function convertNumberToString(number) {
 }
 
 export default function SearchResult({ company, id }) {
+  const [isTouched, setIsTouched] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCompanyCardExpanded, setIsCompanyCardExpanded] = useState(false);
   const [companyCardHeight, setCompanyCardHeight] = useState('');
@@ -79,17 +86,19 @@ export default function SearchResult({ company, id }) {
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
   const employeesCountRef = useRef();
+  const tagsRef = useRef();
 
   const {
     areCompanyCardsExpanded,
+    setAreCompanyCardsExpanded,
     companyExpertiseFilter,
     setCompanyExpertiseFilter,
     lastSearchTerm,
     setLastSearchTerm,
   } = useContext(SearchResultsContext);
 
-  const { currentlyOpenedCompanyCard, setCurrentlyOpenedCompanyCard } =
-    useContext(SearchResultsContext);
+  /* const { currentlyOpenedCompanyCard, setCurrentlyOpenedCompanyCard } =
+    useContext(SearchResultsContext); */
 
   const openModal = () => {
     setIsOpenModal(true);
@@ -111,6 +120,7 @@ export default function SearchResult({ company, id }) {
       setIsCompanyCardExpanded(false);
     }
     setCompanyCardHeight(companyCardInitialHeight.current);
+    // setCompanyCardHeight('unset');
   };
 
   const showSubsidiaries = (event) => {
@@ -140,9 +150,11 @@ export default function SearchResult({ company, id }) {
   };
 
   useEffect(() => {
-    if (companyCardRef.current) {
-      setCompanyCardHeight(companyCardRef.current.offsetHeight);
+    if (companyCardRef.current && tagsRef.current) {
       companyCardInitialHeight.current = companyCardRef.current.offsetHeight;
+      setCompanyCardHeight(companyCardRef.current.offsetHeight);
+      /* companyCardInitialHeight.current = 70 + tagsRef.current.offsetHeight;
+      setCompanyCardHeight(companyCardInitialHeight.current); */
     }
   }, []);
 
@@ -157,11 +169,25 @@ export default function SearchResult({ company, id }) {
   }, [isCompanyCardExpanded]);
 
   useEffect(() => {
+    if (isTouched) {
+      return;
+    }
     if (areCompanyCardsExpanded) {
       expandCompanyCard();
     } else {
       collapseCompanyCard();
     }
+  }, [
+    areCompanyCardsExpanded,
+    expandCompanyCard,
+    collapseCompanyCard,
+    isCompanyCardExpanded,
+    isTouched,
+    company,
+  ]);
+
+  useEffect(() => {
+    setIsTouched(false);
   }, [areCompanyCardsExpanded]);
 
   useEffect(() => {
@@ -177,6 +203,7 @@ export default function SearchResult({ company, id }) {
       decodeURI(router.query.term) === company.name &&
       lastSearchTerm !== decodeURI(router.query.term)
     ) {
+      setIsTouched(true);
       setTimeout(() => {
         expandCompanyCard();
         setLastSearchTerm(decodeURI(router.query.term));
@@ -250,7 +277,7 @@ export default function SearchResult({ company, id }) {
         <div className={classes.companyInfo}>
           <h1>{company.name}</h1>
           <span className={classes.industry}>{company.industry}</span>
-          <div className={classes.tags}>
+          <div className={classes.tags} ref={tagsRef}>
             {company.expertise &&
               company.expertise.split(',').map((tag) => (
                 <span
@@ -381,6 +408,7 @@ export default function SearchResult({ company, id }) {
             isExpandCardButtonRotated && classes.rotate
           )}
           onClick={() => {
+            setIsTouched(true);
             if (isCompanyCardExpanded) {
               collapseCompanyCard();
             } else {

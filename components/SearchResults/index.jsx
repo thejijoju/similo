@@ -415,7 +415,13 @@ export default function SearchResults({ searchResults }) {
         <span
           className={classes.openAllCards}
           onClick={() => {
-            setAreCompanyCardsExpanded((prevState) => !prevState);
+            setAreCompanyCardsExpanded((prevState) => {
+              if (prevState === false || prevState === 'notExpanded') {
+                return true;
+              } else if (prevState === true || prevState === 'expanded') {
+                return false;
+              }
+            });
           }}
         >
           <i>dot</i>
