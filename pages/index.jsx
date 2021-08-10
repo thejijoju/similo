@@ -110,6 +110,8 @@ export async function getServerSideProps(context) {
     return 0;
   });
 
+  console.log(sortedLocations);
+
   return {
     props: {
       searchResults,

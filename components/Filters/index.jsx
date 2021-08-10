@@ -28,9 +28,63 @@ const REVENUE = [
   '50+ billion',
 ];
 
+const LOCATIONS = [
+  'Albania',
+  'Andorra',
+  'Armenia',
+  'Austria',
+  'Azerbaijan',
+  'Belarus',
+  'Belgium',
+  'Bosnia and Herzegovina',
+  'Bulgaria',
+  'Croatia',
+  'Cyprus',
+  'Czechia',
+  'Denmark',
+  'Estonia',
+  'Finland',
+  'France',
+  'Georgia',
+  'Germany',
+  'Greece',
+  'Hungary',
+  'Iceland',
+  'Ireland',
+  'Italy',
+  'Kazakhstan',
+  'Kosovo',
+  'Latvia',
+  'Liechtenstein',
+  'Lithuania',
+  'Luxembourg',
+  'Malta',
+  'Moldova',
+  'Monaco',
+  'Montenegro',
+  'Netherlands',
+  'North Macedonia',
+  'Norway',
+  'Poland',
+  'Portugal',
+  'Romania',
+  'Russia',
+  'San Marino',
+  'Serbia',
+  'Slovakia',
+  'Slovenia',
+  'Spain',
+  'Sweden',
+  'Switzerland',
+  'Turkey',
+  'Ukraine',
+  'United Kingdom',
+  'Vatican City',
+];
+
 const COMPANY_TYPES = ['Public', 'Private', 'Subsidary'];
 
-export default function Filters({ expertise, locations }) {
+export default function Filters({ expertise }) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
@@ -186,7 +240,7 @@ export default function Filters({ expertise, locations }) {
           </div>
           <Filter
             title="Location"
-            values={locations}
+            values={LOCATIONS}
             defaultSize={5}
             search
             state={companyLocationFilter}
