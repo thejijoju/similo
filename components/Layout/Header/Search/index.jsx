@@ -78,7 +78,6 @@ export default function Search({
           searchTerm
         )}`
       );
-      console.log(response.data);
       isCompany = response.data.data.isCompany;
       isIndustry = response.data.data.isIndustry;
       entityName = response.data.data.name;
@@ -198,7 +197,6 @@ export default function Search({
       <i
         className={classnames(classes.closeIcon, isHovered && classes.hover)}
         onClick={() => {
-          console.log('nheo');
           onClearSearch();
         }}
       >

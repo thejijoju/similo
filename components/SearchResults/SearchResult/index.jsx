@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useContext,
-  useCallback,
-} from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import classnames from 'classnames';
@@ -90,7 +84,7 @@ export default function SearchResult({ company, id }) {
 
   const {
     areCompanyCardsExpanded,
-    setAreCompanyCardsExpanded,
+    // setAreCompanyCardsExpanded,
     companyExpertiseFilter,
     setCompanyExpertiseFilter,
     lastSearchTerm,

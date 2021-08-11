@@ -1,10 +1,13 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import classnames from 'classnames';
 import usePortal from 'react-useportal';
+import axios from 'axios';
 
 import { SearchResultsContext, UIContext } from '@/context/index';
 import Filter from './Filter';
+import { API_URL } from '../../constants/index';
 
 import classes from './styles.module.scss';
 
@@ -88,7 +91,28 @@ export default function Filters({ expertise }) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
+  const [expertisesByIndustry, setExpertisesByIndustry] = useState([]);
+
   const { Portal } = usePortal();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.query.fromSuggestions) {
+      axios
+        .get(
+          `${API_URL}/companies/expertise?${router.query.suggestionType}=${router.query.term}`
+        )
+        .then((response) => {
+          setExpertisesByIndustry(response.data.data.expertise);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      setExpertisesByIndustry([]);
+    }
+  }, [router]);
 
   const {
     companySizeFilter,
@@ -254,15 +278,9 @@ export default function Filters({ expertise }) {
             state={companySizeFilter}
           />
           <Filter
-            values={expertise.sort((a, b) => {
-              if (a < b) {
-                return -1;
-              }
-              if (a > b) {
-                return 1;
-              }
-              return 0;
-            })}
+            values={
+              expertisesByIndustry.length ? expertisesByIndustry : expertise
+            }
             defaultSize={4}
             title="Expertise"
             state={companyExpertiseFilter}

@@ -246,8 +246,6 @@ export default function SearchResults({ searchResults }) {
         },
       });
 
-      console.log(response.data);
-
       if (
         companyPreviousPosition !== -1 &&
         companyPreviousPosition !== undefined
