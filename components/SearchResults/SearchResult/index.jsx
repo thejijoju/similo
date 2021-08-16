@@ -350,16 +350,17 @@ export default function SearchResult({ company, id }) {
                       : 'none',
                 }}
               >
-                <div className={classes.keyPeople}>
-                  <span className={classes.title}>Key people</span>
-                  <span
-                    className={classes.content}
-                    style={{ left: keyPeopleOffset }}
-                  >
-                    Michael Burke (Chairman & CEO), Nicolas Ghesquière, Virgil
-                    Abloh (Creative directors)
-                  </span>
-                </div>
+                {company.keyPeople && (
+                  <div className={classes.keyPeople}>
+                    <span className={classes.title}>Key people</span>
+                    <span
+                      className={classes.content}
+                      style={{ left: keyPeopleOffset }}
+                    >
+                      {company.keyPeople}
+                    </span>
+                  </div>
+                )}
                 {company.employeesCount && (
                   <div className={classes.infoBlock}>
                     <span className={classes.title}>Number of employees</span>
@@ -372,10 +373,14 @@ export default function SearchResult({ company, id }) {
                     </span>
                   </div>
                 )}
-                <div className={classes.infoBlock}>
-                  <span className={classes.title}>Area served</span>
-                  <span className={classes.content}>Worldwide</span>
-                </div>
+                {company.areaServed && (
+                  <div className={classes.infoBlock}>
+                    <span className={classes.title}>Area served</span>
+                    <span className={classes.content}>
+                      {company.areaServed}
+                    </span>
+                  </div>
+                )}
                 {company.subsidiaries && (
                   <div
                     className={classnames(

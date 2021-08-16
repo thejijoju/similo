@@ -47,6 +47,8 @@ function formatCompaniesData(companies) {
     companyString = companyString.replace(/Type/g, 'type');
     companyString = companyString.replace(/Expertise/g, 'expertise');
     companyString = companyString.replace(/Subsidiaries/g, 'subsidiaries');
+    companyString = companyString.replace(/Key people/g, 'keyPeople');
+    companyString = companyString.replace(/Area served/g, 'areaServed');
 
     formattedCompaniesData.push(JSON.parse(companyString));
   });
@@ -239,7 +241,9 @@ async function addIndustries(companies) {
   });
 
   try {
-    await Industry.bulkCreate(industriesArray);
+    await Industry.bulkCreate(industriesArray, {
+      updateOnDuplicate: ['industryName'],
+    });
 
     const promises = [];
 

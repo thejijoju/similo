@@ -92,6 +92,12 @@ module.exports = (sequelize, DataTypes) => {
       logoLocalPath: {
         type: DataTypes.STRING,
       },
+      areaServed: {
+        type: DataTypes.STRING,
+      },
+      keyPeople: {
+        type: DataTypes.STRING,
+      },
       industryId: {
         type: DataTypes.UUID,
         onDelete: 'SET NULL',
