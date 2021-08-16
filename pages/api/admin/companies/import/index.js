@@ -219,7 +219,7 @@ function addSearchVector(companies) {
   return sequelize.query(
     `UPDATE "Companies" SET "searchVector" = to_tsvector(name || ' ' || coalesce("HQLocation", '') 
       || ' ' || coalesce(locations, '') || ' ' 
-      || coalesce(expertise, '') || ' ' || coalesce(industry, ''))
+      || coalesce(expertise, '') || ' ' || coalesce(industry, '') || ' ' || coalesce("keyPeople", '') || ' ' || coalesce("areaServed", '')) 
       WHERE name IN (${companiesNames.join(',')})`,
     { type: QueryTypes.UPDATE }
   );
