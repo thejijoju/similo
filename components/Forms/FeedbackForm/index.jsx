@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 
+import axios from 'axios';
 import classnames from 'classnames';
 
 import classes from './styles.module.scss';
+import { API_URL } from '../../../constants/index';
 
 export const FeedbackForm = ({ company, onClose }) => {
   const [feedback, setFeedback] = useState('');
@@ -12,8 +14,11 @@ export const FeedbackForm = ({ company, onClose }) => {
   };
   const onSave = (e) => {
     e.preventDefault();
-    console.log('Company', company);
-    console.log('Feedback', feedback);
+    axios.post(`${API_URL}/companies/feedback`, {
+      company: company.name,
+      feedback,
+    });
+
     onClose();
   };
 

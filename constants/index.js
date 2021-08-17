@@ -14,4 +14,5 @@ module.exports = {
   AUTH_TOKEN_EXPIRATION_TIME: '30m',
   RESET_PASSWORD_TOKEN_EXPIRATION_TIME: '120m',
   EMAIL_FROM: `Support <support@${process.env.MAILGUN_DOMAIN}>`,
+  FEEDBACK_EMAIL: process.env.FEEDBACK_EMAIL,
 };
