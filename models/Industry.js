@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Industry.hasMany(models.CompanyIndustry, {
         foreignKey: 'industryId',
+        onDelete: 'cascade',
+        hooks: true,
       });
       Industry.belongsToMany(models.Company, {
         through: models.CompanyIndustry,
