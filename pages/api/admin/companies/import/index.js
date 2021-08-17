@@ -250,7 +250,7 @@ async function addIndustries(companies) {
     companies.forEach(async (company) => {
       if (company.industry) {
         const industry = await Industry.findOne({
-          where: { industryName: company.industry },
+          where: { industryName: company.industry.trim() },
         });
         promises.push(company.update({ industryId: industry.id }));
       }
