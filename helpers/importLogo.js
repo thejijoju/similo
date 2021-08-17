@@ -10,7 +10,7 @@ const { LOGOS_PATH, UPLOADS_PATH } = require('../constants/index');
 
 // eslint-disable-next-line consistent-return
 module.exports = async function importLogo(company) {
-  if (!company.log) {
+  if (!company.logoPath) {
     return;
   }
   let fileName;

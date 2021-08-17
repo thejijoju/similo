@@ -16,6 +16,7 @@ const {
   Expertise,
   CompanyExpertise,
   Industry,
+  CompanyIndustry,
 } = require('../../../../../models');
 const sequelize = require('../../../../../config/db');
 
@@ -213,6 +214,31 @@ async function addCompanyExpertises(companies) {
   return Promise.all(promises);
 }
 
+async function addCompanyIndustries(companies) {
+  const promises = [];
+  companies.forEach((company) => {
+    if (!company.industry) {
+      return;
+    }
+    const industries = company.industry.split(',');
+    industries.forEach(async (industry) => {
+      const industryFromDB = await Industry.findOne({
+        where: { industryName: industry.trim() },
+      });
+
+      if (industryFromDB) {
+        promises.push(
+          CompanyIndustry.findOrCreate({
+            where: { companyId: company.id, industryId: industryFromDB.id },
+          })
+        );
+      }
+    });
+  });
+
+  return Promise.all(promises);
+}
+
 function addSearchVector(companies) {
   const companiesNames = companies.map((company) => `'${company.name}'`);
 
@@ -240,7 +266,7 @@ async function addIndustries(companies) {
     industriesArray.push({ industryName: industry.trim() });
   });
 
-  try {
+  /* try {
     await Industry.bulkCreate(industriesArray, {
       updateOnDuplicate: ['industryName'],
     });
@@ -259,7 +285,10 @@ async function addIndustries(companies) {
     return Promise.all(promises);
   } catch (error) {
     console.log(error);
-  }
+  } */
+  return Industry.bulkCreate(industriesArray, {
+    updateOnDuplicate: ['industryName'],
+  });
 }
 
 function importLogos(companies) {
@@ -301,6 +330,7 @@ nc.post('*', (req, res) => {
       await addExpertises(createdOrUpdatedCompanies);
       await addCompanyExpertises(createdOrUpdatedCompanies);
       await addIndustries(createdOrUpdatedCompanies);
+      await addCompanyIndustries(createdOrUpdatedCompanies);
       await importLogos(createdOrUpdatedCompanies);
     } catch (error) {
       console.log(error);

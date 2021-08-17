@@ -11,7 +11,7 @@ fs.readdirSync(path.join(process.cwd(), 'models'))
   .filter((fileName) => /\.js$/.test(fileName) && fileName !== 'index.js')
   .forEach((fileName) => {
     const model = require(`./${fileName}`)(sequelize, Sequelize.DataTypes);
-    console.log('ModeL:', model.name);
+
     models[model.name] = model;
   });
 
@@ -20,5 +20,7 @@ Object.keys(models).forEach((modelName) => {
     models[modelName].associate(models);
   }
 });
+
+console.log(models);
 
 module.exports = models;

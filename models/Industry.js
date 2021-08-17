@@ -8,8 +8,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Industry.hasMany(models.Company, {
+      Industry.hasMany(models.CompanyIndustry, {
         foreignKey: 'industryId',
+      });
+      Industry.belongsToMany(models.Company, {
+        through: models.CompanyIndustry,
+        foreignKey: 'industryId',
+        otherKey: 'companyId',
+        onDelete: 'cascade',
+        hooks: true,
       });
     }
   }
