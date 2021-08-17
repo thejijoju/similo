@@ -5,7 +5,7 @@ const { create } = require('express-sequelize-crud/lib/create');
 const { Op, literal } = require('sequelize');
 const passport = require('passport');
 const nc = require('next-connect')();
-const { Company } = require('../../../../models');
+const { Company, CompanyIndustry } = require('../../../../models');
 const { companyCrud } = require('../../../../helpers/cruds');
 const getSearchVectorTerm = require('../../../../helpers/getSearchVectorTerm');
 
@@ -30,6 +30,20 @@ const searchCompanies = ({ q, filter = {}, limit, offset, order = [] }) => {
         required: true,
         where: {
           locationId: filter.locationId,
+        },
+      },
+    ];
+  }
+
+  if (filter.industryId) {
+    delete query.where.industryId;
+    query.include = [
+      {
+        model: CompanyIndustry,
+        attributes: [],
+        required: true,
+        where: {
+          industryId: filter.industryId,
         },
       },
     ];
