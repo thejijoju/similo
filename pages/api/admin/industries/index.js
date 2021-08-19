@@ -31,8 +31,19 @@ const { industryCrud } = require('../../../../helpers/cruds');
     group: [literal('"Industry".id')],
   }).catch((e) => console.error(e)); */
 
-const findAndCountAllIndustries = ({ q, filter = {}, limit, offset, order }) =>
-  Industry.findAndCountAll({
+const findAndCountAllIndustries = ({
+  q,
+  filter = {},
+  limit,
+  offset,
+  order,
+}) => {
+  const newFilter = { ...filter };
+
+  if (newFilter.id) {
+    newFilter.id = { [Op.or]: [...newFilter.id] };
+  }
+  return Industry.findAndCountAll({
     attributes: {
       include: [[literal('COUNT("CompanyIndustries".id)'), 'companiesCount']],
     },
@@ -49,18 +60,19 @@ const findAndCountAllIndustries = ({ q, filter = {}, limit, offset, order }) =>
         ? [[literal('COUNT("CompanyIndustry".id)'), order[0][1]]]
         : order,
     where: {
-      ...filter,
+      ...newFilter,
       ...(q ? { industryName: { [Op.iLike]: `%${q}%` } } : {}),
     },
     subQuery: false,
     group: [literal('"Industry".id')],
   }).catch((e) => console.error(e));
+};
 
 nc.all('*', passport.authenticate('jwt'));
 nc.get(
   '*',
-  getMany(findAndCountAllIndustries, (q, limit) =>
-    findAndCountAllIndustries({ q, limit })
+  getMany(findAndCountAllIndustries, (q, filter, limit) =>
+    findAndCountAllIndustries({ q, filter, limit })
   )
 );
 nc.post('*', create(industryCrud.create));

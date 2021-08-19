@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       Company.hasMany(models.CompanyLocation, {
         foreignKey: 'companyId',
         otherKey: 'locationId',
+        onDelete: 'cascade',
+        hooks: true,
       });
       Company.belongsToMany(models.Location, {
         through: models.CompanyLocation,
@@ -36,6 +38,8 @@ module.exports = (sequelize, DataTypes) => {
       Company.hasMany(models.CompanyIndustry, {
         foreignKey: 'companyId',
         otherKey: 'industryId',
+        onDelete: 'cascade',
+        hooks: true,
       });
     }
   }

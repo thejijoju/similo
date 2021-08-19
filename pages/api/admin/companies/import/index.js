@@ -76,10 +76,9 @@ function formatCompaniesData(companies) {
           .map((tag) => tag.toLowerCase());
         companyData[key] = tags.join(',');
       }
-      /* if (key === 'logoPath' && companyData[key] !== null) {
-        // eslint-disable-next-line no-await-in-loop
-        companyData.logoLocalPath = await importLogo(companyData.logoPath);
-      } */
+      if (typeof companyData[key] === 'string') {
+        companyData[key] = companyData[key].trim();
+      }
     }
     return companyData;
   });
@@ -256,7 +255,10 @@ async function addIndustries(companies) {
 
   companies.forEach((company) => {
     if (company.industry) {
-      industriesSet.add(company.industry);
+      const industriesArray = company.industry.split(',');
+      industriesArray.forEach((industry) => {
+        industriesSet.add(industry);
+      });
     }
   });
 
@@ -266,26 +268,6 @@ async function addIndustries(companies) {
     industriesArray.push({ industryName: industry.trim() });
   });
 
-  /* try {
-    await Industry.bulkCreate(industriesArray, {
-      updateOnDuplicate: ['industryName'],
-    });
-
-    const promises = [];
-
-    companies.forEach(async (company) => {
-      if (company.industry) {
-        const industry = await Industry.findOne({
-          where: { industryName: company.industry.trim() },
-        });
-        promises.push(company.update({ industryId: industry.id }));
-      }
-    });
-
-    return Promise.all(promises);
-  } catch (error) {
-    console.log(error);
-  } */
   return Industry.bulkCreate(industriesArray, {
     updateOnDuplicate: ['industryName'],
   });
