@@ -25,7 +25,7 @@ const convertRevenueToNumber = require('../../../../../helpers/convertRevenueToN
 
 function formatCompaniesData(companies) {
   let formattedCompaniesData = [];
-  companies.forEach((company) => {
+  companies.forEach((company, index) => {
     let companyString = JSON.stringify(company);
     companyString = companyString.replace(/Company or Brand name/g, 'name');
     companyString = companyString.replace(/Logo link/g, 'logoPath');
@@ -51,7 +51,10 @@ function formatCompaniesData(companies) {
     companyString = companyString.replace(/Key people/g, 'keyPeople');
     companyString = companyString.replace(/Area served/g, 'areaServed');
 
-    formattedCompaniesData.push(JSON.parse(companyString));
+    const companyObject = JSON.parse(companyString);
+    companyObject.order = index + 1;
+
+    formattedCompaniesData.push(companyObject);
   });
 
   formattedCompaniesData = formattedCompaniesData.map((company) => {

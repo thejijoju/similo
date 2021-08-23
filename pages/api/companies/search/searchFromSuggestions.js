@@ -138,9 +138,13 @@ export default async function handler(req, res) {
     }
 
     if (!page) {
+      const sortQuery =
+        sort === 'relevant'
+          ? `ORDER BY "order"`
+          : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
       const companyRowNumber = await sequelize.query(
         `SELECT rnum FROM 
-  (SELECT *, row_number() OVER (ORDER BY name) as rnum FROM "Companies" WHERE industry = ? ${expertiseQuery}
+  (SELECT *, row_number() OVER (${sortQuery}) as rnum FROM "Companies" WHERE industry = ? ${expertiseQuery}
   ${companyTypeQuery}
   ${companyRevenueQuery}
   ${companySizeQuery}
@@ -167,12 +171,12 @@ export default async function handler(req, res) {
     }
   }
 
-  if (suggestionType === 'company') {
-    const sortQuery =
-      sort === 'relevant'
-        ? `ORDER BY name`
-        : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
+  const sortQuery =
+    sort === 'relevant'
+      ? `ORDER BY "order" NULLS LAST`
+      : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
 
+  if (suggestionType === 'company') {
     query = `SELECT * FROM "Companies" WHERE (industry='${company.industry}')
     ${expertiseQuery}
     ${companyTypeQuery}
@@ -190,13 +194,22 @@ export default async function handler(req, res) {
     ${locationsQuery}`;
   } else if (suggestionType === 'industry') {
     replacements.unshift(`${searchTerm}`);
-    query = `SELECT * FROM "Companies" WHERE (industry = ?)
+    /* query = `SELECT * FROM "Companies" WHERE (industry = ?)
     ${expertiseQuery}
     ${companyTypeQuery}
     ${companyRevenueQuery}
     ${companySizeQuery}
     ${locationsQuery}
     ORDER by ${sort === 'relevant' ? 'name' : '"createdAt"'} ASC
+    LIMIT ${perPage} OFFSET ${page * perPage}`; */
+
+    query = `SELECT * FROM "Companies" WHERE (industry = ?)
+    ${expertiseQuery}
+    ${companyTypeQuery}
+    ${companyRevenueQuery}
+    ${companySizeQuery}
+    ${locationsQuery}
+    ${sortQuery}
     LIMIT ${perPage} OFFSET ${page * perPage}`;
 
     countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry = ?)

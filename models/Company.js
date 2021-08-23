@@ -110,6 +110,9 @@ module.exports = (sequelize, DataTypes) => {
       keyPeople: {
         type: DataTypes.STRING,
       },
+      order: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       sequelize,

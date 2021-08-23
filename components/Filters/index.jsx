@@ -32,6 +32,11 @@ const REVENUE = [
 ];
 
 const LOCATIONS = [
+  'Germany',
+  'France',
+  'United Kingdom',
+  'Spain',
+  'Italy',
   'Albania',
   'Andorra',
   'Armenia',
@@ -47,14 +52,11 @@ const LOCATIONS = [
   'Denmark',
   'Estonia',
   'Finland',
-  'France',
   'Georgia',
-  'Germany',
   'Greece',
   'Hungary',
   'Iceland',
   'Ireland',
-  'Italy',
   'Kazakhstan',
   'Kosovo',
   'Latvia',
@@ -76,12 +78,10 @@ const LOCATIONS = [
   'Serbia',
   'Slovakia',
   'Slovenia',
-  'Spain',
   'Sweden',
   'Switzerland',
   'Turkey',
   'Ukraine',
-  'United Kingdom',
   'Vatican City',
 ];
 
