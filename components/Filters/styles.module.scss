@@ -30,6 +30,7 @@
     justify-content: space-between;
     margin-bottom: 60px;
     padding-left: 26px;
+
     .filterButton {
       display: flex;
       align-items: center;
@@ -43,7 +44,7 @@
       color: #ffffff;
       background-color: #14a2b8;
       border: 0.8px solid #14a2b8;
-      //font-family: LucidaGrande;
+      letter-spacing: 1px;
       box-sizing: border-box;
       border-radius: 2px;
       cursor: pointer;
@@ -63,23 +64,25 @@
     }
     .mostRelevantButton {
       display: flex;
-      justify-content: space-between;
+      //justify-content: space-between;
       align-items: center;
       width: 135px;
       height: 30px;
+      padding-left: 10px;
       border: 1px solid rgb(20, 162, 184, 0.5);
       box-sizing: border-box;
       border-radius: 3px;
       background-color: transparent;
       //font-family: LucidaGrande;
-      font-size: 15px;
-      line-height: 18px;
+      font-size: 16px;
+      line-height: 19px;
       color: #14a2b8;
       cursor: pointer;
       i {
         display: block;
-        width: 11px;
-        height: 7px;
+        width: 13px;
+        height: 9px;
+        margin-top: 2px;
         margin-left: 3px;
         font-size: 0;
         background-image: url(../../public/images/arrowDown.svg);
