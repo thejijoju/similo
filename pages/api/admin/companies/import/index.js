@@ -38,7 +38,7 @@ function formatCompaniesData(companies) {
     );
     companyString = companyString.replace(/Founder/g, 'founder');
     companyString = companyString.replace(/Industry & Keyword/g, 'industry');
-    companyString = companyString.replace(/Company Size/g, 'size');
+    // companyString = companyString.replace(/Company Size/g, 'size');
     companyString = companyString.replace(
       /Number of employees/g,
       'employeesCount'

@@ -77,9 +77,6 @@ module.exports = (sequelize, DataTypes) => {
       industry: {
         type: DataTypes.STRING,
       },
-      size: {
-        type: DataTypes.STRING,
-      },
       employeesCount: {
         type: DataTypes.INTEGER,
       },
