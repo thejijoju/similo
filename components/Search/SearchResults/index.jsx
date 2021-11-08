@@ -13,7 +13,11 @@ import { SearchResultsContext, UIContext } from '../../../context/index';
 
 let timer;
 
-export default function SearchResults({ searchResults, csrLinks }) {
+export default function SearchResults({
+  searchResults,
+  csrLinks,
+  expertiseLinks,
+}) {
   const [innerSearchResults, setInnerSearchResults] = useState({
     ...searchResults,
   });
@@ -441,6 +445,9 @@ export default function SearchResults({ searchResults, csrLinks }) {
               key={company.companyId}
               id={i}
               csrLinks={csrLinks.filter(
+                (link) => link.company === company.companyId
+              )}
+              expertiseLinks={expertiseLinks.filter(
                 (link) => link.company === company.companyId
               )}
             />

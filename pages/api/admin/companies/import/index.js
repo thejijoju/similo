@@ -1,5 +1,6 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
+
 /* eslint-disable consistent-return */
 const fs = require('fs');
 
@@ -20,6 +21,7 @@ const {
   CSR,
   CompanyCSR,
   CSRLink,
+  ExpertiseLink,
 } = require('../../../../../models');
 const sequelize = require('../../../../../config/db');
 
@@ -63,6 +65,7 @@ function formatCompaniesData(companies) {
       'hasFemaleCEO'
     );
     companyString = companyString.replace(/CSR/g, 'csr');
+    companyString = companyString.replace(/expertise Links/g, 'expertiseLinks');
 
     const companyObject = JSON.parse(companyString);
     companyObject.order = index + 1;
@@ -77,21 +80,26 @@ function formatCompaniesData(companies) {
         // eslint-disable-next-line no-unused-expressions
         companyData[key] = null;
       }
+
       if (key === 'yearOfFoundation' && companyData[key] !== null) {
         companyData[key] = +companyData[key];
       }
+
       if (key === 'revenue' && companyData[key] !== null) {
         companyData[key] = convertRevenueToNumber(companyData[key]);
       }
+
       if (key === 'employeesCount' && companyData[key] !== null) {
         companyData[key] = parseInt(companyData[key].replace(/,/g, ''), 10);
       }
+
       if (key === 'expertise' && companyData[key] !== null) {
         const tags = companyData[key]
           .split(',')
           .map((tag) => tag.toLowerCase());
         companyData[key] = tags.join(',');
       }
+
       if (key === 'hasUderrepresentedMinorities' || key === 'hasFemaleCEO') {
         if (companyData[key] === 'Yes') {
           companyData[key] = true;
@@ -99,20 +107,38 @@ function formatCompaniesData(companies) {
           companyData[key] = false;
         }
       }
+
       if (key === 'csr' && companyData[key] !== null) {
         const csrTags = companyData[key].split(',');
         const csrArray = [];
+        const csrLinksArray = [];
         for (const tag of csrTags) {
           const csrTagSpliited = tag.split(' -- ');
           csrArray.push(csrTagSpliited[0]);
-          companyData.csrLink = {
+          csrLinksArray.push({
             companyName: companyData.name,
             csrName: csrTagSpliited[0],
             url: csrTagSpliited[1],
-          };
+          });
         }
+        companyData.csrLink = csrLinksArray;
         companyData[key] = csrArray.join(',');
       }
+
+      if (key === 'expertiseLinks' && companyData[key] !== null) {
+        const expertiseLinks = companyData[key].split(',');
+        const expertiseLinksArray = [];
+        for (const tag of expertiseLinks) {
+          const expertiseLinkSpliited = tag.split(' -- ');
+          expertiseLinksArray.push({
+            companyName: companyData.name,
+            expertiseName: expertiseLinkSpliited[0],
+            url: expertiseLinkSpliited[1],
+          });
+        }
+        companyData.expertiseLinks = expertiseLinksArray;
+      }
+
       if (typeof companyData[key] === 'string') {
         companyData[key] = companyData[key].trim();
       }
@@ -376,15 +402,45 @@ async function addCSRLinks(companies) {
       where: { name: company.name },
     });
     if (companyFromDB) {
-      promises.push(
-        CSRLink.findOrCreate({
-          where: {
-            companyId: companyFromDB.id,
-            csrName: company.csrLink.csrName,
-            url: company.csrLink.url,
-          },
-        })
-      );
+      company.csrLink.forEach((link) => {
+        promises.push(
+          CSRLink.findOrCreate({
+            where: {
+              companyId: companyFromDB.id,
+              csrName: link.csrName.trim(),
+              url: link.url,
+            },
+          })
+        );
+      });
+    }
+  });
+
+  return Promise.all(promises);
+}
+
+async function addExpertiseLinks(companies) {
+  const promises = [];
+  companies.forEach(async (company) => {
+    if (!company.expertiseLinks) {
+      return;
+    }
+
+    const companyFromDB = await Company.findOne({
+      where: { name: company.name },
+    });
+    if (companyFromDB) {
+      company.expertiseLinks.forEach((link) => {
+        promises.push(
+          ExpertiseLink.findOrCreate({
+            where: {
+              companyId: companyFromDB.id,
+              expertiseName: link.expertiseName.trim(),
+              url: link.url,
+            },
+          })
+        );
+      });
     }
   });
 
@@ -413,6 +469,7 @@ nc.post('*', (req, res) => {
   stream.on('data', (data) => companies.push(data));
   stream.on('end', async () => {
     companies = formatCompaniesData(companies);
+
     let createdOrUpdatedCompanies = [];
     try {
       createdOrUpdatedCompanies = await Company.bulkCreate(companies, {
@@ -434,6 +491,7 @@ nc.post('*', (req, res) => {
       await addCSR(createdOrUpdatedCompanies);
       await addCompanyCSR(createdOrUpdatedCompanies);
       await addCSRLinks(companies);
+      await addExpertiseLinks(companies);
       await importLogos(createdOrUpdatedCompanies);
     } catch (error) {
       console.log(error);

@@ -59,6 +59,11 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         hooks: true,
       });
+      Company.hasMany(models.ExpertiseLink, {
+        foreignKey: 'companyId',
+        onDelete: 'cascade',
+        hooks: true,
+      });
     }
   }
   Company.init(

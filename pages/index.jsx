@@ -18,6 +18,7 @@ export default function HomePage({
   locations,
   csrs,
   csrLinks,
+  expertiseLinks,
 }) {
   const router = useRouter();
 
@@ -91,7 +92,11 @@ export default function HomePage({
       </Head>
       <main className={classes.main}>
         <Filters expertise={expertise} locations={locations} csrs={csrs} />
-        <SearchResults searchResults={searchResults} csrLinks={csrLinks} />
+        <SearchResults
+          searchResults={searchResults}
+          csrLinks={csrLinks}
+          expertiseLinks={expertiseLinks}
+        />
       </main>
     </div>
   );
@@ -117,6 +122,7 @@ export async function getServerSideProps(context) {
   const locations = await axios.get(`${API_URL}/companies/locations`);
   const csrs = await axios.get(`${API_URL}/companies/csrs`);
   const csrLinks = await axios.get(`${API_URL}/companies/csrLinks`);
+  const expertiseLinks = await axios.get(`${API_URL}/companies/expertiseLinks`);
 
   const sortedLocations = [...locations.data.data.locations].sort((a, b) => {
     if (a < b) {
@@ -135,6 +141,7 @@ export async function getServerSideProps(context) {
       locations: sortedLocations,
       csrs: csrs.data.data.csr,
       csrLinks: csrLinks.data.data.csrLinks,
+      expertiseLinks: expertiseLinks.data.data.expertiseLinks,
     },
   };
 }

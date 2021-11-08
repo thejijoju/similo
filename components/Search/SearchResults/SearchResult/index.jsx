@@ -72,7 +72,12 @@ function openCSRLink(link) {
   }
 }
 
-export default function SearchResult({ company, id, csrLinks }) {
+export default function SearchResult({
+  company,
+  id,
+  csrLinks,
+  expertiseLinks,
+}) {
   const [isTouched, setIsTouched] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCompanyCardExpanded, setIsCompanyCardExpanded] = useState(false);
@@ -83,6 +88,9 @@ export default function SearchResult({ company, id, csrLinks }) {
     useState(false);
   const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState(false);
   const [keyPeopleOffset, setKeyPeopleOffset] = useState(0);
+  const [companyWebsiteLink, setCompanyWebsiteLink] = useState(
+    `https://${company.websiteUrl}`
+  );
 
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
@@ -241,6 +249,21 @@ export default function SearchResult({ company, id, csrLinks }) {
     }
   }, [employeesCountRef.current]);
 
+  useEffect(() => {
+    if (!companyExpertiseFilter.length) {
+      setCompanyWebsiteLink(company.websiteUrl);
+    } else {
+      const expertiseLink = expertiseLinks.find(
+        (link) =>
+          link.name ===
+          companyExpertiseFilter[companyExpertiseFilter.length - 1]
+      );
+      if (expertiseLink) {
+        setCompanyWebsiteLink(expertiseLink.url);
+      }
+    }
+  }, [companyExpertiseFilter]);
+
   return (
     <>
       <div
@@ -320,8 +343,13 @@ export default function SearchResult({ company, id, csrLinks }) {
                 <div className={classes.infoBlock}>
                   <span className={classes.title}>Website</span>
                   <span className={classes.content}>
-                    <a href={`https://${company.websiteUrl}`}>
-                      {company.websiteUrl}
+                    <a
+                      className={classes.companyLink}
+                      href={companyWebsiteLink}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {companyWebsiteLink}
                     </a>
                   </span>
                 </div>
