@@ -7,7 +7,7 @@ import classnames from 'classnames';
 
 import { SearchResultsContext, UIContext } from '@/context/index';
 import classes from './styles.module.scss';
-import { API_URL, COMPANIES_PER_PAGE } from '../../../../constants';
+import { API_URL, COMPANIES_PER_PAGE } from '../../constants';
 
 let timer;
 
@@ -27,13 +27,16 @@ export default function Search({
     companyTypeFilter,
     companyRevenueFilter,
     companyLocationFilter,
+    companyCSRFilter,
     sortOption,
     setCompanySizeFilter,
     setCompanyLocationFilter,
     setCompanyExpertiseFilter,
     setCompanyRevenueFilter,
     setCompanyTypeFilter,
-    // setIsSearchResultsLoading,
+    companyDiversityFilter,
+    setCompanyDiversityFilter,
+    setCompanyCSRFilter,
   } = useContext(SearchResultsContext);
   const { setIsSearchMode } = useContext(UIContext);
 
@@ -61,7 +64,7 @@ export default function Search({
     }, 1000);
   };
 
-  const search = async (event) => {
+  const createSearchUrl = async (event) => {
     if (event) {
       event.preventDefault();
     }
@@ -112,6 +115,14 @@ export default function Search({
       queryObject.locations = companyLocationFilter.join(',');
     }
 
+    if (companyDiversityFilter.length) {
+      queryObject.diversity = companyDiversityFilter.join(',');
+    }
+
+    if (companyCSRFilter.length) {
+      queryObject.csr = companyCSRFilter.join(',');
+    }
+
     if (router.query.fromSuggestions && !event) {
       queryObject.fromSuggestions = 'true';
       queryObject.suggestionType = router.query.suggestionType;
@@ -145,13 +156,15 @@ export default function Search({
   };
 
   useEffect(() => {
-    search();
+    createSearchUrl();
   }, [
     companySizeFilter,
     companyExpertiseFilter,
     companyTypeFilter,
     companyRevenueFilter,
     companyLocationFilter,
+    companyDiversityFilter,
+    companyCSRFilter,
     sortOption,
   ]);
 
@@ -169,7 +182,9 @@ export default function Search({
         setCompanyExpertiseFilter([]);
         setCompanyRevenueFilter([]);
         setCompanyTypeFilter([]);
-        search(event);
+        setCompanyDiversityFilter([]);
+        setCompanyCSRFilter([]);
+        createSearchUrl(event);
       }}
       className={classes.Search}
     >

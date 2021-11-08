@@ -65,9 +65,14 @@
         line-height: 14px;
         color: #262a2b !important;
         font-weight: bold;
-        background: #fbf9f9;
+        background-color: #fbf9f9;
         border-radius: 16px;
         cursor: pointer;
+
+        &.csr {
+          background-color: #d9fcfa;
+        }
+
         &.active {
           background-color: #d6edf1;
         }
@@ -85,7 +90,7 @@
     align-self: center;
     margin-left: auto;
     font-size: 0;
-    background-image: url(../../../public/images/wideArrowDown.svg);
+    background-image: url(../../../../public/images/wideArrowDown.svg);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -351,7 +356,7 @@
       height: 6px;
       margin-right: 10px;
       font-size: 0;
-      background-image: url(../../../public/images/wideArrowDown.svg);
+      background-image: url(../../../../public/images/wideArrowDown.svg);
       background-size: contain;
       &.rotate {
         transform: rotate(180deg);

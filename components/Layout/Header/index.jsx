@@ -7,8 +7,8 @@ import Link from 'next/link';
 import classnames from 'classnames';
 
 import { UIContext } from '@/context/index';
-import SearchSuggestions from './SearchSuggestions';
-import Search from './Search';
+import SearchSuggestions from '../../Search/SearchSuggestions';
+import Search from '../../Search';
 
 import classes from './styles.module.scss';
 

@@ -13,32 +13,29 @@ export default async function handler(req, res) {
 
   const searchTerm = req.query.term;
 
-  const companies = await Company.findAll({
-    where: { name: { [Op.iLike]: `%${searchTerm}%` } },
-    attributes: ['name', 'industry', 'logoPath'],
-    limit: 6,
-  });
+  let suggestions =
+    (await Company.findAll({
+      where: { name: { [Op.iLike]: `%${searchTerm}%` } },
+      attributes: ['name', 'industry', 'logoPath'],
+      limit: 6,
+    })) || [];
 
-  if (!companies.length) {
-    /* const industries = await sequelize.query(
-      `SELECT DISTINCT("industry") FROM "Companies"
-       WHERE industry IS NOT NULL AND LOWER(industry) LIKE LOWER(?)`,
-      {
-        replacements: [`%${searchTerm}%`],
-        type: QueryTypes.SELECT,
-      }
-    ); */
-
-    const industries = await sequelize.query(
-      `SELECT "industryName" as industry FROM "Industries"
+  const industries = await sequelize.query(
+    `SELECT "industryName" as industry FROM "Industries"
        WHERE LOWER("industryName") LIKE LOWER(?)`,
-      {
-        replacements: [`%${searchTerm}%`],
-        type: QueryTypes.SELECT,
-      }
-    );
+    {
+      replacements: [`%${searchTerm}%`],
+      type: QueryTypes.SELECT,
+    }
+  );
 
-    return res.json({
+  suggestions = suggestions.concat(
+    industries.map((industry) => {
+      return { name: industry.industry, type: 'industry' };
+    })
+  );
+
+  /* return res.json({
       status: 'success',
       count: companies.length,
       data: {
@@ -46,12 +43,11 @@ export default async function handler(req, res) {
           return { name: industry.industry, type: 'industry' };
         }),
       },
-    });
-  }
+    }); */
 
   return res.json({
     status: 'success',
-    count: companies.length,
-    data: { companies },
+    count: suggestions.length,
+    data: { companies: suggestions },
   });
 }

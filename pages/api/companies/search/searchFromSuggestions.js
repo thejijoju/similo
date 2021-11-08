@@ -4,6 +4,7 @@ import convertSizeRanges from '@/helpers/convertSizeRanges';
 const { QueryTypes } = require('sequelize');
 const { Company } = require('../../../../models');
 const sequelize = require('../../../../config/db');
+const createFilterQueries = require('../../../../helpers/createFilterQueries');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -25,6 +26,8 @@ export default async function handler(req, res) {
 
   const expertise = (req.query.expertise || '').split(',');
 
+  const diversity = (req.query.diversity || '').split(',');
+
   const companyType = (req.query.companyType || '').split(',');
 
   const revenue = (req.query.revenue || '').split(',|');
@@ -34,83 +37,24 @@ export default async function handler(req, res) {
 
   const sort = req.query.sort || 'relevant';
 
+  const csr = (req.query.csr || '').split(',');
+
   let company;
   let query;
   let countQuery;
 
   const replacements = [];
 
-  let expertiseQuery = '';
-  if (expertise[0] !== '') {
-    let tagsString = '';
-    expertise.forEach((tag, index) => {
-      if (index !== expertise.length - 1) {
-        tagsString += ` ?,`;
-      } else {
-        tagsString += ` ?`;
-      }
-      replacements.push(tag);
-    });
-    expertiseQuery = `AND string_to_array(expertise, ', ') @> ARRAY[${tagsString}]`;
-  }
-
-  let companyTypeQuery = '';
-  if (companyType[0] !== '') {
-    companyTypeQuery = `AND \n(`;
-    companyType.forEach((type, index) => {
-      if (index !== companyType.length - 1) {
-        companyTypeQuery += ` "type" LIKE ? OR`;
-      } else {
-        companyTypeQuery += ` "type" LIKE ? )`;
-      }
-      replacements.push(`%${type}%`);
-    });
-  }
-
-  let companyRevenueQuery = '';
-  if (revenueRanges) {
-    companyRevenueQuery = `AND \n(`;
-    revenueRanges.forEach((range, index) => {
-      if (index !== revenueRanges.length - 1) {
-        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? OR`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      } else {
-        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? )`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      }
-    });
-  }
-
-  let companySizeQuery = '';
-  if (sizeRanges) {
-    companySizeQuery = `AND \n(`;
-    sizeRanges.forEach((range, index) => {
-      if (index !== sizeRanges.length - 1) {
-        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? OR`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      } else {
-        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? )`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      }
-    });
-  }
-
-  let locationsQuery = '';
-  if (locations[0] !== '') {
-    locationsQuery = `AND \n(`;
-    locations.forEach((location, index) => {
-      if (index !== locations.length - 1) {
-        locationsQuery += ` "locations" LIKE ? OR`;
-      } else {
-        locationsQuery += ` "locations" LIKE ? )`;
-      }
-      replacements.push(`%${location}%`);
-    });
-  }
+  const queries = createFilterQueries(
+    expertise,
+    companyType,
+    revenueRanges,
+    sizeRanges,
+    locations,
+    diversity,
+    csr,
+    replacements
+  );
 
   if (suggestionType === 'company') {
     try {
@@ -144,11 +88,13 @@ export default async function handler(req, res) {
           : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
       const companyRowNumber = await sequelize.query(
         `SELECT rnum FROM 
-  (SELECT *, row_number() OVER (${sortQuery}) as rnum FROM "Companies" WHERE industry = ? ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${companySizeQuery}
-  ${locationsQuery}) a
+  (SELECT *, row_number() OVER (${sortQuery}) as rnum FROM "Companies" WHERE industry = ? ${queries.expertiseQuery}
+  ${queries.companyTypeQuery}
+  ${queries.companyRevenueQuery}
+  ${queries.companySizeQuery}
+  ${queries.diversityQuery}
+  ${queries.csrQuery}
+  ${queries.locationsQuery}) a
   WHERE a.name = ?`,
         {
           type: QueryTypes.SELECT,
@@ -178,20 +124,24 @@ export default async function handler(req, res) {
 
   if (suggestionType === 'company') {
     query = `SELECT * FROM "Companies" WHERE (industry='${company.industry}')
-    ${expertiseQuery}
-    ${companyTypeQuery}
-    ${companyRevenueQuery}
-    ${companySizeQuery}
-    ${locationsQuery}
+    ${queries.expertiseQuery}
+    ${queries.companyTypeQuery}
+    ${queries.companyRevenueQuery}
+    ${queries.companySizeQuery}
+    ${queries.diversityQuery}
+    ${queries.csrQuery}
+    ${queries.locationsQuery}
     ${sortQuery}
     LIMIT ${perPage} OFFSET ${page * perPage}`;
 
     countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry='${company.industry}')
-    ${expertiseQuery}
-    ${companyTypeQuery}
-    ${companyRevenueQuery}
-    ${companySizeQuery}
-    ${locationsQuery}`;
+    ${queries.expertiseQuery}
+    ${queries.companyTypeQuery}
+    ${queries.companyRevenueQuery}
+    ${queries.companySizeQuery}
+    ${queries.diversityQuery}
+    ${queries.csrQuery}
+    ${queries.locationsQuery}`;
   } else if (suggestionType === 'industry') {
     replacements.unshift(`${searchTerm}`);
     /* query = `SELECT * FROM "Companies" WHERE (industry = ?)
@@ -204,20 +154,24 @@ export default async function handler(req, res) {
     LIMIT ${perPage} OFFSET ${page * perPage}`; */
 
     query = `SELECT * FROM "Companies" WHERE (industry = ?)
-    ${expertiseQuery}
-    ${companyTypeQuery}
-    ${companyRevenueQuery}
-    ${companySizeQuery}
-    ${locationsQuery}
+    ${queries.expertiseQuery}
+    ${queries.companyTypeQuery}
+    ${queries.companyRevenueQuery}
+    ${queries.companySizeQuery}
+    ${queries.diversityQuery}
+    ${queries.csrQuery}
+    ${queries.locationsQuery}
     ${sortQuery}
     LIMIT ${perPage} OFFSET ${page * perPage}`;
 
     countQuery = `SELECT COUNT(*) FROM "Companies" WHERE (industry = ?)
-    ${expertiseQuery}
-    ${companyTypeQuery}
-    ${companyRevenueQuery}
-    ${companySizeQuery}
-    ${locationsQuery}`;
+    ${queries.expertiseQuery}
+    ${queries.companyTypeQuery}
+    ${queries.companyRevenueQuery}
+    ${queries.companySizeQuery}
+    ${queries.diversityQuery}
+    ${queries.csrQuery}
+    ${queries.locationsQuery}`;
   }
 
   const rows = await sequelize.query(query, {

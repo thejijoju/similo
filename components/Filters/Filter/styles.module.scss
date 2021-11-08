@@ -105,6 +105,16 @@
       &:last-child {
         margin-bottom: 0;
       }
+      .tooltipToggle {
+        box-sizing: border-box;
+        position: absolute;
+        top: 1px;
+        right: 10px;
+        display: block;
+        width: 10px;
+        height: 10px;
+        font-style: normal;
+      }
     }
 
     /* Hide the browser's default checkbox */

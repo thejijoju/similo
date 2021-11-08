@@ -9,11 +9,11 @@ import SkeletonLoader from '@/components/SkeletonLoader';
 import SearchResult from './SearchResult';
 
 import classes from './styles.module.scss';
-import { SearchResultsContext, UIContext } from '../../context/index';
+import { SearchResultsContext, UIContext } from '../../../context/index';
 
 let timer;
 
-export default function SearchResults({ searchResults }) {
+export default function SearchResults({ searchResults, csrLinks }) {
   const [innerSearchResults, setInnerSearchResults] = useState({
     ...searchResults,
   });
@@ -43,6 +43,8 @@ export default function SearchResults({ searchResults }) {
     isSearchResultsLoading,
     setIsSearchResultsLoading,
     lastSearchTerm,
+    setCompanyDiversityFilter,
+    setCompanyCSRFilter,
   } = useContext(SearchResultsContext);
 
   useEffect(() => {
@@ -306,6 +308,8 @@ export default function SearchResults({ searchResults }) {
       setCompanyRevenueFilter([]);
       setCompanyTypeFilter([]);
       setCompanyLocationFilter([]);
+      setCompanyDiversityFilter([]);
+      setCompanyCSRFilter([]);
     }
   }, [router.query]);
 
@@ -432,7 +436,14 @@ export default function SearchResults({ searchResults }) {
       <div className={classes.resultsContainer}>
         {innerSearchResults.data.companies.map((company, i) => {
           return (
-            <SearchResult company={company} key={company.companyId} id={i} />
+            <SearchResult
+              company={company}
+              key={company.companyId}
+              id={i}
+              csrLinks={csrLinks.filter(
+                (link) => link.company === company.companyId
+              )}
+            />
           );
         })}
       </div>

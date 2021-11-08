@@ -41,6 +41,24 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         hooks: true,
       });
+      Company.hasMany(models.CompanyCSR, {
+        foreignKey: 'companyId',
+        otherKey: 'csrId',
+        onDelete: 'cascade',
+        hooks: true,
+      });
+      Company.belongsToMany(models.CSR, {
+        through: models.CompanyLocation,
+        foreignKey: 'companyId',
+        otherKey: 'csrId',
+        onDelete: 'cascade',
+        hooks: true,
+      });
+      Company.hasMany(models.CSRLink, {
+        foreignKey: 'companyId',
+        onDelete: 'cascade',
+        hooks: true,
+      });
     }
   }
   Company.init(
@@ -109,6 +127,15 @@ module.exports = (sequelize, DataTypes) => {
       },
       order: {
         type: DataTypes.INTEGER,
+      },
+      hasUderrepresentedMinorities: {
+        type: DataTypes.BOOLEAN,
+      },
+      hasFemaleCEO: {
+        type: DataTypes.BOOLEAN,
+      },
+      csr: {
+        type: DataTypes.STRING,
       },
     },
     {

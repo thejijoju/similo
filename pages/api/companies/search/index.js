@@ -4,6 +4,7 @@ import convertSizeRanges from '@/helpers/convertSizeRanges';
 const { QueryTypes } = require('sequelize');
 // const { Company } = require('../../../../models');
 const sequelize = require('../../../../config/db');
+const createFilterQueries = require('../../../../helpers/createFilterQueries');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -45,6 +46,8 @@ export default async function handler(req, res) {
 
   const expertise = (req.query.expertise || '').split(',');
 
+  const diversity = (req.query.diversity || '').split(',');
+
   const companyType = (req.query.companyType || '').split(',');
 
   const revenue = (req.query.revenue || '').split(',|');
@@ -52,68 +55,22 @@ export default async function handler(req, res) {
 
   const locations = (req.query.locations || '').split(',');
 
+  const csr = (req.query.csr || '').split(',');
+
   const replacements = [`${searchTerm}`];
 
-  let expertiseQuery = '';
-  if (expertise[0] !== '') {
-    let tagsString = '';
-    expertise.forEach((tag, index) => {
-      if (index !== expertise.length - 1) {
-        tagsString += ` ?,`;
-      } else {
-        tagsString += ` ?`;
-      }
-      replacements.push(tag);
-    });
-    expertiseQuery = `AND string_to_array(expertise, ', ') @> ARRAY[${tagsString}]`;
-  }
+  const queries = createFilterQueries(
+    expertise,
+    companyType,
+    revenueRanges,
+    sizeRanges,
+    locations,
+    diversity,
+    csr,
+    replacements
+  );
 
-  let companyTypeQuery = '';
-  if (companyType[0] !== '') {
-    companyTypeQuery = `AND \n(`;
-    companyType.forEach((type, index) => {
-      if (index !== companyType.length - 1) {
-        companyTypeQuery += ` "type" LIKE ? OR`;
-      } else {
-        companyTypeQuery += ` "type" LIKE ? )`;
-      }
-      replacements.push(`%${type}%`);
-    });
-  }
-
-  let companyRevenueQuery = '';
-  if (revenueRanges) {
-    companyRevenueQuery = `AND \n(`;
-    revenueRanges.forEach((range, index) => {
-      if (index !== revenueRanges.length - 1) {
-        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? OR`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      } else {
-        companyRevenueQuery += ` "revenue" BETWEEN ? AND ? )`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      }
-    });
-  }
-
-  let companySizeQuery = '';
-  if (sizeRanges) {
-    companySizeQuery = `AND \n(`;
-    sizeRanges.forEach((range, index) => {
-      if (index !== sizeRanges.length - 1) {
-        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? OR`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      } else {
-        companySizeQuery += ` "employeesCount" BETWEEN ? AND ? )`;
-        replacements.push(`${range[0]}`);
-        replacements.push(`${range[1]}`);
-      }
-    });
-  }
-
-  let locationsQuery = '';
+  /* let locationsQuery = '';
   if (locations[0] !== '') {
     locationsQuery = `AND \n(`;
     locations.forEach((location, index) => {
@@ -124,7 +81,7 @@ export default async function handler(req, res) {
       }
       replacements.push(`${location}`);
     });
-  }
+  } */
 
   replacements.push(`${searchTerm}`);
 
@@ -139,11 +96,13 @@ export default async function handler(req, res) {
   FULL JOIN "CompanyLocations" cl ON cl."companyId" = c.id
   FULL JOIN "Locations" l ON l.id = cl."locationId"
   WHERE "searchVector" @@ to_tsquery('english', ?)
-  ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${companySizeQuery}
-  ${locationsQuery}) p
+  ${queries.expertiseQuery}
+  ${queries.companyTypeQuery}
+  ${queries.companyRevenueQuery}
+  ${queries.companySizeQuery}
+  ${queries.diversityQuery}
+  ${queries.csrQuery}
+  ${queries.locationsQuery}) p
   ${sortQuery}
   LIMIT ${perPage} OFFSET ${page * perPage}`;
 
@@ -153,11 +112,13 @@ export default async function handler(req, res) {
   FULL JOIN "CompanyLocations" cl ON cl."companyId" = c.id
   FULL JOIN "Locations" l ON l.id = cl."locationId"
   WHERE "searchVector" @@ to_tsquery('english', ?)
-  ${expertiseQuery}
-  ${companyTypeQuery}
-  ${companyRevenueQuery}
-  ${companySizeQuery}
-  ${locationsQuery}) p`;
+  ${queries.companyTypeQuery}
+  ${queries.companyRevenueQuery}
+  ${queries.companySizeQuery}
+  ${queries.expertiseQuery}
+  ${queries.diversityQuery}
+  ${queries.csrQuery}
+  ${queries.locationsQuery}) p`;
 
   const rows = await sequelize.query(query, {
     type: QueryTypes.SELECT,

@@ -21,6 +21,4 @@ Object.keys(models).forEach((modelName) => {
   }
 });
 
-console.log(models);
-
 module.exports = models;

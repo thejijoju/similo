@@ -17,6 +17,9 @@ const {
   CompanyExpertise,
   Industry,
   CompanyIndustry,
+  CSR,
+  CompanyCSR,
+  CSRLink,
 } = require('../../../../../models');
 const sequelize = require('../../../../../config/db');
 
@@ -27,6 +30,7 @@ function formatCompaniesData(companies) {
   let formattedCompaniesData = [];
   companies.forEach((company, index) => {
     let companyString = JSON.stringify(company);
+
     companyString = companyString.replace(/Company or Brand name/g, 'name');
     companyString = companyString.replace(/Logo link/g, 'logoPath');
     companyString = companyString.replace(/Website Link/g, 'websiteUrl');
@@ -50,6 +54,15 @@ function formatCompaniesData(companies) {
     companyString = companyString.replace(/Subsidiaries/g, 'subsidiaries');
     companyString = companyString.replace(/Key people/g, 'keyPeople');
     companyString = companyString.replace(/Area served/g, 'areaServed');
+    companyString = companyString.replace(
+      /Diversity \(Underrepresented minorities\)/g,
+      'hasUderrepresentedMinorities'
+    );
+    companyString = companyString.replace(
+      /Diversity \(Female CEO\)/g,
+      'hasFemaleCEO'
+    );
+    companyString = companyString.replace(/CSR/g, 'csr');
 
     const companyObject = JSON.parse(companyString);
     companyObject.order = index + 1;
@@ -78,6 +91,27 @@ function formatCompaniesData(companies) {
           .split(',')
           .map((tag) => tag.toLowerCase());
         companyData[key] = tags.join(',');
+      }
+      if (key === 'hasUderrepresentedMinorities' || key === 'hasFemaleCEO') {
+        if (companyData[key] === 'Yes') {
+          companyData[key] = true;
+        } else {
+          companyData[key] = false;
+        }
+      }
+      if (key === 'csr' && companyData[key] !== null) {
+        const csrTags = companyData[key].split(',');
+        const csrArray = [];
+        for (const tag of csrTags) {
+          const csrTagSpliited = tag.split(' -- ');
+          csrArray.push(csrTagSpliited[0]);
+          companyData.csrLink = {
+            companyName: companyData.name,
+            csrName: csrTagSpliited[0],
+            url: csrTagSpliited[1],
+          };
+        }
+        companyData[key] = csrArray.join(',');
       }
       if (typeof companyData[key] === 'string') {
         companyData[key] = companyData[key].trim();
@@ -247,7 +281,7 @@ function addSearchVector(companies) {
   return sequelize.query(
     `UPDATE "Companies" SET "searchVector" = to_tsvector(name || ' ' || coalesce("HQLocation", '') 
       || ' ' || coalesce(locations, '') || ' ' 
-      || coalesce(expertise, '') || ' ' || coalesce(industry, '') || ' ' || coalesce("keyPeople", '') || ' ' || coalesce("areaServed", '')) 
+      || coalesce(expertise, '') || ' ' || coalesce(industry, '') || ' ' || coalesce("keyPeople", '') || ' ' || coalesce("areaServed", '') || ' ' || coalesce("csr", '')) 
       WHERE name IN (${companiesNames.join(',')})`,
     { type: QueryTypes.UPDATE }
   );
@@ -274,6 +308,87 @@ async function addIndustries(companies) {
   return Industry.bulkCreate(industriesArray, {
     updateOnDuplicate: ['industryName'],
   });
+}
+
+async function addCSR(companies) {
+  const csrStrings = [];
+  const csrSet = new Set();
+
+  companies.forEach((company) => {
+    if (company.csr) {
+      csrStrings.push(company.csr);
+    }
+  });
+
+  csrStrings.forEach((csrTag) => {
+    const expertisesArray = csrTag.split(',');
+    expertisesArray.forEach((csrTag2) => {
+      if (csrTag2 === '') {
+        return;
+      }
+      csrSet.add(csrTag2.trim());
+    });
+  });
+
+  const promises = [];
+
+  csrSet.forEach((csrTag) => {
+    promises.push(CSR.findOrCreate({ where: { csrName: csrTag } }));
+  });
+
+  return Promise.all(promises);
+}
+
+async function addCompanyCSR(companies) {
+  const promises = [];
+  companies.forEach((company) => {
+    if (!company.csr) {
+      return;
+    }
+    const csrTags = company.csr.split(',');
+    csrTags.forEach(async (csr) => {
+      const csrFromDB = await CSR.findOne({
+        where: { csrName: csr.trim() },
+      });
+
+      if (csrFromDB) {
+        promises.push(
+          CompanyCSR.findOrCreate({
+            where: { companyId: company.id, csrId: csrFromDB.id },
+          })
+        );
+      }
+    });
+  });
+
+  return Promise.all(promises);
+}
+
+async function addCSRLinks(companies) {
+  const promises = [];
+  console.log(companies[0]);
+  companies.forEach(async (company) => {
+    if (!company.csrLink) {
+      return;
+    }
+
+    const companyFromDB = await Company.findOne({
+      where: { name: company.name },
+    });
+    if (companyFromDB) {
+      promises.push(
+        CSRLink.findOrCreate({
+          where: {
+            companyId: companyFromDB.id,
+            csrName: company.csrLink.csrName,
+            url: company.csrLink.url,
+          },
+        })
+      );
+    }
+  });
+
+  return Promise.all(promises);
 }
 
 function importLogos(companies) {
@@ -316,6 +431,9 @@ nc.post('*', (req, res) => {
       await addCompanyExpertises(createdOrUpdatedCompanies);
       await addIndustries(createdOrUpdatedCompanies);
       await addCompanyIndustries(createdOrUpdatedCompanies);
+      await addCSR(createdOrUpdatedCompanies);
+      await addCompanyCSR(createdOrUpdatedCompanies);
+      await addCSRLinks(companies);
       await importLogos(createdOrUpdatedCompanies);
     } catch (error) {
       console.log(error);

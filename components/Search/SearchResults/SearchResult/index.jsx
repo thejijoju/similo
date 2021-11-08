@@ -3,12 +3,13 @@ import { useRouter } from 'next/router';
 
 import classnames from 'classnames';
 
+import csrToUpperCase from '@/helpers/csrToUpperCase';
 import Subsidiaries from './Subsidiaries';
-import { FeedbackForm } from '../../Forms/FeedbackForm';
-import Modal from '../../Modal';
+import { FeedbackForm } from '../../../Forms/FeedbackForm';
+import Modal from '../../../Modal';
 
 import classes from './styles.module.scss';
-import { SearchResultsContext } from '../../../context/index';
+import { SearchResultsContext } from '../../../../context/index';
 
 function setBorderAndShadowColor(id) {
   switch (true) {
@@ -65,7 +66,13 @@ function convertNumberToString(number) {
   }
 }
 
-export default function SearchResult({ company, id }) {
+function openCSRLink(link) {
+  if (window.innerWidth > 1200) {
+    window.open(link, '_blank');
+  }
+}
+
+export default function SearchResult({ company, id, csrLinks }) {
   const [isTouched, setIsTouched] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCompanyCardExpanded, setIsCompanyCardExpanded] = useState(false);
@@ -285,6 +292,25 @@ export default function SearchResult({ company, id }) {
                   onClick={() => toggleExpertiseFilter(tag.trim())}
                 >
                   {tag.trim()}
+                </span>
+              ))}
+            {company.csr &&
+              company.csr.split(',').map((tag) => (
+                <span
+                  className={classnames(
+                    classes.tag,
+                    classes.csr,
+                    companyExpertiseFilter.includes(tag.trim()) &&
+                      classes.active
+                  )}
+                  key={tag}
+                  onClick={() =>
+                    openCSRLink(
+                      csrLinks.find((link) => link.name === tag.trim()).url
+                    )
+                  }
+                >
+                  {csrToUpperCase(tag.trim())}
                 </span>
               ))}
           </div>

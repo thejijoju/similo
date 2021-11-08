@@ -1,13 +1,9 @@
 import React, { useContext } from 'react';
-// import { useRouter } from 'next/router';
 
-// import { COMPANIES_PER_PAGE } from 'constants/index';
 import { SearchResultsContext } from '@/context/index';
 import classes from './styles.module.scss';
 
 function highlightMatchingText(searchTerm, text) {
-  /* const querystr = 'ula';
-  const result = 'Calculator'; */
   const reg = new RegExp(searchTerm, 'gi');
   const finalStr = text.replace(reg, (str) => {
     return `<b>${str}</b>`;
@@ -25,8 +21,6 @@ export default function SearchSuggestions({
   setSearchTerm,
   searchTerm,
 }) {
-  // const router = useRouter();
-
   const {
     setLastSearchTerm,
     setCompanySizeFilter,
@@ -44,21 +38,15 @@ export default function SearchSuggestions({
     setCompanyExpertiseFilter([]);
     setCompanyRevenueFilter([]);
     setCompanyTypeFilter([]);
-
-    /* router.push(
-      `/?term=${encodeURIComponent(
-        term
-      )}&perPage=${COMPANIES_PER_PAGE}&fromSuggestions=true&suggestionType=${
-        type === 'industry' ? 'industry' : 'company'
-      }`,
-      undefined,
-      { shallow: true }
-    ); */
   };
+
+  const sortedSuggestions = searchSuggestions.sort((a, b) => {
+    return b.type === 'industry' ? 1 : -1;
+  });
 
   return show ? (
     <div className={classes.SearchSuggestions}>
-      {searchSuggestions.map((suggestion) => {
+      {sortedSuggestions.map((suggestion) => {
         return (
           <div
             className={classes.suggestion}

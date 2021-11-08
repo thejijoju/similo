@@ -85,9 +85,15 @@ const LOCATIONS = [
   'Vatican City',
 ];
 
+const DIVERSITY = ['Underrepresented minorities', 'Female CEO'];
+const DIVERSITY_DETAILS = [
+  'Here is some explanatory text',
+  'Here is another explanatory text',
+];
+
 const COMPANY_TYPES = ['Public', 'Private', 'Subsidary'];
 
-export default function Filters({ expertise }) {
+export default function Filters({ expertise, csrs }) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
@@ -127,6 +133,10 @@ export default function Filters({ expertise }) {
     setCompanyTypeFilter,
     sortOption,
     setSortOption,
+    companyDiversityFilter,
+    setCompanyDiversityFilter,
+    companyCSRFilter,
+    setCompanyCSRFilter,
   } = useContext(SearchResultsContext);
 
   const { isFiltersPanelVisible, setIsFiltersPanelVisible } =
@@ -262,6 +272,21 @@ export default function Filters({ expertise }) {
               {sortOption === 'relevant' ? 'Most recent' : 'Most relevant'}
             </span>
           </div>
+          <Filter
+            title="Diversity"
+            values={DIVERSITY}
+            defaultSize={2}
+            tooltipDetails={DIVERSITY_DETAILS}
+            state={companyDiversityFilter}
+            setState={setCompanyDiversityFilter}
+          />
+          <Filter
+            title="CSR"
+            values={csrs}
+            defaultSize={csrs.length}
+            state={companyCSRFilter}
+            setState={setCompanyCSRFilter}
+          />
           <Filter
             title="Location"
             values={LOCATIONS}
