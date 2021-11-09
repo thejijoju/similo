@@ -28,6 +28,9 @@ export default function Search({
     companyRevenueFilter,
     companyLocationFilter,
     companyCSRFilter,
+    companyParentOrganisatonFilter,
+    companyHQFilter,
+    companyFoundationYearFilter,
     sortOption,
     setCompanySizeFilter,
     setCompanyLocationFilter,
@@ -37,6 +40,9 @@ export default function Search({
     companyDiversityFilter,
     setCompanyDiversityFilter,
     setCompanyCSRFilter,
+    setCompanyParentOrganisationFilter,
+    setCompanyHQFilter,
+    setCompanyFoundationYearFilter,
   } = useContext(SearchResultsContext);
   const { setIsSearchMode } = useContext(UIContext);
 
@@ -123,6 +129,18 @@ export default function Search({
       queryObject.csr = companyCSRFilter.join(',');
     }
 
+    if (companyParentOrganisatonFilter) {
+      queryObject.parentOrganisation = companyParentOrganisatonFilter;
+    }
+
+    if (companyHQFilter) {
+      queryObject.companyHQ = companyHQFilter;
+    }
+
+    if (companyFoundationYearFilter) {
+      queryObject.foundationYear = companyFoundationYearFilter;
+    }
+
     if (router.query.fromSuggestions && !event) {
       queryObject.fromSuggestions = 'true';
       queryObject.suggestionType = router.query.suggestionType;
@@ -165,6 +183,9 @@ export default function Search({
     companyLocationFilter,
     companyDiversityFilter,
     companyCSRFilter,
+    companyParentOrganisatonFilter,
+    companyHQFilter,
+    companyFoundationYearFilter,
     sortOption,
   ]);
 
@@ -184,6 +205,9 @@ export default function Search({
         setCompanyTypeFilter([]);
         setCompanyDiversityFilter([]);
         setCompanyCSRFilter([]);
+        setCompanyParentOrganisationFilter('');
+        setCompanyHQFilter('');
+        setCompanyFoundationYearFilter('');
         createSearchUrl(event);
       }}
       className={classes.Search}

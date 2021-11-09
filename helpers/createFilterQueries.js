@@ -6,6 +6,9 @@ module.exports = function createFilterQueries(
   locations,
   diversity,
   csr,
+  companyHQ,
+  foundationYear,
+  parentOrganisation,
   replacements
 ) {
   const queries = {};
@@ -69,19 +72,6 @@ module.exports = function createFilterQueries(
     });
   }
 
-  queries.locationsQuery = '';
-  if (locations[0] !== '') {
-    queries.locationsQuery = `AND \n(`;
-    locations.forEach((location, index) => {
-      if (index !== locations.length - 1) {
-        queries.locationsQuery += ` "locations" LIKE ? OR`;
-      } else {
-        queries.locationsQuery += ` "locations" LIKE ? )`;
-      }
-      replacements.push(`%${location}%`);
-    });
-  }
-
   queries.diversityQuery = '';
   if (diversity[0] !== '') {
     queries.diversityQuery = `AND \n(`;
@@ -109,6 +99,37 @@ module.exports = function createFilterQueries(
     });
 
     queries.csrQuery = `AND string_to_array(csr, ', ') @> ARRAY[${csrString}]`;
+  }
+
+  queries.companyHQQuery = '';
+  if (companyHQ !== '') {
+    replacements.push(companyHQ);
+    queries.companyHQQuery = `AND "HQLocation" = ?`;
+  }
+
+  queries.foundationYear = '';
+  if (foundationYear !== '') {
+    replacements.push(foundationYear);
+    queries.foundationYear = `AND "yearOfFoundation" = ?`;
+  }
+
+  queries.parentOrganisation = '';
+  if (parentOrganisation !== '') {
+    replacements.push(parentOrganisation);
+    queries.parentOrganisation = `AND "parentCompany" = ?`;
+  }
+
+  queries.locationsQuery = '';
+  if (locations[0] !== '') {
+    queries.locationsQuery = `AND \n(`;
+    locations.forEach((location, index) => {
+      if (index !== locations.length - 1) {
+        queries.locationsQuery += ` "locations" LIKE ? OR`;
+      } else {
+        queries.locationsQuery += ` "locations" LIKE ? )`;
+      }
+      replacements.push(`%${location}%`);
+    });
   }
 
   return queries;

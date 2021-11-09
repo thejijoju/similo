@@ -39,6 +39,12 @@ export default async function handler(req, res) {
 
   const csr = (req.query.csr || '').split(',');
 
+  const companyHQ = req.query.companyHQ || '';
+
+  const foundationYear = req.query.foundationYear || '';
+
+  const parentOrganisation = req.query.parentOrganisation || '';
+
   let company;
   let query;
   let countQuery;
@@ -53,6 +59,9 @@ export default async function handler(req, res) {
     locations,
     diversity,
     csr,
+    companyHQ,
+    foundationYear,
+    parentOrganisation,
     replacements
   );
 
@@ -94,6 +103,9 @@ export default async function handler(req, res) {
   ${queries.companySizeQuery}
   ${queries.diversityQuery}
   ${queries.csrQuery}
+  ${queries.companyHQQuery}
+  ${queries.foundationYear}
+  ${queries.parentOrganisation}
   ${queries.locationsQuery}) a
   WHERE a.name = ?`,
         {
@@ -130,6 +142,9 @@ export default async function handler(req, res) {
     ${queries.companySizeQuery}
     ${queries.diversityQuery}
     ${queries.csrQuery}
+    ${queries.companyHQQuery}
+    ${queries.foundationYear}
+    ${queries.parentOrganisation}
     ${queries.locationsQuery}
     ${sortQuery}
     LIMIT ${perPage} OFFSET ${page * perPage}`;
@@ -141,6 +156,9 @@ export default async function handler(req, res) {
     ${queries.companySizeQuery}
     ${queries.diversityQuery}
     ${queries.csrQuery}
+    ${queries.companyHQQuery}
+    ${queries.foundationYear}
+    ${queries.parentOrganisation}
     ${queries.locationsQuery}`;
   } else if (suggestionType === 'industry') {
     replacements.unshift(`${searchTerm}`);
@@ -160,6 +178,9 @@ export default async function handler(req, res) {
     ${queries.companySizeQuery}
     ${queries.diversityQuery}
     ${queries.csrQuery}
+    ${queries.companyHQQuery}
+    ${queries.foundationYear}
+    ${queries.parentOrganisation}
     ${queries.locationsQuery}
     ${sortQuery}
     LIMIT ${perPage} OFFSET ${page * perPage}`;
@@ -171,6 +192,9 @@ export default async function handler(req, res) {
     ${queries.companySizeQuery}
     ${queries.diversityQuery}
     ${queries.csrQuery}
+    ${queries.companyHQQuery}
+    ${queries.foundationYear}
+    ${queries.parentOrganisation}
     ${queries.locationsQuery}`;
   }
 

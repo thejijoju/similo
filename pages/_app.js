@@ -15,6 +15,11 @@ function MyApp({ Component, pageProps }) {
   const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
   const [companyDiversityFilter, setCompanyDiversityFilter] = useState([]);
   const [companyCSRFilter, setCompanyCSRFilter] = useState([]);
+  const [companyParentOrganisatonFilter, setCompanyParentOrganisationFilter] =
+    useState('');
+  const [companyHQFilter, setCompanyHQFilter] = useState('');
+  const [companyFoundationYearFilter, setCompanyFoundationYearFilter] =
+    useState('');
   const [sortOption, setSortOption] = useState('relevant');
   const [isSearchResultsLoading, setIsSearchResultsLoading] = useState(false);
   const [isSearchMode, setIsSearchMode] = useState(false);
@@ -51,6 +56,12 @@ function MyApp({ Component, pageProps }) {
         setCompanyDiversityFilter,
         companyCSRFilter,
         setCompanyCSRFilter,
+        companyParentOrganisatonFilter,
+        setCompanyParentOrganisationFilter,
+        companyHQFilter,
+        setCompanyHQFilter,
+        companyFoundationYearFilter,
+        setCompanyFoundationYearFilter,
       }}
     >
       <UIContext.Provider

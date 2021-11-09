@@ -57,6 +57,12 @@ export default async function handler(req, res) {
 
   const csr = (req.query.csr || '').split(',');
 
+  const companyHQ = req.query.companyHQ || '';
+
+  const foundationYear = req.query.foundationYear || '';
+
+  const parentOrganisation = req.query.parentOrganisation || '';
+
   const replacements = [`${searchTerm}`];
 
   const queries = createFilterQueries(
@@ -67,6 +73,9 @@ export default async function handler(req, res) {
     locations,
     diversity,
     csr,
+    companyHQ,
+    foundationYear,
+    parentOrganisation,
     replacements
   );
 
@@ -102,6 +111,9 @@ export default async function handler(req, res) {
   ${queries.companySizeQuery}
   ${queries.diversityQuery}
   ${queries.csrQuery}
+  ${queries.companyHQQuery}
+  ${queries.foundationYear}
+  ${queries.parentOrganisation}
   ${queries.locationsQuery}) p
   ${sortQuery}
   LIMIT ${perPage} OFFSET ${page * perPage}`;
@@ -118,6 +130,9 @@ export default async function handler(req, res) {
   ${queries.expertiseQuery}
   ${queries.diversityQuery}
   ${queries.csrQuery}
+  ${queries.companyHQQuery}
+  ${queries.foundationYear}
+  ${queries.parentOrganisation}
   ${queries.locationsQuery}) p`;
 
   const rows = await sequelize.query(query, {

@@ -6,7 +6,7 @@ export default function convertRevenueRanges(ranges) {
   const numberRanges = [];
   ranges.forEach((range) => {
     if (range === '50+ billion') {
-      numberRanges.push([50 * 1000000000, 9223372036854775807]);
+      numberRanges.push([50 * 1000000000, 9000 * 1000000000]);
       return;
     }
 

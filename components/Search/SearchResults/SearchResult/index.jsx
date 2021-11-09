@@ -4,6 +4,10 @@ import { useRouter } from 'next/router';
 import classnames from 'classnames';
 
 import csrToUpperCase from '@/helpers/csrToUpperCase';
+import convertNumberToCompanySizeRanges from '@/helpers/convertNumberToCompanySizeRange';
+import isNumberInsideCompanySizeRange from '@/helpers/isNumberInsideCompanySizeRange';
+import isNumberInsideCompanyRevenueRange from '@/helpers/isNumberInsideCompanyRevenueRange';
+import convertNumberToCompanyRevenueRange from '@/helpers/convertNumberToCompanyRevenueRange';
 import Subsidiaries from './Subsidiaries';
 import { FeedbackForm } from '../../../Forms/FeedbackForm';
 import Modal from '../../../Modal';
@@ -99,15 +103,21 @@ export default function SearchResult({
 
   const {
     areCompanyCardsExpanded,
-    // setAreCompanyCardsExpanded,
     companyExpertiseFilter,
     setCompanyExpertiseFilter,
     lastSearchTerm,
     setLastSearchTerm,
+    companyParentOrganisatonFilter,
+    setCompanyParentOrganisationFilter,
+    companyHQFilter,
+    setCompanyHQFilter,
+    companyFoundationYearFilter,
+    setCompanyFoundationYearFilter,
+    companySizeFilter,
+    setCompanySizeFilter,
+    companyRevenueFilter,
+    setCompanyRevenueFilter,
   } = useContext(SearchResultsContext);
-
-  /* const { currentlyOpenedCompanyCard, setCurrentlyOpenedCompanyCard } =
-    useContext(SearchResultsContext); */
 
   const openModal = () => {
     setIsOpenModal(true);
@@ -158,12 +168,57 @@ export default function SearchResult({
     }
   };
 
+  const toggleCompanyCardFilter = (filterType, filter) => {
+    switch (filterType) {
+      case 'parentCompany':
+        setCompanyParentOrganisationFilter((prevFilter) => {
+          if (filter === prevFilter && prevFilter !== '') {
+            return '';
+          }
+          return filter;
+        });
+        break;
+      case 'HQLocation':
+        setCompanyHQFilter((prevFilter) => {
+          if (filter === prevFilter && prevFilter !== '') {
+            return '';
+          }
+          return filter;
+        });
+        break;
+      case 'yearOfFoundation':
+        setCompanyFoundationYearFilter((prevFilter) => {
+          if (filter === prevFilter && prevFilter !== '') {
+            return '';
+          }
+          return filter;
+        });
+        break;
+      case 'companySize':
+        setCompanySizeFilter((prevFilter) => {
+          if (prevFilter[0] === convertNumberToCompanySizeRanges(filter)) {
+            return [];
+          }
+          return [convertNumberToCompanySizeRanges(filter)];
+        });
+        break;
+      case 'revenue':
+        setCompanyRevenueFilter((prevFilter) => {
+          if (prevFilter[0] === convertNumberToCompanyRevenueRange(filter)) {
+            return [];
+          }
+          return [convertNumberToCompanyRevenueRange(filter)];
+        });
+        break;
+      default:
+        console.log('No such filter exists');
+    }
+  };
+
   useEffect(() => {
     if (companyCardRef.current && tagsRef.current) {
       companyCardInitialHeight.current = companyCardRef.current.offsetHeight;
       setCompanyCardHeight(companyCardRef.current.offsetHeight);
-      /* companyCardInitialHeight.current = 70 + tagsRef.current.offsetHeight;
-      setCompanyCardHeight(companyCardInitialHeight.current); */
     }
   }, []);
 
@@ -264,6 +319,10 @@ export default function SearchResult({
     }
   }, [companyExpertiseFilter]);
 
+  useEffect(() => {
+    console.log(companyParentOrganisatonFilter);
+  }, [companyParentOrganisatonFilter]);
+
   return (
     <>
       <div
@@ -355,13 +414,37 @@ export default function SearchResult({
                 </div>
                 <div className={classes.infoBlock}>
                   <span className={classes.title}>Headquarters</span>
-                  <span className={classes.content}>{company.HQLocation}</span>
+                  <span
+                    className={classnames(
+                      classes.content,
+                      classes.cardFilter,
+                      companyHQFilter === company.HQLocation && classes.active
+                    )}
+                    onClick={() =>
+                      toggleCompanyCardFilter('HQLocation', company.HQLocation)
+                    }
+                  >
+                    <span>{company.HQLocation}</span>
+                  </span>
                 </div>
                 {company.parentCompany && (
                   <div className={classes.infoBlock}>
                     <span className={classes.title}>Parent Organization</span>
-                    <span className={classes.content}>
-                      {company.parentCompany}
+                    <span
+                      className={classnames(
+                        classes.content,
+                        classes.cardFilter,
+                        companyParentOrganisatonFilter ===
+                          company.parentCompany && classes.active
+                      )}
+                      onClick={() =>
+                        toggleCompanyCardFilter(
+                          'parentCompany',
+                          company.parentCompany
+                        )
+                      }
+                    >
+                      <span>{company.parentCompany}</span>
                     </span>
                   </div>
                 )}
@@ -374,15 +457,42 @@ export default function SearchResult({
                 {company.yearOfFoundation && (
                   <div className={classes.infoBlock}>
                     <span className={classes.title}>Founded</span>
-                    <span className={classes.content}>
-                      {company.yearOfFoundation}
+                    <span
+                      className={classnames(
+                        classes.content,
+                        classes.cardFilter,
+                        companyFoundationYearFilter ===
+                          company.yearOfFoundation && classes.active
+                      )}
+                      onClick={() =>
+                        toggleCompanyCardFilter(
+                          'yearOfFoundation',
+                          company.yearOfFoundation
+                        )
+                      }
+                    >
+                      <span>{company.yearOfFoundation}</span>
                     </span>
                   </div>
                 )}
                 <div className={classes.infoBlock}>
                   <span className={classes.title}>Revenue</span>
-                  <span className={classes.content}>
-                    {convertNumberToString(company.revenue)}
+                  <span
+                    className={classnames(
+                      classes.content,
+                      classes.cardFilter,
+                      companyRevenueFilter.length === 1 &&
+                        isNumberInsideCompanyRevenueRange(
+                          companyRevenueFilter[0],
+                          company.revenue
+                        ) &&
+                        classes.active
+                    )}
+                    onClick={() =>
+                      toggleCompanyCardFilter('revenue', company.revenue)
+                    }
+                  >
+                    <span>{convertNumberToString(company.revenue)}</span>
                   </span>
                 </div>
               </div>
@@ -418,12 +528,32 @@ export default function SearchResult({
                 {company.employeesCount && (
                   <div className={classes.infoBlock}>
                     <span className={classes.title}>Number of employees</span>
-                    <span className={classes.content} ref={employeesCountRef}>
-                      {company.employeesCount
-                        ? company.employeesCount.toLocaleString('en-US', {
-                            maximumFractionDigits: 2,
-                          })
-                        : null}
+                    <span
+                      className={classnames(
+                        classes.content,
+                        classes.cardFilter,
+                        companySizeFilter.length === 1 &&
+                          isNumberInsideCompanySizeRange(
+                            companySizeFilter[0],
+                            company.employeesCount
+                          ) &&
+                          classes.active
+                      )}
+                      ref={employeesCountRef}
+                      onClick={() =>
+                        toggleCompanyCardFilter(
+                          'companySize',
+                          company.employeesCount
+                        )
+                      }
+                    >
+                      <span>
+                        {company.employeesCount
+                          ? company.employeesCount.toLocaleString('en-US', {
+                              maximumFractionDigits: 2,
+                            })
+                          : null}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -477,6 +607,7 @@ export default function SearchResult({
             show={isSubsidiariesComponentVisible}
             onHide={hideSubsidiaries}
             subsidiaries={company.subsidiaries.split(',')}
+            companyName={company.name}
           />
         )}
         <div

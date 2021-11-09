@@ -4,7 +4,12 @@ import classnames from 'classnames';
 
 import classes from './styles.module.scss';
 
-export default function Subsidiaries({ show, onHide, subsidiaries }) {
+export default function Subsidiaries({
+  show,
+  onHide,
+  subsidiaries,
+  companyName,
+}) {
   return (
     <div className={classnames(classes.Subsidiaries, show && classes.show)}>
       <header>
@@ -15,7 +20,7 @@ export default function Subsidiaries({ show, onHide, subsidiaries }) {
       </header>
       <div className={classes.subsidiariesList}>
         <div className={classes.title}>
-          <h2>Luxury fashion companies</h2>
+          <h2>{companyName}</h2>
         </div>
         {subsidiaries.map((company) => {
           if (company === '') {

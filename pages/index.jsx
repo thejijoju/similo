@@ -30,6 +30,9 @@ export default function HomePage({
     setCompanyLocationFilter,
     setCompanyDiversityFilter,
     setCompanyCSRFilter,
+    setCompanyParentOrganisationFilter,
+    setCompanyHQFilter,
+    setCompanyFoundationYearFilter,
   } = useContext(SearchResultsContext);
 
   const { isFiltersPanelVisible } = useContext(UIContext);
@@ -79,6 +82,15 @@ export default function HomePage({
 
     const csrFilters = router.query.csr ? router.query.csr.split(',') : [];
     setCompanyCSRFilter(csrFilters);
+
+    const companyParentOrganisationFilter = router.query.parentOrganisation;
+    setCompanyParentOrganisationFilter(companyParentOrganisationFilter);
+
+    const companyHQFilter = router.query.companyHQ;
+    setCompanyHQFilter(companyHQFilter);
+
+    const companyFoundationYearFilter = router.query.foundationYear;
+    setCompanyFoundationYearFilter(companyFoundationYearFilter);
   }, []);
 
   return (
