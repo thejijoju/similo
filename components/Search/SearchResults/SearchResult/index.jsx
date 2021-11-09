@@ -169,6 +169,9 @@ export default function SearchResult({
   };
 
   const toggleCompanyCardFilter = (filterType, filter) => {
+    if (window.innerWidth <= 1200) {
+      return;
+    }
     switch (filterType) {
       case 'parentCompany':
         setCompanyParentOrganisationFilter((prevFilter) => {
