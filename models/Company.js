@@ -142,6 +142,30 @@ module.exports = (sequelize, DataTypes) => {
       csr: {
         type: DataTypes.STRING,
       },
+      stockData: {
+        type: DataTypes.TEXT,
+      },
+      stockSymbol: {
+        type: DataTypes.STRING,
+      },
+      marketCap: {
+        type: DataTypes.BIGINT,
+      },
+      stockPrice: {
+        type: DataTypes.FLOAT,
+      },
+      volume: {
+        type: DataTypes.FLOAT,
+      },
+      open: {
+        type: DataTypes.FLOAT,
+      },
+      priceEps: {
+        type: DataTypes.FLOAT,
+      },
+      about: {
+        type: DataTypes.TEXT,
+      },
     },
     {
       sequelize,

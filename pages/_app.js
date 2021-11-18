@@ -28,6 +28,7 @@ function MyApp({ Component, pageProps }) {
   const [lastSearchTerm, setLastSearchTerm] = useState('');
   const [currentlyOpenedCompanyCard, setCurrentlyOpenedCompanyCard] =
     useState('');
+  const [currentStockDataKey, setCurrentStockDataKey] = useState('stockPrice');
 
   return (
     <SearchResultsContext.Provider
@@ -74,6 +75,8 @@ function MyApp({ Component, pageProps }) {
           setIsFiltersPanelVisible,
           currentlyOpenedCompanyCard,
           setCurrentlyOpenedCompanyCard,
+          currentStockDataKey,
+          setCurrentStockDataKey,
         }}
       >
         <Layout>

@@ -15,4 +15,6 @@ module.exports = {
   RESET_PASSWORD_TOKEN_EXPIRATION_TIME: '120m',
   EMAIL_FROM: `Support <support@${process.env.MAILGUN_DOMAIN}>`,
   FEEDBACK_EMAIL: process.env.FEEDBACK_EMAIL,
+
+  YAHOO_FINANCE_API_KEY: process.env.YAHOO_FINANCE_API_KEY,
 };

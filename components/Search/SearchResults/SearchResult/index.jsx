@@ -1,5 +1,7 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import classnames from 'classnames';
 
@@ -13,7 +15,7 @@ import { FeedbackForm } from '../../../Forms/FeedbackForm';
 import Modal from '../../../Modal';
 
 import classes from './styles.module.scss';
-import { SearchResultsContext } from '../../../../context/index';
+import { SearchResultsContext, UIContext } from '../../../../context/index';
 
 function setBorderAndShadowColor(id) {
   switch (true) {
@@ -76,6 +78,186 @@ function openCSRLink(link) {
   }
 }
 
+function createDateString(date) {
+  function getTimezoneOffset() {
+    let offset = new Date().getTimezoneOffset();
+    const sign = offset < 0 ? '+' : '-';
+    offset = Math.abs(offset);
+    return sign + offset / 60;
+  }
+
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const dateObj = new Date(date);
+  return `${
+    monthNames[dateObj.getMonth()]
+  } ${dateObj.getDate()}, ${dateObj.getHours()}:${
+    (dateObj.getMinutes() < 10 ? '0' : '') + dateObj.getMinutes()
+  } GMT${getTimezoneOffset()}`;
+}
+
+function createCompanySymbolAndExchange(stockData) {
+  return (
+    <>
+      <span style={{ color: '#2463c4' }}>{stockData.symbol}</span>{' '}
+      <span style={{ color: '#717479' }}>({stockData.exchange})</span>{' '}
+    </>
+  );
+}
+
+function createDateStampSubstring(stockData) {
+  return (
+    <sub
+      style={{
+        fontSize: '13px',
+        lineHeight: '15px',
+        color: '#848181',
+        fontWeight: 'normal',
+      }}
+    >
+      {createDateString(stockData.createdAt)} -{' '}
+      <Link href="/disclamer">
+        <a style={{ display: 'inline', color: 'inherit' }}>Disclamer</a>
+      </Link>
+    </sub>
+  );
+}
+
+function createStockPriceString(stockData) {
+  if (!stockData || !stockData.stockPrice) {
+    return <span>No data available</span>;
+  }
+  return (
+    <span style={{ fontWeight: 'bold' }}>
+      {createCompanySymbolAndExchange(stockData)}
+      <span>
+        {stockData.currency === 'USD' ? '$' : '€'}
+        {stockData.stockPrice.toFixed(2)}
+        &nbsp;&nbsp;
+        <span
+          style={{
+            color: +stockData.stockPriceChange >= 0 ? 'green' : '#e02c38',
+          }}
+        >
+          <span>
+            {+stockData.stockPriceChange > 0 && '+'}
+            {stockData.stockPriceChange.toFixed(2)}
+          </span>{' '}
+          <span>
+            ({+stockData.regularMarketChangePercent > 0 && '+'}
+            {stockData.regularMarketChangePercent.toFixed(2)}%)
+          </span>
+        </span>
+        <br />
+        {createDateStampSubstring(stockData)}
+        <span />
+      </span>
+    </span>
+  );
+}
+
+function createMktCapString(stockData) {
+  if (!stockData || !stockData.marketCap) {
+    return <span>No data available</span>;
+  }
+  return (
+    <span style={{ fontWeight: 'bold' }}>
+      {createCompanySymbolAndExchange(stockData)}
+      <span>
+        {stockData.currency === 'USD' ? '$' : '€'}
+        {stockData.marketCap}
+        <br />
+        {createDateStampSubstring(stockData)}
+        <span />
+      </span>
+    </span>
+  );
+}
+
+function createOpenString(stockData) {
+  if (!stockData || !stockData.open) {
+    return <span>No data available</span>;
+  }
+  return (
+    <span style={{ fontWeight: 'bold' }}>
+      {createCompanySymbolAndExchange(stockData)}
+      <span>
+        {stockData.currency === 'USD' ? '$' : '€'}
+        {stockData.open}
+        <br />
+        {createDateStampSubstring(stockData)}
+        <span />
+      </span>
+    </span>
+  );
+}
+
+function createVolumeString(stockData) {
+  if (!stockData || !stockData.volume) {
+    return <span>No data available</span>;
+  }
+  return (
+    <span style={{ fontWeight: 'bold' }}>
+      {createCompanySymbolAndExchange(stockData)}
+      <span>
+        {stockData.currency === 'USD' ? '$' : '€'}
+        {stockData.volume}
+        <br />
+        {createDateStampSubstring(stockData)}
+        <span />
+      </span>
+    </span>
+  );
+}
+
+function createPriceEPSString(stockData) {
+  if (!stockData || !stockData.priceEps) {
+    return <span>No data available</span>;
+  }
+  return (
+    <span style={{ fontWeight: 'bold' }}>
+      {createCompanySymbolAndExchange(stockData)}
+      <span>
+        {stockData.priceEps}
+        <br />
+        {createDateStampSubstring(stockData)}
+        <span />
+      </span>
+    </span>
+  );
+}
+
+// eslint-disable-next-line consistent-return
+function createStockDataValue(company, currentStockDataKey) {
+  if (currentStockDataKey === 'stockPrice') {
+    return createStockPriceString(JSON.parse(company.stockData));
+  }
+  if (currentStockDataKey === 'marketCap') {
+    return createMktCapString(JSON.parse(company.stockData));
+  }
+  if (currentStockDataKey === 'open') {
+    return createOpenString(JSON.parse(company.stockData));
+  }
+  if (currentStockDataKey === 'volume') {
+    return createVolumeString(JSON.parse(company.stockData));
+  }
+  if (currentStockDataKey === 'priceEps') {
+    return createPriceEPSString(JSON.parse(company.stockData));
+  }
+}
+
 export default function SearchResult({
   company,
   id,
@@ -95,6 +277,8 @@ export default function SearchResult({
   const [companyWebsiteLink, setCompanyWebsiteLink] = useState(
     `https://${company.websiteUrl}`
   );
+  const [stockDataKeyTitle, setStockDataKeyTitle] = useState('');
+  const [isFullAboutVisible, setIsFullAboutVisible] = useState(false);
 
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
@@ -109,7 +293,7 @@ export default function SearchResult({
     setLastSearchTerm,
     companyParentOrganisatonFilter,
     setCompanyParentOrganisationFilter,
-    companyHQFilter,
+    // companyHQFilter,
     setCompanyHQFilter,
     companyFoundationYearFilter,
     setCompanyFoundationYearFilter,
@@ -118,6 +302,8 @@ export default function SearchResult({
     companyRevenueFilter,
     setCompanyRevenueFilter,
   } = useContext(SearchResultsContext);
+
+  const { currentStockDataKey, setCurrentStockDataKey } = useContext(UIContext);
 
   const openModal = () => {
     setIsOpenModal(true);
@@ -217,6 +403,45 @@ export default function SearchResult({
         console.log('No such filter exists');
     }
   };
+
+  const changeCurrentStockDataKey = () => {
+    // eslint-disable-next-line consistent-return
+    setCurrentStockDataKey((prevKey) => {
+      if (prevKey === 'stockPrice') {
+        return 'marketCap';
+      }
+      if (prevKey === 'marketCap') {
+        return 'open';
+      }
+      if (prevKey === 'open') {
+        return 'volume';
+      }
+      if (prevKey === 'volume') {
+        return 'priceEps';
+      }
+      if (prevKey === 'priceEps') {
+        return 'stockPrice';
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (currentStockDataKey === 'stockPrice') {
+      setStockDataKeyTitle('Stock price');
+    }
+    if (currentStockDataKey === 'marketCap') {
+      setStockDataKeyTitle('Mkt Cap');
+    }
+    if (currentStockDataKey === 'open') {
+      setStockDataKeyTitle('Open');
+    }
+    if (currentStockDataKey === 'volume') {
+      setStockDataKeyTitle('Vol');
+    }
+    if (currentStockDataKey === 'priceEps') {
+      setStockDataKeyTitle('P/E');
+    }
+  }, [currentStockDataKey]);
 
   useEffect(() => {
     if (companyCardRef.current && tagsRef.current) {
@@ -333,7 +558,7 @@ export default function SearchResult({
         className={classes.SearchResult}
         ref={companyCardRef}
         style={{
-          height: companyCardHeight,
+          height: isFullAboutVisible ? '' : companyCardHeight,
           visibility: company.hidden ? 'hidden' : 'visible',
           ...setBorderAndShadowColor(id),
         }}
@@ -415,7 +640,7 @@ export default function SearchResult({
                     </a>
                   </span>
                 </div>
-                <div className={classes.infoBlock}>
+                {/* <div className={classes.infoBlock}>
                   <span className={classes.title}>Headquarters</span>
                   <span
                     className={classnames(
@@ -428,6 +653,19 @@ export default function SearchResult({
                     }
                   >
                     <span>{company.HQLocation}</span>
+                  </span>
+                </div> */}
+                <div className={classes.infoBlock}>
+                  <span
+                    className={classnames(classes.title, classes.toggle)}
+                    onClick={changeCurrentStockDataKey}
+                  >
+                    {stockDataKeyTitle}
+                  </span>
+                  <span className={classes.content}>
+                    <span>
+                      {createStockDataValue(company, currentStockDataKey)}
+                    </span>
                   </span>
                 </div>
                 {company.parentCompany && (
@@ -478,26 +716,28 @@ export default function SearchResult({
                     </span>
                   </div>
                 )}
-                <div className={classes.infoBlock}>
-                  <span className={classes.title}>Revenue</span>
-                  <span
-                    className={classnames(
-                      classes.content,
-                      classes.cardFilter,
-                      companyRevenueFilter.length === 1 &&
-                        isNumberInsideCompanyRevenueRange(
-                          companyRevenueFilter[0],
-                          company.revenue
-                        ) &&
-                        classes.active
-                    )}
-                    onClick={() =>
-                      toggleCompanyCardFilter('revenue', company.revenue)
-                    }
-                  >
-                    <span>{convertNumberToString(company.revenue)}</span>
-                  </span>
-                </div>
+                {company.revenue && (
+                  <div className={classes.infoBlock}>
+                    <span className={classes.title}>Revenue</span>
+                    <span
+                      className={classnames(
+                        classes.content,
+                        classes.cardFilter,
+                        companyRevenueFilter.length === 1 &&
+                          isNumberInsideCompanyRevenueRange(
+                            companyRevenueFilter[0],
+                            company.revenue
+                          ) &&
+                          classes.active
+                      )}
+                      onClick={() =>
+                        toggleCompanyCardFilter('revenue', company.revenue)
+                      }
+                    >
+                      <span>{convertNumberToString(company.revenue)}</span>
+                    </span>
+                  </div>
+                )}
               </div>
               <div
                 className={classes.divider}
@@ -525,6 +765,30 @@ export default function SearchResult({
                       style={{ left: keyPeopleOffset }}
                     >
                       {company.keyPeople}
+                    </span>
+                  </div>
+                )}
+                {company.about && (
+                  <div className={classes.keyPeople}>
+                    <span className={classes.title}>About</span>
+                    <span
+                      className={classes.content}
+                      style={{ left: keyPeopleOffset }}
+                    >
+                      {isFullAboutVisible
+                        ? company.about
+                        : company.about.substring(0, 140)}
+                      &nbsp;&nbsp;&nbsp;
+                      {!isFullAboutVisible && (
+                        <sub
+                          className={classes.moreAbout}
+                          onClick={() => {
+                            setIsFullAboutVisible(true);
+                          }}
+                        >
+                          More
+                        </sub>
+                      )}
                     </span>
                   </div>
                 )}

@@ -122,6 +122,10 @@
           letter-spacing: 0.221429px;
           font-weight: bold;
           color: #090909;
+          &.toggle {
+            cursor: pointer;
+            user-select: none;
+          }
         }
         .content {
           width: 50%;
@@ -182,7 +186,7 @@
         &:nth-child(3) {
           //padding-right: 0;
           //padding-left: 67px;
-          margin-left: auto;
+          // margin-left: auto;
         }
         .title {
           width: 50%;
@@ -216,6 +220,15 @@
         display: flex;
         //justify-content: space-between;
         margin-bottom: 38px;
+
+        .moreAbout {
+          position: relative;
+          top: -2px;
+          font-size: 13px;
+          line-height: 15px;
+          color: #7a7f86;
+          cursor: pointer;
+        }
         .title {
           min-width: 25%;
           max-width: 25%;

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 
@@ -27,6 +28,8 @@ const sequelize = require('../../../../../config/db');
 
 const importLogo = require('../../../../../helpers/importLogo');
 const convertRevenueToNumber = require('../../../../../helpers/convertRevenueToNumber');
+const getStockData = require('../../../../../helpers/getStockData');
+const getCompanyInfo = require('../../../../../helpers/getCompanyInfo');
 
 function formatCompaniesData(companies) {
   let formattedCompaniesData = [];
@@ -66,6 +69,8 @@ function formatCompaniesData(companies) {
     );
     companyString = companyString.replace(/CSR/g, 'csr');
     companyString = companyString.replace(/expertise Links/g, 'expertiseLinks');
+    companyString = companyString.replace(/Stock symbol/g, 'stockSymbol');
+    companyString = companyString.replace(/About/g, 'about');
 
     const companyObject = JSON.parse(companyString);
     companyObject.order = index + 1;
@@ -453,6 +458,36 @@ function importLogos(companies) {
   return Promise.all(promises);
 }
 
+function addStockData(formattedCompanies) {
+  const stockSymbols = formattedCompanies.map((company) => company.stockSymbol);
+  return getStockData(stockSymbols).then((stockData) => {
+    formattedCompanies.forEach((company) => {
+      if (!stockData[company.stockSymbol]) {
+        return;
+      }
+      company.stockData = JSON.stringify(stockData[company.stockSymbol]);
+      company.marketCap = stockData[company.stockSymbol].marketCap;
+      company.stockPrice = stockData[company.stockSymbol].stockPrice;
+      company.volume = stockData[company.stockSymbol].volume;
+      company.open = stockData[company.stockSymbol].open;
+      company.priceEps = stockData[company.stockSymbol].priceEps;
+    });
+  });
+}
+
+function addCompanyInfo(formattedCompanies) {
+  const stockSymbols = formattedCompanies.map((company) => company.stockSymbol);
+  return getCompanyInfo(stockSymbols).then((companyInfoEl) => {
+    formattedCompanies.forEach((company) => {
+      if (!companyInfoEl[company.stockSymbol]) {
+        return;
+      }
+      company.about = companyInfoEl[company.stockSymbol].about;
+      company.keyPeople = companyInfoEl[company.stockSymbol].keyPeople;
+    });
+  });
+}
+
 nc.all('*', passport.authenticate('jwt'));
 nc.post('*', csvUploader.single('file'));
 
@@ -469,9 +504,10 @@ nc.post('*', (req, res) => {
   stream.on('data', (data) => companies.push(data));
   stream.on('end', async () => {
     companies = formatCompaniesData(companies);
-
     let createdOrUpdatedCompanies = [];
     try {
+      await addStockData(companies);
+      await addCompanyInfo(companies);
       createdOrUpdatedCompanies = await Company.bulkCreate(companies, {
         updateOnDuplicate: Object.keys(Company.rawAttributes).filter(
           (field) =>

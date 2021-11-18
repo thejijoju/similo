@@ -42,6 +42,7 @@
     "next": "10.2.3",
     "next-auth": "^3.26.1",
     "next-connect": "^0.10.1",
+    "node-cron": "^3.0.0",
     "nodejs-file-downloader": "^4.7.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",

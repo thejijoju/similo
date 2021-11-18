@@ -27,6 +27,8 @@ nextApp
     const server = app.listen(process.env.PORT, () => {
       // eslint-disable-next-line no-console
       console.log(`  Server Listening on port ${server.address().port}`);
+      // eslint-disable-next-line global-require
+      require('./helpers/updateStockData');
     });
   })
   .catch((error) => console.log(error));
