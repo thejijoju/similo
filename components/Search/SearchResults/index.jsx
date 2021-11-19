@@ -439,6 +439,7 @@ export default function SearchResults({
       )}
       <div className={classes.resultsContainer}>
         {innerSearchResults.data.companies.map((company, i) => {
+          console.log(expertiseLinks);
           return (
             <SearchResult
               company={company}
@@ -447,9 +448,10 @@ export default function SearchResults({
               csrLinks={csrLinks.filter(
                 (link) => link.company === company.companyId
               )}
-              expertiseLinks={expertiseLinks.filter(
-                (link) => link.company === company.companyId
-              )}
+              // expertiseLinks={expertiseLinks.filter(
+              //   (link) => link.company === company.companyId
+              // )}
+              expertiseLinks={expertiseLinks}
             />
           );
         })}

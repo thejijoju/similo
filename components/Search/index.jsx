@@ -19,6 +19,9 @@ export default function Search({
   onClearSearch,
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [searchPlaceholder, setSearchPlaceholder] = useState(
+    'What company or brand do you want to compare?'
+  );
 
   const {
     setCurrentPage,
@@ -195,6 +198,12 @@ export default function Search({
     }
   }, [router.query.term]);
 
+  useEffect(() => {
+    if (window.innerWidth < 1201) {
+      setSearchPlaceholder('Search Similo');
+    }
+  }, []);
+
   return (
     <form
       onSubmit={(event) => {
@@ -219,7 +228,7 @@ export default function Search({
         }}
         onBlur={() => setIsHovered(false)}
         type="text"
-        placeholder="What company or brand do you want to compare?"
+        placeholder={searchPlaceholder}
         className={classes.searchBar}
         value={searchTerm}
         onChange={(event) => setSearchTerm(event.target.value)}

@@ -541,15 +541,12 @@ export default function SearchResult({
           link.name ===
           companyExpertiseFilter[companyExpertiseFilter.length - 1]
       );
+
       if (expertiseLink) {
         setCompanyWebsiteLink(expertiseLink.url);
       }
     }
   }, [companyExpertiseFilter]);
-
-  useEffect(() => {
-    console.log(companyParentOrganisatonFilter);
-  }, [companyParentOrganisatonFilter]);
 
   return (
     <>
