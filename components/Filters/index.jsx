@@ -167,7 +167,7 @@ export default function Filters({ expertise, csrs }) {
       if (sortOption.includes('desc')) {
         setSortOption(`stock${currentStockDataKey} desc`);
       } else if (sortOption.includes('asc')) {
-        setSortOption(`stock${currentStockDataKey} desc`);
+        setSortOption(`stock${currentStockDataKey} asc`);
       }
     }
   }, [currentStockDataKey]);
