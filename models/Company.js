@@ -128,7 +128,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       keyPeople: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
       },
       order: {
         type: DataTypes.INTEGER,

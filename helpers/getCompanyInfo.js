@@ -5,7 +5,7 @@ function createKeyPeopleString(keyPeople) {
   let keyPeopleString = '';
   keyPeople.forEach((officer, index) => {
     keyPeopleString += `${officer.name} (${officer.title})${
-      index !== keyPeople.length - 1 && ', '
+      index !== keyPeople.length - 1 ? ', ' : ''
     }`;
   });
   // Remove double spaces
@@ -34,11 +34,14 @@ module.exports = async function getStockData(symbols = []) {
     results.forEach((result, index) => {
       companyData[symbols[index]] = {};
 
-      companyData[symbols[index]].about =
-        result.data.quoteSummary.result[0].assetProfile.longBusinessSummary;
-      companyData[symbols[index]].keyPeople = createKeyPeopleString(
-        result.data.quoteSummary.result[0].assetProfile.companyOfficers
-      );
+      companyData[symbols[index]].about = result.data.quoteSummary.result
+        ? result.data.quoteSummary.result[0].assetProfile.longBusinessSummary
+        : null;
+      companyData[symbols[index]].keyPeople = result.data.quoteSummary.result
+        ? createKeyPeopleString(
+            result.data.quoteSummary.result[0].assetProfile.companyOfficers
+          )
+        : null;
     });
 
     return companyData;

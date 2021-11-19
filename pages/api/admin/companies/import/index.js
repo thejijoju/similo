@@ -476,16 +476,36 @@ function addStockData(formattedCompanies) {
 }
 
 function addCompanyInfo(formattedCompanies) {
-  const stockSymbols = formattedCompanies.map((company) => company.stockSymbol);
-  return getCompanyInfo(stockSymbols).then((companyInfoEl) => {
-    formattedCompanies.forEach((company) => {
-      if (!companyInfoEl[company.stockSymbol]) {
-        return;
-      }
-      company.about = companyInfoEl[company.stockSymbol].about;
-      company.keyPeople = companyInfoEl[company.stockSymbol].keyPeople;
-    });
+  /*   const stockSymbols = [];
+  formattedCompanies.forEach((company) => {
+    if (company.stockSymbol) {
+      stockSymbols.push(company.stockSymbol);
+    }
   });
+  console.log(stockSymbols); */
+
+  const stockSymbols = [];
+  formattedCompanies.forEach((company) => {
+    if (company.stockSymbol) {
+      stockSymbols.push(company.stockSymbol);
+    }
+  });
+
+  return getCompanyInfo(Array.from(new Set(stockSymbols))).then(
+    (companyInfoEl) => {
+      formattedCompanies.forEach((company) => {
+        if (!companyInfoEl[company.stockSymbol]) {
+          return;
+        }
+        if (companyInfoEl[company.stockSymbol].about) {
+          company.about = companyInfoEl[company.stockSymbol].about;
+        }
+        if (companyInfoEl[company.stockSymbol].keyPeople) {
+          company.keyPeople = companyInfoEl[company.stockSymbol].keyPeople;
+        }
+      });
+    }
+  );
 }
 
 nc.all('*', passport.authenticate('jwt'));
