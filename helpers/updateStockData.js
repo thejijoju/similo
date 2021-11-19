@@ -4,8 +4,8 @@ const cron = require('node-cron');
 const getStockData = require('./getStockData');
 const { Company } = require('../models');
 
-// Run every hour
-cron.schedule('* 1 * * *', async () => {
+// Run every 15 minutes
+cron.schedule('0 */15 * * * *', async () => {
   const companies = await Company.findAll();
   const stockSymbols = [];
   companies.forEach((company) => {
