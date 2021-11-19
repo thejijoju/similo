@@ -5,6 +5,7 @@ const { QueryTypes } = require('sequelize');
 // const { Company } = require('../../../../models');
 const sequelize = require('../../../../config/db');
 const createFilterQueries = require('../../../../helpers/createFilterQueries');
+const createSortQuery = require('../../../../helpers/createSortQuery');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -94,10 +95,12 @@ export default async function handler(req, res) {
 
   replacements.push(`${searchTerm}`);
 
-  const sortQuery =
-    sort === 'relevant'
-      ? `ORDER BY ts_rank("searchVector", to_tsquery('english', ?)) DESC, name`
-      : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
+  const sortQuery = createSortQuery(sort);
+
+  // const sortQuery =
+  //   sort === 'relevant'
+  //     ? `ORDER BY ts_rank("searchVector", to_tsquery('english', ?)) DESC, name`
+  //     : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
 
   const query = `SELECT *
   FROM (SELECT DISTINCT ON(name) *, c."createdAt" as "creationDate", c.id as "companyId" 

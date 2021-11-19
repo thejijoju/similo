@@ -5,6 +5,7 @@ const { QueryTypes } = require('sequelize');
 const { Company } = require('../../../../models');
 const sequelize = require('../../../../config/db');
 const createFilterQueries = require('../../../../helpers/createFilterQueries');
+const createSortQuery = require('../../../../helpers/createSortQuery');
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -91,10 +92,11 @@ export default async function handler(req, res) {
     }
 
     if (!page) {
-      const sortQuery =
+      /* const sortQuery =
         sort === 'relevant'
           ? `ORDER BY "order"`
-          : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
+          : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`; */
+      const sortQuery = createSortQuery(sort, true);
       const companyRowNumber = await sequelize.query(
         `SELECT rnum FROM 
   (SELECT *, row_number() OVER (${sortQuery}) as rnum FROM "Companies" WHERE industry = ? ${queries.expertiseQuery}
@@ -129,10 +131,12 @@ export default async function handler(req, res) {
     }
   }
 
-  const sortQuery =
+  const sortQuery = createSortQuery(sort, true);
+
+  /* const sortQuery =
     sort === 'relevant'
       ? `ORDER BY "order" NULLS LAST`
-      : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`;
+      : `ORDER BY "yearOfFoundation" DESC NULLS LAST, name`; */
 
   if (suggestionType === 'company') {
     query = `SELECT * FROM "Companies" WHERE (industry='${company.industry}')

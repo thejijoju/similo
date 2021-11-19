@@ -66,9 +66,10 @@
       display: flex;
       //justify-content: space-between;
       align-items: center;
-      width: 135px;
+      justify-content: center;
+      width: 140px;
       height: 30px;
-      padding-left: 10px;
+      //padding-left: 10px;
       border: 1px solid rgb(20, 162, 184, 0.5);
       box-sizing: border-box;
       border-radius: 3px;
@@ -78,6 +79,7 @@
       line-height: 19px;
       color: #14a2b8;
       cursor: pointer;
+      white-space: nowrap;
       i {
         display: block;
         width: 13px;

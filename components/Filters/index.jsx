@@ -93,6 +93,23 @@ const DIVERSITY_DETAILS = [
 
 const COMPANY_TYPES = ['Public', 'Private', 'Subsidary'];
 
+function createSortingButtonLabel(currentStockDataKey) {
+  switch (currentStockDataKey) {
+    case 'stockPrice':
+      return 'Stock price';
+    case 'marketCap':
+      return 'Mkt Cap';
+    case 'open':
+      return 'Open';
+    case 'volume':
+      return 'Vol';
+    case 'priceEps':
+      return 'P/E';
+    default:
+      return '';
+  }
+}
+
 export default function Filters({ expertise, csrs }) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
@@ -139,8 +156,21 @@ export default function Filters({ expertise, csrs }) {
     setCompanyCSRFilter,
   } = useContext(SearchResultsContext);
 
-  const { isFiltersPanelVisible, setIsFiltersPanelVisible } =
-    useContext(UIContext);
+  const {
+    isFiltersPanelVisible,
+    setIsFiltersPanelVisible,
+    currentStockDataKey,
+  } = useContext(UIContext);
+
+  useEffect(() => {
+    if (sortOption.startsWith('stock')) {
+      if (sortOption.includes('desc')) {
+        setSortOption(`stock${currentStockDataKey} desc`);
+      } else if (sortOption.includes('asc')) {
+        setSortOption(`stock${currentStockDataKey} desc`);
+      }
+    }
+  }, [currentStockDataKey]);
 
   const filtersContainerRef = useRef();
 
@@ -172,6 +202,15 @@ export default function Filters({ expertise, csrs }) {
     }
   };
 
+  let sortOptionLabel = 'Most relevant';
+  if (sortOption === 'recent') {
+    sortOptionLabel = 'Most recent';
+  } else if (sortOption.startsWith('stock') && sortOption.includes('asc')) {
+    sortOptionLabel = `${createSortingButtonLabel(currentStockDataKey)} (asc)`;
+  } else if (sortOption.startsWith('stock') && sortOption.includes('desc')) {
+    sortOptionLabel = `${createSortingButtonLabel(currentStockDataKey)} (desc)`;
+  }
+
   return (
     <div
       className={classnames(
@@ -195,11 +234,17 @@ export default function Filters({ expertise, csrs }) {
               if (prevOption === 'relevant') {
                 return 'recent';
               }
+              if (prevOption === 'recent') {
+                return `stock${currentStockDataKey} asc`;
+              }
+              if (prevOption === `stock${currentStockDataKey} asc`) {
+                return `stock${currentStockDataKey} desc`;
+              }
               return 'relevant';
             });
           }}
         >
-          {sortOption === 'relevant' ? 'Most relevant' : 'Most recent'}
+          {sortOptionLabel}
           <i>arrow down</i>
         </button>
         {isFilterActive() && (
@@ -269,7 +314,7 @@ export default function Filters({ expertise, csrs }) {
                 });
               }}
             >
-              {sortOption === 'relevant' ? 'Most recent' : 'Most relevant'}
+              {sortOptionLabel}
             </span>
           </div>
           <Filter
