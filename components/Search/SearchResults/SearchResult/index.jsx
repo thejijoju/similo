@@ -129,7 +129,9 @@ function createDateStampSubstring(stockData) {
     >
       {createDateString(stockData.createdAt)} -{' '}
       <Link href="/disclamer">
-        <a style={{ display: 'inline', color: 'inherit' }}>Disclamer</a>
+        <a target="_blank" style={{ display: 'inline', color: 'inherit' }}>
+          Disclamer
+        </a>
       </Link>
     </sub>
   );
