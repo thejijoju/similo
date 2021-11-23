@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import psl from 'psl';
 
 import classnames from 'classnames';
 
@@ -139,7 +140,7 @@ function createDateStampSubstring(stockData) {
 
 function createStockPriceString(stockData) {
   if (!stockData || !stockData.stockPrice) {
-    return <span>No data available</span>;
+    return null;
   }
   return (
     <span style={{ fontWeight: 'bold' }}>
@@ -172,7 +173,7 @@ function createStockPriceString(stockData) {
 
 function createMktCapString(stockData) {
   if (!stockData || !stockData.marketCap) {
-    return <span>No data available</span>;
+    return null;
   }
   return (
     <span style={{ fontWeight: 'bold' }}>
@@ -190,7 +191,7 @@ function createMktCapString(stockData) {
 
 function createOpenString(stockData) {
   if (!stockData || !stockData.open) {
-    return <span>No data available</span>;
+    return null;
   }
   return (
     <span style={{ fontWeight: 'bold' }}>
@@ -208,7 +209,7 @@ function createOpenString(stockData) {
 
 function createVolumeString(stockData) {
   if (!stockData || !stockData.volume) {
-    return <span>No data available</span>;
+    return null;
   }
   return (
     <span style={{ fontWeight: 'bold' }}>
@@ -226,7 +227,7 @@ function createVolumeString(stockData) {
 
 function createPriceEPSString(stockData) {
   if (!stockData || !stockData.priceEps) {
-    return <span>No data available</span>;
+    return null;
   }
   return (
     <span style={{ fontWeight: 'bold' }}>
@@ -242,21 +243,45 @@ function createPriceEPSString(stockData) {
 }
 
 // eslint-disable-next-line consistent-return
-function createStockDataValue(company, currentStockDataKey) {
+function createStockDataValue(
+  company,
+  currentStockDataKey,
+  setCurrentStockDataKey
+) {
   if (currentStockDataKey === 'stockPrice') {
-    return createStockPriceString(JSON.parse(company.stockData));
+    const dataValue = createStockPriceString(JSON.parse(company.stockData));
+    if (!dataValue && setCurrentStockDataKey) {
+      return setCurrentStockDataKey('marketCap');
+    }
+    return dataValue;
   }
   if (currentStockDataKey === 'marketCap') {
-    return createMktCapString(JSON.parse(company.stockData));
+    const dataValue = createMktCapString(JSON.parse(company.stockData));
+    if (!dataValue && setCurrentStockDataKey) {
+      return setCurrentStockDataKey('open');
+    }
+    return dataValue;
   }
   if (currentStockDataKey === 'open') {
-    return createOpenString(JSON.parse(company.stockData));
+    const dataValue = createOpenString(JSON.parse(company.stockData));
+    if (!dataValue && setCurrentStockDataKey) {
+      return setCurrentStockDataKey('volume');
+    }
+    return dataValue;
   }
   if (currentStockDataKey === 'volume') {
-    return createVolumeString(JSON.parse(company.stockData));
+    const dataValue = createVolumeString(JSON.parse(company.stockData));
+    if (!dataValue && setCurrentStockDataKey) {
+      return setCurrentStockDataKey('priceEps');
+    }
+    return dataValue;
   }
   if (currentStockDataKey === 'priceEps') {
-    return createPriceEPSString(JSON.parse(company.stockData));
+    const dataValue = createPriceEPSString(JSON.parse(company.stockData));
+    if (!dataValue && setCurrentStockDataKey) {
+      return setCurrentStockDataKey('stockPrice');
+    }
+    return dataValue;
   }
 }
 
@@ -279,8 +304,12 @@ export default function SearchResult({
   const [companyWebsiteLink, setCompanyWebsiteLink] = useState(
     `https://${company.websiteUrl}`
   );
+  const [companyWebsiteText, setCompanyWebsiteText] = useState(
+    `https://${company.websiteUrl}`
+  );
   const [stockDataKeyTitle, setStockDataKeyTitle] = useState('');
   const [isFullAboutVisible, setIsFullAboutVisible] = useState(false);
+  const [currentStockDataKey, setCurrentStockDataKey] = useState('stockPrice');
 
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
@@ -295,7 +324,7 @@ export default function SearchResult({
     setLastSearchTerm,
     companyParentOrganisatonFilter,
     setCompanyParentOrganisationFilter,
-    // companyHQFilter,
+    companyHQFilter,
     setCompanyHQFilter,
     companyFoundationYearFilter,
     setCompanyFoundationYearFilter,
@@ -303,9 +332,15 @@ export default function SearchResult({
     setCompanySizeFilter,
     companyRevenueFilter,
     setCompanyRevenueFilter,
+    sortOption,
   } = useContext(SearchResultsContext);
 
-  const { currentStockDataKey, setCurrentStockDataKey } = useContext(UIContext);
+  const {
+    globalStockDataKey,
+    setGlobalStockDataKey,
+    setCompanyWithLastSwitchedStockKey,
+    companyWithLastSwitchedStockKey,
+  } = useContext(UIContext);
 
   const openModal = () => {
     setIsOpenModal(true);
@@ -446,6 +481,22 @@ export default function SearchResult({
   }, [currentStockDataKey]);
 
   useEffect(() => {
+    if (
+      sortOption.startsWith('stock') &&
+      companyWithLastSwitchedStockKey === company.name
+    ) {
+      console.log('setting stock key');
+      setGlobalStockDataKey(currentStockDataKey);
+    }
+  }, [sortOption, currentStockDataKey]);
+
+  useEffect(() => {
+    if (globalStockDataKey !== currentStockDataKey) {
+      setCurrentStockDataKey(globalStockDataKey);
+    }
+  }, [globalStockDataKey]);
+
+  useEffect(() => {
     if (companyCardRef.current && tagsRef.current) {
       companyCardInitialHeight.current = companyCardRef.current.offsetHeight;
       setCompanyCardHeight(companyCardRef.current.offsetHeight);
@@ -535,8 +586,15 @@ export default function SearchResult({
   }, [employeesCountRef.current]);
 
   useEffect(() => {
+    function getDomainFromUrl(url) {
+      const tmp = document.createElement('a');
+      tmp.href = url;
+      const parsed = psl.parse(tmp.hostname);
+      return parsed.sld;
+    }
     if (!companyExpertiseFilter.length) {
       setCompanyWebsiteLink(company.websiteUrl);
+      setCompanyWebsiteText(company.websiteUrl);
     } else {
       const expertiseLink = expertiseLinks.find(
         (link) =>
@@ -546,6 +604,11 @@ export default function SearchResult({
 
       if (expertiseLink) {
         setCompanyWebsiteLink(expertiseLink.url);
+        setCompanyWebsiteText(
+          `${getDomainFromUrl(expertiseLink.url)}/${
+            companyExpertiseFilter[companyExpertiseFilter.length - 1]
+          }`
+        );
       }
     }
   }, [companyExpertiseFilter]);
@@ -635,11 +698,33 @@ export default function SearchResult({
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {companyWebsiteLink}
+                      {companyWebsiteText}
                     </a>
                   </span>
                 </div>
-                {/* <div className={classes.infoBlock}>
+                {company.stockData && (
+                  <div className={classes.infoBlock}>
+                    <span
+                      className={classnames(classes.title, classes.toggle)}
+                      onClick={() => {
+                        changeCurrentStockDataKey();
+                        setCompanyWithLastSwitchedStockKey(company.name);
+                      }}
+                    >
+                      {stockDataKeyTitle}
+                    </span>
+                    <span className={classes.content}>
+                      <span>
+                        {createStockDataValue(
+                          company,
+                          currentStockDataKey,
+                          setCurrentStockDataKey
+                        )}
+                      </span>
+                    </span>
+                  </div>
+                )}
+                <div className={classes.infoBlock}>
                   <span className={classes.title}>Headquarters</span>
                   <span
                     className={classnames(
@@ -652,19 +737,6 @@ export default function SearchResult({
                     }
                   >
                     <span>{company.HQLocation}</span>
-                  </span>
-                </div> */}
-                <div className={classes.infoBlock}>
-                  <span
-                    className={classnames(classes.title, classes.toggle)}
-                    onClick={changeCurrentStockDataKey}
-                  >
-                    {stockDataKeyTitle}
-                  </span>
-                  <span className={classes.content}>
-                    <span>
-                      {createStockDataValue(company, currentStockDataKey)}
-                    </span>
                   </span>
                 </div>
                 {company.parentCompany && (
@@ -763,7 +835,7 @@ export default function SearchResult({
                       className={classes.content}
                       style={{ left: keyPeopleOffset }}
                     >
-                      {company.keyPeople}
+                      {company.keyPeople.split(',').slice(0, 3).join(',')}
                     </span>
                   </div>
                 )}

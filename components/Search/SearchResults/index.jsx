@@ -439,7 +439,6 @@ export default function SearchResults({
       )}
       <div className={classes.resultsContainer}>
         {innerSearchResults.data.companies.map((company, i) => {
-          console.log(expertiseLinks);
           return (
             <SearchResult
               company={company}

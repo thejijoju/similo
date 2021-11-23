@@ -159,18 +159,18 @@ export default function Filters({ expertise, csrs }) {
   const {
     isFiltersPanelVisible,
     setIsFiltersPanelVisible,
-    currentStockDataKey,
+    globalStockDataKey,
   } = useContext(UIContext);
 
   useEffect(() => {
     if (sortOption.startsWith('stock')) {
       if (sortOption.includes('desc')) {
-        setSortOption(`stock${currentStockDataKey} desc`);
+        setSortOption(`stock${globalStockDataKey} desc`);
       } else if (sortOption.includes('asc')) {
-        setSortOption(`stock${currentStockDataKey} asc`);
+        setSortOption(`stock${globalStockDataKey} asc`);
       }
     }
-  }, [currentStockDataKey]);
+  }, [globalStockDataKey]);
 
   const filtersContainerRef = useRef();
 
@@ -206,9 +206,9 @@ export default function Filters({ expertise, csrs }) {
   if (sortOption === 'recent') {
     sortOptionLabel = 'Most recent';
   } else if (sortOption.startsWith('stock') && sortOption.includes('asc')) {
-    sortOptionLabel = `${createSortingButtonLabel(currentStockDataKey)} (asc)`;
+    sortOptionLabel = `${createSortingButtonLabel(globalStockDataKey)} (asc)`;
   } else if (sortOption.startsWith('stock') && sortOption.includes('desc')) {
-    sortOptionLabel = `${createSortingButtonLabel(currentStockDataKey)} (desc)`;
+    sortOptionLabel = `${createSortingButtonLabel(globalStockDataKey)} (desc)`;
   }
 
   return (
@@ -235,10 +235,10 @@ export default function Filters({ expertise, csrs }) {
                 return 'recent';
               }
               if (prevOption === 'recent') {
-                return `stock${currentStockDataKey} asc`;
+                return `stock${globalStockDataKey} asc`;
               }
-              if (prevOption === `stock${currentStockDataKey} asc`) {
-                return `stock${currentStockDataKey} desc`;
+              if (prevOption === `stock${globalStockDataKey} asc`) {
+                return `stock${globalStockDataKey} desc`;
               }
               return 'relevant';
             });

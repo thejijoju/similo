@@ -1,4 +1,5 @@
 const axios = require('axios');
+const utf8 = require('utf8');
 const { YAHOO_FINANCE_API_KEY } = require('../constants/index');
 
 function createKeyPeopleString(keyPeople) {
@@ -35,7 +36,9 @@ module.exports = async function getStockData(symbols = []) {
       companyData[symbols[index]] = {};
 
       companyData[symbols[index]].about = result.data.quoteSummary.result
-        ? result.data.quoteSummary.result[0].assetProfile.longBusinessSummary
+        ? utf8.decode(
+            result.data.quoteSummary.result[0].assetProfile.longBusinessSummary
+          )
         : null;
       companyData[symbols[index]].keyPeople = result.data.quoteSummary.result
         ? createKeyPeopleString(
