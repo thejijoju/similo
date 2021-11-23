@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import axios from 'axios';
 import classnames from 'classnames';
 import ReactTooltip from 'react-tooltip';
+import Truncate from 'react-truncate';
 
 import { SearchResultsContext } from '@/context/index';
 import csrToUpperCase from '@/helpers/csrToUpperCase';
@@ -230,7 +231,20 @@ export default function index({
                 }}
               />
               <span className={classes.checkmark} />
-              {title === 'CSR' ? csrToUpperCase(value) : value}
+              <Truncate
+                lines={1}
+                ellipsis={
+                  <span>
+                    ...{' '}
+                    <a style={{ visibility: 'hidden' }} href="/link/to/article">
+                      aaaaaaaa
+                    </a>
+                  </span>
+                }
+              >
+                {title === 'CSR' ? csrToUpperCase(value) : value}
+              </Truncate>
+
               {tooltipDetails && tooltipDetails[i] && (
                 <div
                   className={classes.tooltipToggle}

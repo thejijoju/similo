@@ -328,7 +328,7 @@ export default function Filters({ expertise, csrs }) {
           <Filter
             title="CSR"
             values={csrs}
-            defaultSize={csrs.length}
+            defaultSize={2}
             state={companyCSRFilter}
             setState={setCompanyCSRFilter}
           />

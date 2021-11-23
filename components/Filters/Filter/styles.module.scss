@@ -93,6 +93,7 @@
     overflow: hidden;
     transition: all ease-in-out 0.2s;
     .container {
+      white-space: nowrap;
       display: block;
       position: relative;
       padding-left: 21px;
