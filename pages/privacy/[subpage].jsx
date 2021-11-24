@@ -4,6 +4,7 @@ import { FaCalendar } from 'react-icons/fa';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 import classnames from 'classnames';
 import axios from 'axios';
@@ -40,35 +41,44 @@ export default function PrivacyPage({ pageContent, updatedAt }) {
   const router = useRouter();
   const { subpage } = router.query;
   return (
-    <main className={classes.PrivacyPage}>
-      <div className={classes.sideBar}>
-        <h2>Legal information</h2>
-        <ul>
-          <li className={classnames(subpage === 'policy' && classes.active)}>
-            <Link href="/privacy/policy">
-              <a>Privacy Policy</a>
-            </Link>
-          </li>
-          <li className={classnames(subpage === 'notice' && classes.active)}>
-            <Link href="/privacy/notice">
-              <a>Legal notice</a>
-            </Link>
-          </li>
-          <li className={classnames(subpage === 'methods' && classes.active)}>
-            <Link href="/privacy/methods">
-              <a>Referencing, dereferencing and classification methods</a>
-            </Link>
-          </li>
-        </ul>
-      </div>
-      <div className={classes.content}>
-        <div dangerouslySetInnerHTML={{ __html: pageContent }} />
-        <div className={classes.updatedAt}>
-          <FaCalendar style={{ marginRight: 6 }} /> Last update:{' '}
-          {createDateString(updatedAt)}
+    <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
+        />
+        <title>Similo Privacy</title>
+      </Head>
+      <main className={classes.PrivacyPage}>
+        <div className={classes.sideBar}>
+          <h2>Legal information</h2>
+          <ul>
+            <li className={classnames(subpage === 'policy' && classes.active)}>
+              <Link href="/privacy/policy">
+                <a>Privacy Policy</a>
+              </Link>
+            </li>
+            <li className={classnames(subpage === 'notice' && classes.active)}>
+              <Link href="/privacy/notice">
+                <a>Legal notice</a>
+              </Link>
+            </li>
+            <li className={classnames(subpage === 'methods' && classes.active)}>
+              <Link href="/privacy/methods">
+                <a>Referencing, dereferencing and classification methods</a>
+              </Link>
+            </li>
+          </ul>
         </div>
-      </div>
-    </main>
+        <div className={classes.content}>
+          <div dangerouslySetInnerHTML={{ __html: pageContent }} />
+          <div className={classes.updatedAt}>
+            <FaCalendar style={{ marginRight: 6 }} /> Last update:{' '}
+            {createDateString(updatedAt)}
+          </div>
+        </div>
+      </main>
+    </>
   );
 }
 
