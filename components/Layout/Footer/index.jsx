@@ -15,7 +15,7 @@ export default function Footer() {
         <span>Similo © {new Date().getFullYear()}</span>
       </div>
       <div className={classes.links}>
-        <Link href="/">
+        <Link href="/privacy/policy">
           <a>Privacy</a>
         </Link>
         <Link href="/">
