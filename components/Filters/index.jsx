@@ -115,6 +115,7 @@ export default function Filters({ expertise, csrs }) {
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
   const [expertisesByIndustry, setExpertisesByIndustry] = useState([]);
+  const [csrsByIndustry, setCSRSByIndustry] = useState([]);
 
   const { Portal } = usePortal();
 
@@ -134,6 +135,20 @@ export default function Filters({ expertise, csrs }) {
         });
     } else {
       setExpertisesByIndustry([]);
+    }
+    if (router.query.fromSuggestions) {
+      axios
+        .get(
+          `${API_URL}/companies/csrs?${router.query.suggestionType}=${router.query.term}`
+        )
+        .then((response) => {
+          setCSRSByIndustry(response.data.data.csr);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      setCSRSByIndustry([]);
     }
   }, [router]);
 
@@ -327,7 +342,14 @@ export default function Filters({ expertise, csrs }) {
           />
           <Filter
             title="CSR"
-            values={csrs}
+            values={
+              // eslint-disable-next-line no-nested-ternary
+              csrsByIndustry.length
+                ? csrsByIndustry
+                : router.query.term
+                ? csrs
+                : []
+            }
             defaultSize={2}
             state={companyCSRFilter}
             setState={setCompanyCSRFilter}
@@ -349,7 +371,12 @@ export default function Filters({ expertise, csrs }) {
           />
           <Filter
             values={
-              expertisesByIndustry.length ? expertisesByIndustry : expertise
+              // eslint-disable-next-line no-nested-ternary
+              expertisesByIndustry.length
+                ? expertisesByIndustry
+                : router.query.term
+                ? expertise
+                : []
             }
             defaultSize={4}
             title="Expertise"
