@@ -301,12 +301,8 @@ export default function SearchResult({
     useState(false);
   const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState(false);
   const [keyPeopleOffset, setKeyPeopleOffset] = useState(0);
-  const [companyWebsiteLink, setCompanyWebsiteLink] = useState(
-    `https://${company.websiteUrl}`
-  );
-  const [companyWebsiteText, setCompanyWebsiteText] = useState(
-    `https://${company.websiteUrl}`
-  );
+  const [companyWebsiteLink, setCompanyWebsiteLink] = useState('');
+  const [companyWebsiteText, setCompanyWebsiteText] = useState('');
   const [stockDataKeyTitle, setStockDataKeyTitle] = useState('');
   const [isFullAboutVisible, setIsFullAboutVisible] = useState(false);
   const [currentStockDataKey, setCurrentStockDataKey] = useState('stockPrice');
@@ -315,6 +311,11 @@ export default function SearchResult({
   const companyCardInitialHeight = useRef();
   const employeesCountRef = useRef();
   const tagsRef = useRef();
+
+  useEffect(() => {
+    setCompanyWebsiteLink(company.websiteUrl);
+    setCompanyWebsiteText(company.websiteUrl);
+  }, [company]);
 
   const {
     areCompanyCardsExpanded,
@@ -611,7 +612,7 @@ export default function SearchResult({
         );
       }
     }
-  }, [companyExpertiseFilter]);
+  }, [companyExpertiseFilter, company]);
 
   return (
     <>
@@ -694,7 +695,11 @@ export default function SearchResult({
                   <span className={classes.content}>
                     <a
                       className={classes.companyLink}
-                      href={companyWebsiteLink}
+                      href={
+                        companyWebsiteLink.includes('http')
+                          ? companyWebsiteLink
+                          : `https://${companyWebsiteLink}`
+                      }
                       target="_blank"
                       rel="noreferrer"
                     >
