@@ -593,6 +593,7 @@ export default function SearchResult({
       const parsed = psl.parse(tmp.hostname);
       return parsed.sld;
     }
+
     if (!companyExpertiseFilter.length) {
       setCompanyWebsiteLink(company.websiteUrl);
       setCompanyWebsiteText(company.websiteUrl);
@@ -600,7 +601,8 @@ export default function SearchResult({
       const expertiseLink = expertiseLinks.find(
         (link) =>
           link.name ===
-          companyExpertiseFilter[companyExpertiseFilter.length - 1]
+            companyExpertiseFilter[companyExpertiseFilter.length - 1] &&
+          (link.company === company.companyId || link.company === company.id)
       );
 
       if (expertiseLink) {
@@ -612,7 +614,7 @@ export default function SearchResult({
         );
       }
     }
-  }, [companyExpertiseFilter, company]);
+  }, [companyExpertiseFilter, company, expertiseLinks]);
 
   return (
     <>
