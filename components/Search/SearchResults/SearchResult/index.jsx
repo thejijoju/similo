@@ -334,6 +334,7 @@ export default function SearchResult({
     companyRevenueFilter,
     setCompanyRevenueFilter,
     sortOption,
+    companyCSRFilter,
   } = useContext(SearchResultsContext);
 
   const {
@@ -589,12 +590,12 @@ export default function SearchResult({
   useEffect(() => {
     function getDomainFromUrl(url) {
       const tmp = document.createElement('a');
-      tmp.href = url;
+      tmp.href = url.includes('https://') ? url : `https://${url}`;
       const parsed = psl.parse(tmp.hostname);
       return parsed.sld;
     }
 
-    if (!companyExpertiseFilter.length) {
+    if (!companyExpertiseFilter.length && !companyCSRFilter.length) {
       setCompanyWebsiteLink(company.websiteUrl);
       setCompanyWebsiteText(company.websiteUrl);
     } else {
@@ -613,8 +614,30 @@ export default function SearchResult({
           }`
         );
       }
+
+      const csrLink = csrLinks.find((link) => {
+        return (
+          link.name === companyCSRFilter[companyCSRFilter.length - 1] &&
+          (link.company === company.companyId || link.company === company.id)
+        );
+      });
+
+      if (csrLink) {
+        setCompanyWebsiteLink(csrLink.url);
+        setCompanyWebsiteText(
+          `${getDomainFromUrl(company.websiteUrl)}/${
+            companyCSRFilter[companyCSRFilter.length - 1]
+          }`
+        );
+      }
     }
-  }, [companyExpertiseFilter, company, expertiseLinks]);
+  }, [
+    companyExpertiseFilter,
+    company,
+    expertiseLinks,
+    companyCSRFilter,
+    csrLinks,
+  ]);
 
   return (
     <>
@@ -679,11 +702,11 @@ export default function SearchResult({
                       classes.active
                   )}
                   key={tag}
-                  onClick={() =>
+                  onClick={() => {
                     openCSRLink(
                       csrLinks.find((link) => link.name === tag.trim()).url
-                    )
-                  }
+                    );
+                  }}
                 >
                   {csrToUpperCase(tag.trim())}
                 </span>

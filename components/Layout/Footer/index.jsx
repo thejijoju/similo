@@ -18,10 +18,7 @@ export default function Footer() {
         <Link href="/privacy/policy">
           <a>Privacy</a>
         </Link>
-        <Link href="/">
-          <a>Terms</a>
-        </Link>
-        <Link href="/">
+        <Link href="/privacy/notice">
           <a>About Similo</a>
         </Link>
       </div>

@@ -444,12 +444,10 @@ export default function SearchResults({
               company={company}
               key={company.companyId}
               id={i}
-              csrLinks={csrLinks.filter(
-                (link) => link.company === company.companyId
-              )}
-              // expertiseLinks={expertiseLinks.filter(
+              // csrLinks={csrLinks.filter(
               //   (link) => link.company === company.companyId
               // )}
+              csrLinks={csrLinks}
               expertiseLinks={expertiseLinks}
             />
           );
