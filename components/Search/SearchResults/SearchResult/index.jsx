@@ -646,7 +646,10 @@ export default function SearchResult({
         className={classes.SearchResult}
         ref={companyCardRef}
         style={{
-          height: isFullAboutVisible ? '' : companyCardHeight,
+          height:
+            isFullAboutVisible && window.innerWidth > 1200
+              ? ''
+              : companyCardHeight,
           visibility: company.hidden ? 'hidden' : 'visible',
           ...setBorderAndShadowColor(id),
         }}
@@ -883,7 +886,9 @@ export default function SearchResult({
                       {!isFullAboutVisible && (
                         <sub
                           className={classes.moreAbout}
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            event.nativeEvent.stopImmediatePropagation();
                             setIsFullAboutVisible(true);
                           }}
                         >
