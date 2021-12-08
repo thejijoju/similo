@@ -668,11 +668,11 @@ export default function SearchResult({
     if (touchEnd === 0) {
       return;
     }
-    if (touchStart - touchEnd > 150) {
+    if (touchStart - touchEnd > 75) {
       swipeDetails('right');
     }
 
-    if (touchStart - touchEnd < -150) {
+    if (touchStart - touchEnd < -75) {
       swipeDetails('left');
     }
   };
