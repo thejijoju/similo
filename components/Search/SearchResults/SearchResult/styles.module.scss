@@ -352,7 +352,19 @@
       display: none;
     }
     .details {
+      display: flex;
+      position: relative;
+
       .mainDetails {
+        position: relative;
+        min-width: 100%;
+        &.hidden {
+          left: -101%;
+        }
+        &.visible {
+          left: 0;
+        }
+        transition: left 0.1s ease-in-out;
         .infoBlock {
           justify-content: unset;
           width: 100%;
@@ -375,7 +387,19 @@
       }
       .additionalDetails {
         //display: none;
+        min-width: 100%;
         margin-bottom: 0;
+        padding-top: 30px;
+        position: absolute;
+
+        &.hidden {
+          left: 100%;
+        }
+        &.visible {
+          left: 0;
+        }
+        transition: left 0.1s ease-in-out;
+        top: 0;
         .infoBlock {
           width: 100%;
           margin-bottom: 18px;
@@ -393,9 +417,12 @@
           }
         }
         .keyPeople {
+          display: flex;
+          flex-direction: column;
           width: 100%;
           .title {
             min-width: 50%;
+            margin-bottom: 5px;
           }
           .content {
             margin-left: 0;
@@ -410,23 +437,17 @@
     justify-content: center;
     margin-bottom: 8px;
     span {
-      display: flex;
-      align-items: center;
-      font-size: 10px;
-      line-height: 12px;
-      letter-spacing: 0.142857px;
-      color: #c1abab;
-    }
-    i {
-      display: block;
-      width: 16px;
-      height: 6px;
-      margin-right: 10px;
+      width: 8px;
+      height: 8px;
+      background-color: #cae3e7;
       font-size: 0;
-      background-image: url(../../../../public/images/wideArrowDown.svg);
-      background-size: contain;
-      &.rotate {
-        transform: rotate(180deg);
+      border-radius: 50%;
+      display: inline-block;
+      &.active {
+        background-color: #14a2b8;
+      }
+      &:first-child {
+        margin-right: 5px;
       }
     }
   }

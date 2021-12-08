@@ -299,18 +299,23 @@ export default function SearchResult({
     useState(false);
   const [isSubsidiariesComponentVisible, setIsSubsidiariesComponentVisible] =
     useState(false);
-  const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState(false);
+  const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState(true);
   const [keyPeopleOffset, setKeyPeopleOffset] = useState(0);
   const [companyWebsiteLink, setCompanyWebsiteLink] = useState('');
   const [companyWebsiteText, setCompanyWebsiteText] = useState('');
   const [stockDataKeyTitle, setStockDataKeyTitle] = useState('');
   const [isFullAboutVisible, setIsFullAboutVisible] = useState(false);
   const [currentStockDataKey, setCurrentStockDataKey] = useState('stockPrice');
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [visibleDetailsPage, setVisibleDetailsPage] = useState(1);
 
   const companyCardRef = useRef();
   const companyCardInitialHeight = useRef();
   const employeesCountRef = useRef();
   const tagsRef = useRef();
+  const additionalDetailsRef = useRef();
+  const detailsRef = useRef();
 
   useEffect(() => {
     setCompanyWebsiteLink(company.websiteUrl);
@@ -639,6 +644,47 @@ export default function SearchResult({
     csrLinks,
   ]);
 
+  const swipeDetails = (direction) => {
+    if (direction === 'left') {
+      if (visibleDetailsPage === 2) {
+        setVisibleDetailsPage(1);
+      }
+    } else if (direction === 'right') {
+      if (visibleDetailsPage === 1) {
+        setVisibleDetailsPage(2);
+      }
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchEnd === 0) {
+      return;
+    }
+    if (touchStart - touchEnd > 150) {
+      swipeDetails('right');
+    }
+
+    if (touchStart - touchEnd < -150) {
+      swipeDetails('left');
+    }
+  };
+
+  useEffect(() => {
+    if (additionalDetailsRef.current && visibleDetailsPage === 2) {
+      detailsRef.current.style.height = `${additionalDetailsRef.current.offsetHeight}px`;
+    } else if (additionalDetailsRef.current && visibleDetailsPage === 1) {
+      detailsRef.current.style.height = '';
+    }
+  }, [visibleDetailsPage, isFullAboutVisible, isCompanyCardExpanded]);
+
   return (
     <>
       <div
@@ -663,6 +709,9 @@ export default function SearchResult({
             }
           }
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <div className={classes.header}>
           <div
@@ -716,8 +765,13 @@ export default function SearchResult({
               ))}
           </div>
           {isCompanyCardExpanded && (
-            <div className={classes.details}>
-              <div className={classes.mainDetails}>
+            <div className={classes.details} ref={detailsRef}>
+              <div
+                className={classnames(
+                  classes.mainDetails,
+                  visibleDetailsPage === 2 ? classes.hidden : classes.visible
+                )}
+              >
                 <div className={classes.infoBlock}>
                   <span className={classes.title}>Website</span>
                   <span className={classes.content}>
@@ -847,13 +901,18 @@ export default function SearchResult({
                 className={classes.divider}
                 style={{
                   display:
-                    isAdditionalInfoVisible || window.innerWidth > 1201
-                      ? 'block'
-                      : 'none',
+                    // isAdditionalInfoVisible || window.innerWidth > 1201
+                    //   ? 'block'
+                    //   : 'none',
+                    'none',
                 }}
               />
               <div
-                className={classes.additionalDetails}
+                className={classnames(
+                  classes.additionalDetails,
+                  visibleDetailsPage === 1 ? classes.hidden : classes.visible
+                )}
+                ref={additionalDetailsRef}
                 style={{
                   display:
                     isAdditionalInfoVisible || window.innerWidth > 1201
@@ -983,21 +1042,19 @@ export default function SearchResult({
             companyName={company.name}
           />
         )}
-        <div
-          className={classes.showMore}
-          onClick={(event) => {
-            event.stopPropagation();
-            setIsAdditionalInfoVisible((prevState) => !prevState);
-          }}
-        >
-          <span>
-            <i
-              className={classnames(isAdditionalInfoVisible && classes.rotate)}
+        <div className={classes.showMore}>
+          <div>
+            <span
+              className={classnames(visibleDetailsPage === 1 && classes.active)}
             >
-              arrow icon
-            </i>
-            {isAdditionalInfoVisible ? 'see less' : 'see more'}
-          </span>
+              1
+            </span>
+            <span
+              className={classnames(visibleDetailsPage === 2 && classes.active)}
+            >
+              2
+            </span>
+          </div>
         </div>
         <Modal
           isOpen={isOpenModal}
