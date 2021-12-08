@@ -74,9 +74,7 @@ function convertNumberToString(number) {
 }
 
 function openCSRLink(link) {
-  if (window.innerWidth > 1200) {
-    window.open(link, '_blank');
-  }
+  window.open(link, '_blank');
 }
 
 function createDateString(date) {
@@ -739,7 +737,10 @@ export default function SearchResult({
                       classes.active
                   )}
                   key={tag}
-                  onClick={() => toggleExpertiseFilter(tag.trim())}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    toggleExpertiseFilter(tag.trim());
+                  }}
                 >
                   {tag.trim()}
                 </span>
@@ -754,7 +755,8 @@ export default function SearchResult({
                       classes.active
                   )}
                   key={tag}
-                  onClick={() => {
+                  onClick={(event) => {
+                    event.stopPropagation();
                     openCSRLink(
                       csrLinks.find((link) => link.name === tag.trim()).url
                     );
