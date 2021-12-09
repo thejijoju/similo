@@ -7,7 +7,7 @@ import classes from './styles.module.scss';
 
 export default function HeaderWithoutSearch() {
   return (
-    <header className={classes.Header}>
+    <header className={classes.HeaderWithoutSearch}>
       <div className={classes.logo}>
         <Link href="/">
           <a>
