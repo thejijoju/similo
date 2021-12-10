@@ -340,20 +340,22 @@ export default function Filters({ expertise, csrs }) {
             state={companyDiversityFilter}
             setState={setCompanyDiversityFilter}
           />
-          <Filter
-            title="CSR"
-            values={
-              // eslint-disable-next-line no-nested-ternary
-              csrsByIndustry.length
-                ? csrsByIndustry
-                : router.query.term
-                ? csrs
-                : []
-            }
-            defaultSize={2}
-            state={companyCSRFilter}
-            setState={setCompanyCSRFilter}
-          />
+          {csrsByIndustry.length || router.query.term ? (
+            <Filter
+              title="CSR"
+              values={
+                // eslint-disable-next-line no-nested-ternary
+                csrsByIndustry.length
+                  ? csrsByIndustry
+                  : router.query.term
+                  ? csrs
+                  : []
+              }
+              defaultSize={2}
+              state={companyCSRFilter}
+              setState={setCompanyCSRFilter}
+            />
+          ) : null}
           <Filter
             title="Location"
             values={LOCATIONS}
