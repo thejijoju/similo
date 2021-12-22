@@ -3,8 +3,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import ReactTooltip from 'react-tooltip';
 import classnames from 'classnames';
 import { FaTimes } from 'react-icons/fa';
-// import { CgRemove } from 'react-icons/cg';
 
+import useOnClickOutside from '@/helpers/useOnClickOutside';
 import classes from './styles.module.scss';
 
 export default function FilterElement({
@@ -17,6 +17,8 @@ export default function FilterElement({
   const [initialWidth, setInitialWidth] = useState('');
 
   const filterRef = useRef();
+
+  useOnClickOutside(filterRef, () => setSelectedFilter(null));
 
   useEffect(() => {
     setIsMounted(true);
