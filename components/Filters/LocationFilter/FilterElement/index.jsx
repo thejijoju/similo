@@ -18,7 +18,11 @@ export default function FilterElement({
 
   const filterRef = useRef();
 
-  useOnClickOutside(filterRef, () => setSelectedFilter(null));
+  useOnClickOutside(filterRef, () => {
+    if (filter === selectedFilter) {
+      setSelectedFilter(null);
+    }
+  });
 
   useEffect(() => {
     setIsMounted(true);
