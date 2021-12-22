@@ -364,7 +364,7 @@
         &.visible {
           left: 0;
         }
-        transition: left 0.1s ease-in-out;
+        transition: left 0.03s ease-in-out;
         .infoBlock {
           justify-content: unset;
           width: 100%;
@@ -398,7 +398,7 @@
         &.visible {
           left: 0;
         }
-        transition: left 0.1s ease-in-out;
+        transition: left 0.03s ease-in-out;
         top: 0;
         .infoBlock {
           width: 100%;

@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import { SearchResultsContext, UIContext } from '@/context/index';
 import Filter from './Filter';
+import LocationFilter from './LocationFilter';
 import { API_URL } from '../../constants/index';
 
 import classes from './styles.module.scss';
@@ -31,7 +32,7 @@ const REVENUE = [
   '50+ billion',
 ];
 
-const LOCATIONS = [
+/* const LOCATIONS = [
   'Germany',
   'France',
   'United Kingdom',
@@ -83,7 +84,7 @@ const LOCATIONS = [
   'Turkey',
   'Ukraine',
   'Vatican City',
-];
+]; */
 
 const DIVERSITY = ['Underrepresented minorities', 'Female CEO'];
 const DIVERSITY_DETAILS = [
@@ -110,7 +111,12 @@ function createSortingButtonLabel(currentStockDataKey) {
   }
 }
 
-export default function Filters({ expertise, csrs }) {
+export default function Filters({
+  expertise,
+  csrs,
+  locations,
+  locationCounts,
+}) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
@@ -356,13 +362,19 @@ export default function Filters({ expertise, csrs }) {
               setState={setCompanyCSRFilter}
             />
           ) : null}
-          <Filter
+          {/* <Filter
             title="Location"
             values={LOCATIONS}
             defaultSize={5}
             search
             state={companyLocationFilter}
             setState={setCompanyLocationFilter}
+          /> */}
+          <LocationFilter
+            companyLocationFilter={companyLocationFilter}
+            setCompanyLocationFilter={setCompanyLocationFilter}
+            locations={locations}
+            locationCounts={locationCounts}
           />
           <Filter
             values={COMPANY_SIZES}

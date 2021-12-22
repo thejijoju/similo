@@ -1,0 +1,109 @@
+.LocationFilter {
+  box-sizing: border-box;
+  padding-top: 25px;
+  padding-left: 26px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #e0ddce;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 21px;
+    span {
+      color: #727374;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 21px;
+      letter-spacing: 0.3px;
+      color: #383834;
+    }
+  }
+
+  .activeFilters {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+    .activeFilter {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      white-space: nowrap;
+      background-color: #caedfe;
+      border-radius: 15px;
+      cursor: pointer;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .inputContainer {
+    position: relative;
+    .searchSuggestions {
+      position: absolute;
+      top: 27px;
+      z-index: 1;
+      box-sizing: border-box;
+      width: 100%;
+      background-color: #ffffff;
+      border: 1px solid #d6d3d3;
+      box-sizing: border-box;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      .suggestion {
+        display: block;
+        padding-top: 7px;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 5px;
+        //font-family: LucidaGrande;
+        font-size: 14px;
+        line-height: 16px;
+        color: #605f5c;
+        cursor: pointer;
+        &:hover {
+          background-color: #d8d8d8;
+        }
+      }
+    }
+    input {
+      width: 100%;
+      padding-bottom: 5px;
+      border: none;
+      font-size: 14px;
+      border-bottom: 1px solid #626263;
+      outline: none;
+    }
+  }
+
+  .filters {
+    padding-top: 10px;
+    .filter {
+      margin-bottom: 5px;
+      color: #006096;
+      white-space: nowrap;
+      cursor: pointer;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .LocationFilter {
+    padding-right: 15px;
+    input {
+      background-color: transparent;
+    }
+  }
+}

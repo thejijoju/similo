@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Location.hasMany(models.CompanyLocation, {
         foreignKey: 'locationId',
+        onDelete: 'cascade',
       });
       Location.belongsToMany(models.Company, {
         through: models.CompanyLocation,
@@ -30,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       city: DataTypes.STRING,
       country: DataTypes.STRING,
+      region: DataTypes.STRING,
     },
     {
       sequelize,

@@ -172,12 +172,14 @@ async function addLocations(companies) {
   const promises = [];
 
   locationsSet.forEach((location) => {
-    const city = location.split(' -- ')[1];
-    const country = location.split(' -- ')[0];
-    if (!city || !country) {
+    const locationArr = location.split(' -- ');
+    const city = locationArr[0];
+    const region = locationArr[1];
+    const country = locationArr[2];
+    if (!city || !country || !region) {
       return;
     }
-    promises.push(Location.findOrCreate({ where: { city, country } }));
+    promises.push(Location.findOrCreate({ where: { city, country, region } }));
   });
 
   return Promise.all(promises);
@@ -185,19 +187,30 @@ async function addLocations(companies) {
 
 async function addCompanyLocations(companies) {
   const promises = [];
+
   companies.forEach((company) => {
     if (!company.locations) {
       return;
     }
+
     const locations = company.locations.split(';');
+
     locations.forEach(async (location) => {
-      let city = location.split(' -- ')[1];
-      let country = location.split(' -- ')[0];
+      const locationArr = location.split(' -- ');
+      let city = locationArr[0];
+      let region = locationArr[1];
+      let country = locationArr[2];
 
       if (!city) {
         city = null;
       } else {
         city = city.trim();
+      }
+
+      if (!region) {
+        region = null;
+      } else {
+        region = region.trim();
       }
 
       if (!country) {
@@ -207,7 +220,7 @@ async function addCompanyLocations(companies) {
       }
 
       const locationFromDB = await Location.findOne({
-        where: { country, city },
+        where: { country, city, region },
       });
 
       if (locationFromDB) {

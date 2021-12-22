@@ -19,6 +19,7 @@ export default function HomePage({
   csrs,
   csrLinks,
   expertiseLinks,
+  locationCounts,
 }) {
   const router = useRouter();
 
@@ -103,7 +104,12 @@ export default function HomePage({
         <title>Similo</title>
       </Head>
       <main className={classes.main}>
-        <Filters expertise={expertise} locations={locations} csrs={csrs} />
+        <Filters
+          expertise={expertise}
+          locations={locations}
+          csrs={csrs}
+          locationCounts={locationCounts}
+        />
         <SearchResults
           searchResults={searchResults}
           csrLinks={csrLinks}
@@ -136,7 +142,14 @@ export async function getServerSideProps(context) {
   const csrLinks = await axios.get(`${API_URL}/companies/csrLinks`);
   const expertiseLinks = await axios.get(`${API_URL}/companies/expertiseLinks`);
 
-  const sortedLocations = [...locations.data.data.locations].sort((a, b) => {
+  const locationsWithoutCounts = locations.data.data.locations.map(
+    (location) => {
+      const locationArr = location.split(', ');
+      return `${locationArr[0]}, ${locationArr[1]}, ${locationArr[2]}`;
+    }
+  );
+
+  /* const sortedLocations = locationsWithoutCounts.sort((a, b) => {
     if (a < b) {
       return -1;
     }
@@ -144,16 +157,27 @@ export async function getServerSideProps(context) {
       return 1;
     }
     return 0;
+  }); */
+
+  const locationCounts = {};
+  locations.data.data.locations.forEach((location) => {
+    const locationArr = location.split(', ');
+    // eslint-disable-next-line prefer-destructuring
+    locationCounts[`${locationArr[0]}, ${locationArr[1]}, ${locationArr[2]}`] =
+      locationArr[3];
   });
+
+  // console.log('locationsCounts', locationCounts);
 
   return {
     props: {
       searchResults,
       expertise: expertise.data.data.expertise,
-      locations: sortedLocations,
+      locations: locationsWithoutCounts,
       csrs: csrs.data.data.csr,
       csrLinks: csrLinks.data.data.csrLinks,
       expertiseLinks: expertiseLinks.data.data.expertiseLinks,
+      locationCounts,
     },
   };
 }

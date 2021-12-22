@@ -1,0 +1,72 @@
+.FilterElement {
+  height: 29px;
+  max-width: 266px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  background-color: #caedfe;
+  border-radius: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+
+  &.selected {
+    display: flex;
+    align-items: center;
+    height: 29px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 9px;
+    padding-right: 0;
+    color: #b20722;
+    background-color: #ffe0db;
+    border: 1px solid #b20722;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  .filterName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .button {
+    position: relative;
+    top: -1px;
+    right: -1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 25px;
+    height: calc(100% + 4px);
+    min-width: 25px;
+    height: calc(100% + 4px);
+    border-left: 1px solid #b20722;
+
+    &.excludeButton {
+      overflow: hidden;
+      border-right: none;
+    }
+
+    &.removeButton {
+      position: relative;
+      top: 0;
+      height: calc(100% + 2px);
+
+      svg {
+        left: -1px;
+      }
+    }
+
+    svg {
+      position: relative;
+      top: 1px;
+    }
+  }
+}

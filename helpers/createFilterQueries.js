@@ -120,15 +120,28 @@ module.exports = function createFilterQueries(
   }
 
   queries.locationsQuery = '';
+
   if (locations[0] !== '') {
     queries.locationsQuery = `AND \n(`;
     locations.forEach((location, index) => {
-      if (index !== locations.length - 1) {
-        queries.locationsQuery += ` "locations" LIKE ? OR`;
+      const parsedLocation = location.split('|');
+      if (parsedLocation.length === 3) {
+        const parsedLocationString = `${parsedLocation[0]} -- ${parsedLocation[1]} -- ${parsedLocation[2]}`;
+        if (index !== locations.length - 1) {
+          queries.locationsQuery += ` "locations" LIKE ? OR`;
+        } else {
+          queries.locationsQuery += ` "locations" LIKE ? )`;
+        }
+        replacements.push(`%${parsedLocationString}%`);
       } else {
-        queries.locationsQuery += ` "locations" LIKE ? )`;
+        const parsedLocationString = `${parsedLocation[0]}`;
+        if (index !== locations.length - 1) {
+          queries.locationsQuery += ` "locations" LIKE ? OR`;
+        } else {
+          queries.locationsQuery += ` "locations" LIKE ? )`;
+        }
+        replacements.push(`%${parsedLocationString}%`);
       }
-      replacements.push(`%${location}%`);
     });
   }
 

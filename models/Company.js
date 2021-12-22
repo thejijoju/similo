@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         hooks: true,
       });
       Company.belongsToMany(models.CSR, {
-        through: models.CompanyLocation,
+        through: models.CompanyCSR,
         foreignKey: 'companyId',
         otherKey: 'csrId',
         onDelete: 'cascade',

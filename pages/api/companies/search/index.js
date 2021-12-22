@@ -54,6 +54,7 @@ export default async function handler(req, res) {
   const revenue = (req.query.revenue || '').split(',|');
   const revenueRanges = convertRevenueRanges(revenue);
 
+  console.log('LOCATIONS', req.query.locations);
   const locations = (req.query.locations || '').split(',');
 
   const csr = (req.query.csr || '').split(',');
