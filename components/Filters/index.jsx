@@ -114,8 +114,8 @@ function createSortingButtonLabel(currentStockDataKey) {
 export default function Filters({
   expertise,
   csrs,
-  locations,
-  locationCounts,
+  // locations,
+  // locationCounts,
 }) {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
@@ -373,8 +373,8 @@ export default function Filters({
           <LocationFilter
             companyLocationFilter={companyLocationFilter}
             setCompanyLocationFilter={setCompanyLocationFilter}
-            locations={locations}
-            locationCounts={locationCounts}
+            // locations={locations}
+            // locationCounts={locationCounts}
           />
           <Filter
             values={COMPANY_SIZES}

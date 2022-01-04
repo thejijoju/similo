@@ -15,11 +15,11 @@ import { API_URL } from '../constants/index';
 export default function HomePage({
   searchResults,
   expertise,
-  locations,
+  // locations,
   csrs,
   csrLinks,
   expertiseLinks,
-  locationCounts,
+  // locationCounts,
 }) {
   const router = useRouter();
 
@@ -106,9 +106,9 @@ export default function HomePage({
       <main className={classes.main}>
         <Filters
           expertise={expertise}
-          locations={locations}
+          // locations={locations}
           csrs={csrs}
-          locationCounts={locationCounts}
+          // locationCounts={locationCounts}
         />
         <SearchResults
           searchResults={searchResults}
@@ -137,27 +137,17 @@ export async function getServerSideProps(context) {
   }
 
   const expertise = await axios.get(`${API_URL}/companies/expertise`);
-  const locations = await axios.get(`${API_URL}/companies/locations`);
+  // const locations = await axios.get(`${API_URL}/companies/locations`);
   const csrs = await axios.get(`${API_URL}/companies/csrs`);
   const csrLinks = await axios.get(`${API_URL}/companies/csrLinks`);
   const expertiseLinks = await axios.get(`${API_URL}/companies/expertiseLinks`);
 
-  const locationsWithoutCounts = locations.data.data.locations.map(
+  /*  const locationsWithoutCounts = locations.data.data.locations.map(
     (location) => {
       const locationArr = location.split(', ');
       return `${locationArr[0]}, ${locationArr[1]}, ${locationArr[2]}`;
     }
   );
-
-  /* const sortedLocations = locationsWithoutCounts.sort((a, b) => {
-    if (a < b) {
-      return -1;
-    }
-    if (a > b) {
-      return 1;
-    }
-    return 0;
-  }); */
 
   const locationCounts = {};
   locations.data.data.locations.forEach((location) => {
@@ -166,18 +156,16 @@ export async function getServerSideProps(context) {
     locationCounts[`${locationArr[0]}, ${locationArr[1]}, ${locationArr[2]}`] =
       locationArr[3];
   });
-
-  // console.log('locationsCounts', locationCounts);
-
+ */
   return {
     props: {
       searchResults,
       expertise: expertise.data.data.expertise,
-      locations: locationsWithoutCounts,
+      // locations: locationsWithoutCounts,
       csrs: csrs.data.data.csr,
       csrLinks: csrLinks.data.data.csrLinks,
       expertiseLinks: expertiseLinks.data.data.expertiseLinks,
-      locationCounts,
+      //  locationCounts,
     },
   };
 }

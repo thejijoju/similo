@@ -65,17 +65,17 @@ function createLocationSuggestion(location, locationValue) {
   }
 }
 
-function createLocationText(location) {
+/* function createLocationText(location) {
   const locationTextArray = location.split(',');
   const locationText = `${locationTextArray[0]}, ${locationTextArray[2]}`;
   return locationText;
-}
+} */
 
 export default function LocationFilter({
   companyLocationFilter,
   setCompanyLocationFilter,
-  locations,
-  locationCounts,
+  //  locations,
+  //  locationCounts,
 }) {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
@@ -181,7 +181,7 @@ export default function LocationFilter({
           onKeyUp={getLocationSuggestions}
         />
       </div>
-      <div className={classes.filters}>
+      {/* <div className={classes.filters}>
         {locations.map((location) => {
           return (
             <div
@@ -206,7 +206,7 @@ export default function LocationFilter({
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }
