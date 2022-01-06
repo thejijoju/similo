@@ -5,6 +5,7 @@ import axios from 'axios';
 import classnames from 'classnames';
 import ReactTooltip from 'react-tooltip';
 import Truncate from 'react-truncate';
+import amplitude from 'amplitude-js';
 
 import { SearchResultsContext } from '@/context/index';
 import csrToUpperCase from '@/helpers/csrToUpperCase';
@@ -172,6 +173,7 @@ export default function index({
                         if (prevState.includes(location.country)) {
                           return prevState;
                         }
+
                         return [...prevState, location.country];
                       });
                       setLocationSuggestions([]);
@@ -217,6 +219,9 @@ export default function index({
                 onChange={() => {
                   const indexOfValue = state.indexOf(value);
                   if (indexOfValue === -1) {
+                    amplitude
+                      .getInstance()
+                      .logEvent('Search Filter', { type: title, value });
                     setState((prevState) => {
                       const newState = [...prevState, value];
                       return newState;

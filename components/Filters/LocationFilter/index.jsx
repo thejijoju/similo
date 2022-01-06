@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
+import amplitude from 'amplitude-js';
 
 import FilterElement from './FilterElement';
 import classes from './styles.module.scss';
@@ -155,6 +156,11 @@ export default function LocationFilter({
                     if (companyLocationFilter.includes(location.textContent)) {
                       return;
                     }
+
+                    amplitude.getInstance().logEvent('Search Filter', {
+                      type: 'Location',
+                      value: location.textContent,
+                    });
                     setCompanyLocationFilter((prevState) => {
                       if (prevState.includes(location.country)) {
                         return prevState;

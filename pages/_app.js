@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+import amplitude from 'amplitude-js';
 
 import Layout from '@/components/Layout';
 import { SearchResultsContext, UIContext } from '../context/index';
+import { AMPLITUDE_API_KEY } from '../constants';
 
 import '@/styles/globals.css';
 
@@ -31,6 +35,14 @@ function MyApp({ Component, pageProps }) {
   const [globalStockDataKey, setGlobalStockDataKey] = useState('stockPrice');
   const [companyWithLastSwitchedStockKey, setCompanyWithLastSwitchedStockKey] =
     useState('');
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.isReady) {
+      amplitude.getInstance().init(AMPLITUDE_API_KEY);
+    }
+  }, [router.isReady]);
 
   return (
     <SearchResultsContext.Provider

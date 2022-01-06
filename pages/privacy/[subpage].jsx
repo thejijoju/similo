@@ -1,13 +1,14 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react';
-import { FaCalendar } from 'react-icons/fa';
+import React, { useEffect } from 'react';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
+import { FaCalendar } from 'react-icons/fa';
 import classnames from 'classnames';
 import axios from 'axios';
+import amplitude from 'amplitude-js';
 
 import classes from './styles.module.scss';
 import { API_URL } from '../../constants';
@@ -40,6 +41,13 @@ const createDateString = (date) => {
 export default function PrivacyPage({ pageContent, updatedAt }) {
   const router = useRouter();
   const { subpage } = router.query;
+
+  useEffect(() => {
+    if (router.isReady) {
+      amplitude.getInstance().logEvent('About Page Opened');
+    }
+  }, [router.isReady]);
+
   return (
     <>
       <Head>

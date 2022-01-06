@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import qs from 'qs';
 import classnames from 'classnames';
+import amplitude from 'amplitude-js';
 
 import { SearchResultsContext, UIContext } from '@/context/index';
 import classes from './styles.module.scss';
@@ -85,6 +86,7 @@ export default function Search({
     let isIndustry;
     let entityName;
     try {
+      amplitude.getInstance().logEvent('Search', { searchTerm });
       const response = await axios.get(
         `${API_URL}/companies/search/isCompany?term=${encodeURIComponent(
           searchTerm

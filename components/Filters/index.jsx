@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import classnames from 'classnames';
 import usePortal from 'react-useportal';
 import axios from 'axios';
+import amplitude from 'amplitude-js';
 
 import { SearchResultsContext, UIContext } from '@/context/index';
 import Filter from './Filter';
@@ -253,14 +254,26 @@ export default function Filters({
           onClick={() => {
             setSortOption((prevOption) => {
               if (prevOption === 'relevant') {
+                amplitude.getInstance().logEvent('Sort Search Results', {
+                  value: 'recent',
+                });
                 return 'recent';
               }
               if (prevOption === 'recent') {
+                amplitude.getInstance().logEvent('Sort Search Results', {
+                  value: `stock${globalStockDataKey} asc`,
+                });
                 return `stock${globalStockDataKey} asc`;
               }
               if (prevOption === `stock${globalStockDataKey} asc`) {
+                amplitude.getInstance().logEvent('Sort Search Results', {
+                  value: `stock${globalStockDataKey} desc`,
+                });
                 return `stock${globalStockDataKey} desc`;
               }
+              amplitude.getInstance().logEvent('Sort Search Results', {
+                value: 'relevant',
+              });
               return 'relevant';
             });
           }}

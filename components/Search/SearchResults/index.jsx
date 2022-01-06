@@ -1,8 +1,15 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
 import arrayMove from 'array-move';
+import amplitude from 'amplitude-js';
 
 import { COMPANIES_PER_PAGE, API_URL } from 'constants/index';
 import SkeletonLoader from '@/components/SkeletonLoader';
@@ -31,6 +38,8 @@ export default function SearchResults({
     useState('');
   const [addSearchResultsDirection, setAddSearchResultsDirection] =
     useState('bottom');
+  const [y, setY] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const router = useRouter();
 
@@ -316,6 +325,30 @@ export default function SearchResults({
       setCompanyCSRFilter([]);
     }
   }, [router.query]);
+
+  const handleScroll = useCallback(
+    (e) => {
+      const window = e.currentTarget;
+      if (y < window.scrollY) {
+        if (isScrolled) {
+          return;
+        }
+        amplitude.getInstance().logEvent('Scroll Down');
+        setIsScrolled(true);
+      }
+      setY(window.scrollY);
+    },
+    [y, isScrolled]
+  );
+
+  useEffect(() => {
+    setY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
 
   const switchPage = () => {
     if (

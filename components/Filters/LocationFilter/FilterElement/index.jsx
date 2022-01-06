@@ -45,7 +45,9 @@ export default function FilterElement({
     <div
       style={{ width: selectedFilter === filter ? initialWidth : '' }}
       ref={filterRef}
-      onClick={() => setSelectedFilter(filter)}
+      onClick={() => {
+        setSelectedFilter(filter);
+      }}
       className={classnames(
         classes.FilterElement,
         selectedFilter === filter && classes.selected

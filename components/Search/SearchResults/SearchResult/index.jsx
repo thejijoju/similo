@@ -2,9 +2,10 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import psl from 'psl';
 
+import psl from 'psl';
 import classnames from 'classnames';
+import amplitude from 'amplitude-js';
 
 import csrToUpperCase from '@/helpers/csrToUpperCase';
 import convertNumberToCompanySizeRanges from '@/helpers/convertNumberToCompanySizeRange';
@@ -297,7 +298,8 @@ export default function SearchResult({
     useState(false);
   const [isSubsidiariesComponentVisible, setIsSubsidiariesComponentVisible] =
     useState(false);
-  const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState(true);
+  const [isAdditionalInfoVisible /* , setIsAdditionalInfoVisible */] =
+    useState(true);
   const [keyPeopleOffset, setKeyPeopleOffset] = useState(0);
   const [companyWebsiteLink, setCompanyWebsiteLink] = useState('');
   const [companyWebsiteText, setCompanyWebsiteText] = useState('');
@@ -383,6 +385,10 @@ export default function SearchResult({
   const toggleExpertiseFilter = (value) => {
     const indexOfValue = companyExpertiseFilter.indexOf(value);
     if (indexOfValue === -1) {
+      amplitude.getInstance().logEvent('Search Filter', {
+        type: 'Expertise',
+        value,
+      });
       setCompanyExpertiseFilter((prevState) => {
         const newState = [...prevState, value];
         return newState;
@@ -406,6 +412,10 @@ export default function SearchResult({
           if (filter === prevFilter && prevFilter !== '') {
             return '';
           }
+          amplitude.getInstance().logEvent('Search Filter', {
+            type: 'Parent Organization',
+            value: filter,
+          });
           return filter;
         });
         break;
@@ -414,6 +424,10 @@ export default function SearchResult({
           if (filter === prevFilter && prevFilter !== '') {
             return '';
           }
+          amplitude.getInstance().logEvent('Search Filter', {
+            type: 'HQ Location',
+            value: filter,
+          });
           return filter;
         });
         break;
@@ -422,6 +436,10 @@ export default function SearchResult({
           if (filter === prevFilter && prevFilter !== '') {
             return '';
           }
+          amplitude.getInstance().logEvent('Search Filter', {
+            type: 'Year Of Foundation',
+            value: filter,
+          });
           return filter;
         });
         break;
@@ -430,7 +448,12 @@ export default function SearchResult({
           if (prevFilter[0] === convertNumberToCompanySizeRanges(filter)) {
             return [];
           }
-          return [convertNumberToCompanySizeRanges(filter)];
+          const value = convertNumberToCompanySizeRanges(filter);
+          amplitude.getInstance().logEvent('Search Filter', {
+            type: 'Company size',
+            value,
+          });
+          return [value];
         });
         break;
       case 'revenue':
@@ -438,7 +461,12 @@ export default function SearchResult({
           if (prevFilter[0] === convertNumberToCompanyRevenueRange(filter)) {
             return [];
           }
-          return [convertNumberToCompanyRevenueRange(filter)];
+          const value = convertNumberToCompanyRevenueRange(filter);
+          amplitude.getInstance().logEvent('Search Filter', {
+            type: 'Revenue',
+            value,
+          });
+          return [value];
         });
         break;
       default:
@@ -778,6 +806,13 @@ export default function SearchResult({
                   <span className={classes.title}>Website</span>
                   <span className={classes.content}>
                     <a
+                      onClick={() => {
+                        amplitude.getInstance().logEvent('Open Link', {
+                          url: companyWebsiteLink.includes('http')
+                            ? companyWebsiteLink
+                            : `https://${companyWebsiteLink}`,
+                        });
+                      }}
                       className={classes.companyLink}
                       href={
                         companyWebsiteLink.includes('http')
@@ -1030,6 +1065,9 @@ export default function SearchResult({
             if (isCompanyCardExpanded) {
               collapseCompanyCard();
             } else {
+              amplitude
+                .getInstance()
+                .logEvent('Company Card Open', { companyName: company.name });
               expandCompanyCard();
             }
           }}

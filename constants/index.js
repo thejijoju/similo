@@ -17,4 +17,5 @@ module.exports = {
   FEEDBACK_EMAIL: process.env.FEEDBACK_EMAIL,
 
   YAHOO_FINANCE_API_KEY: process.env.YAHOO_FINANCE_API_KEY,
+  AMPLITUDE_API_KEY: process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY,
 };
