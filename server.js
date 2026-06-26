@@ -2,8 +2,8 @@ require('dotenv-flow').config();
 const express = require('express');
 const { parse } = require('url');
 const next = require('next');
-const configure = require('./config');
-const sequelize = require('./config/db');
+const api = require('./config/api');
+const passport = require('./config/passport');
 const defaultErrorHandler = require('./helpers/defaultErrorHandler');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -12,7 +12,9 @@ const nextHandler = nextApp.getRequestHandler();
 
 const app = express();
 
-configure(app);
+api(app);
+passport(app);
+
 app.use((req, res) => {
   const parsedUrl = parse(req.url, true);
   nextHandler(req, res, parsedUrl);
@@ -22,13 +24,9 @@ app.use(defaultErrorHandler);
 
 nextApp
   .prepare()
-  .then(() => sequelize.authenticate())
   .then(() => {
     const server = app.listen(process.env.PORT, () => {
-      // eslint-disable-next-line no-console
       console.log(`  Server Listening on port ${server.address().port}`);
-      // eslint-disable-next-line global-require
-      require('./helpers/updateStockData');
     });
   })
   .catch((error) => console.log(error));
