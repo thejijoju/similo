@@ -189,7 +189,6 @@ export default async function searchCompanies(term, query = {}) {
         ...c,
         id: offset + i + 1,
         companyId: offset + i + 1,
-        logoPath: `https://logo.clearbit.com/${c.websiteUrl}`,
         hidden: false,
         stockData: null,
       }));

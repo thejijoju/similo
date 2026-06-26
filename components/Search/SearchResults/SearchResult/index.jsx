@@ -740,14 +740,23 @@ export default function SearchResult({
         onTouchEnd={handleTouchEnd}
       >
         <div className={classes.header}>
-          <div
+          <img
             className={classes.logo}
-            style={{
-              backgroundImage: `url(${
-                company.logoLocalPath
-                  ? `uploads/${company.logoLocalPath}`
-                  : company.logoPath
-              })`,
+            alt={`${company.name} logo`}
+            src={
+              company.logoLocalPath
+                ? `uploads/${company.logoLocalPath}`
+                : `https://img.logo.dev/${company.websiteUrl}?token=${process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN}&size=160&format=png`
+            }
+            onError={(e) => {
+              // Logo.dev had no logo for this domain — fall back to the
+              // site's favicon, then give up to avoid an error loop.
+              if (e.currentTarget.dataset.fb) {
+                e.currentTarget.style.visibility = 'hidden';
+                return;
+              }
+              e.currentTarget.dataset.fb = '1';
+              e.currentTarget.src = `https://www.google.com/s2/favicons?domain=${company.websiteUrl}&sz=128`;
             }}
           />
           <h1 className={classes.mobileTitle}>{company.name}</h1>
