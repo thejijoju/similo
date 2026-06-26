@@ -109,8 +109,8 @@ For each company, return an object with EXACTLY these fields (use null for unkno
   "employeesCount": 28000,
   "areaServed": "Worldwide",
   "subsidiaries": "comma-separated subsidiary names or null",
-  "keyPeople": "Name (Title), Name (Title) or null",
-  "about": "2-3 sentence description of the company",
+  "keyPeople": "up to 3 as Name (Title), Name (Title), Name (Title) or null",
+  "about": "ONE concise sentence, max 140 characters",
   "companyType": "Public or Private or Subsidiary",
   "hasFemaleCEO": false,
   "hasUnderrepresentedMinorities": false
