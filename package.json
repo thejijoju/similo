@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node server.js",
-    "build": "next build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider next build",
     "start": "NODE_ENV=production node server.js",
     "prod:start": "NODE_ENV=production pm2 start server.js --name \"similo-next\"",
     "prod:restart": "yarn build && pm2 restart \"similo-next\"",
