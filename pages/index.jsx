@@ -2,12 +2,9 @@ import React, { useEffect, useContext } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
-import qs from 'qs';
-
 import Filters from '@/components/Filters';
 import SearchResults from '@/components/Search/SearchResults';
 
-import searchCompanies from '@/helpers/claudeSearch';
 import { SearchResultsContext, UIContext } from '@/context/index';
 import classes from './styles.module.scss';
 
@@ -119,17 +116,12 @@ export default function HomePage({
   );
 }
 
-export async function getServerSideProps(context) {
-  const { term } = context.query;
-
-  let searchResults = null;
-  if (term) {
-    searchResults = await searchCompanies(decodeURIComponent(term), context.query);
-  }
-
+export async function getServerSideProps() {
+  // The page renders instantly; SearchResults fetches data client-side
+  // and shows a skeleton loader while Claude generates the results.
   return {
     props: {
-      searchResults,
+      searchResults: null,
       expertise: [],
       csrs: [],
       csrLinks: [],

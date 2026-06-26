@@ -419,6 +419,18 @@ export default function SearchResults({
   }, [searchResultsInitialHeight]);
 
   if (!innerSearchResults || !innerSearchResults.data) {
+    // A search term is in the URL but results haven't arrived yet —
+    // show the skeleton loader instead of a blank screen.
+    if (router.query.term) {
+      return (
+        <div
+          className={classes.SearchResults}
+          style={{ minHeight: searchResultsInitialHeight }}
+        >
+          <SkeletonLoader totalCount={9999} />
+        </div>
+      );
+    }
     return null;
   }
 
