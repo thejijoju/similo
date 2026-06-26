@@ -1,4 +1,5 @@
 import searchCompanies from '@/helpers/claudeSearch';
+import checkRateLimit from '@/helpers/rateLimit';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -6,6 +7,13 @@ export default async function handler(req, res) {
     return res
       .status(405)
       .json({ message: `Method ${req.method} not allowed` });
+  }
+
+  const limit = await checkRateLimit(req);
+  if (!limit.allowed) {
+    return res
+      .status(limit.status)
+      .json({ status: 'fail', message: limit.message });
   }
 
   const term = decodeURIComponent(req.query.term || '');

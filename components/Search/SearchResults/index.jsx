@@ -316,6 +316,19 @@ export default function SearchResults({
       setIsSearchResultsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsSearchResultsLoading(false);
+      setInnerSearchResults({
+        status: 'fail',
+        count: 0,
+        totalCount: 0,
+        page: 0,
+        data: { companies: [] },
+        error:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          'Something went wrong. Please try again later.',
+      });
     }
   };
 
@@ -450,8 +463,8 @@ export default function SearchResults({
           ref={noResultsRef}
           style={{ height: noResultInitialHeight }}
         >
-          No result found. Try a company or brand name or use a different
-          keyword.
+          {innerSearchResults.error ||
+            'No result found. Try a company or brand name or use a different keyword.'}
         </div>
       </div>
     );
