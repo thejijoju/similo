@@ -7,7 +7,7 @@ module.exports = {
 
   SECRET_KEY: process.env.SECRET_KEY,
 
-  COMPANIES_PER_PAGE: 10,
+  COMPANIES_PER_PAGE: 15,
   UPLOADS_PATH: path.join(process.cwd(), 'public', 'uploads'),
   LOGOS_PATH: 'logos',
 

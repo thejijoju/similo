@@ -216,11 +216,19 @@ export default function SearchResults({
       ? `${API_URL}/companies/search/searchFromSuggestions`
       : `${API_URL}/companies/search`;
 
+    // Tell the server which companies are already shown so the next page
+    // returns fresh, non-duplicate results (the API is stateless).
+    const alreadyShown = (innerSearchResults.data.companies || [])
+      .filter((c) => !c.hidden)
+      .map((c) => c.name)
+      .join('|');
+
     try {
       const response = await axios.get(url, {
         params: {
           ...router.query,
           page: currentPage + 1,
+          exclude: alreadyShown,
         },
       });
       setCurrentPage((prevState) => prevState + 1);

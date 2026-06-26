@@ -14,8 +14,10 @@ export default async function handler(req, res) {
     });
   }
 
+  // Treat every query as a keyword search so results use the paginated
+  // "Display more results" flow (the company-suggestion flow hides it).
   return res.json({
     status: 'success',
-    data: { isCompany: true, isIndustry: false, name: term },
+    data: { isCompany: false, isIndustry: false, name: term },
   });
 }
