@@ -32,6 +32,7 @@ export default function Search({
     companyRevenueFilter,
     companyLocationFilter,
     companyCSRFilter,
+    csrOnly,
     companyParentOrganisatonFilter,
     companyHQFilter,
     companyFoundationYearFilter,
@@ -134,6 +135,10 @@ export default function Search({
       queryObject.csr = companyCSRFilter.join(',');
     }
 
+    if (csrOnly.length) {
+      queryObject.hasCSR = 'true';
+    }
+
     if (companyParentOrganisatonFilter) {
       queryObject.parentOrganisation = companyParentOrganisatonFilter;
     }
@@ -188,6 +193,7 @@ export default function Search({
     companyLocationFilter,
     companyDiversityFilter,
     companyCSRFilter,
+    csrOnly,
     companyParentOrganisatonFilter,
     companyHQFilter,
     companyFoundationYearFilter,

@@ -79,6 +79,11 @@ function applyFilters(companies, query) {
     );
   }
 
+  // "Only companies that run CSR initiatives" checkbox.
+  if (query.hasCSR === 'true') {
+    out = out.filter((c) => c.csr && String(c.csr).trim() !== '');
+  }
+
   const hq = query.companyHQ || '';
   if (hq)
     out = out.filter((c) =>
@@ -125,6 +130,25 @@ const SCHEMA = `{
 }`;
 
 const CHUNK_SIZE = 6; // companies requested per parallel call
+
+// Unique expertise tags across a set of companies (case-insensitive, first
+// casing wins). Computed from the unfiltered set so the Expertise filter
+// options don't shrink when the user selects one.
+function uniqueExpertise(companies) {
+  const seen = new Set();
+  const tags = [];
+  companies.forEach((c) => {
+    (c.expertise || '').split(',').forEach((t) => {
+      const tag = t.trim();
+      if (!tag) return;
+      const key = tag.toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      tags.push(tag);
+    });
+  });
+  return tags;
+}
 
 function buildPrompt(instruction, exclude) {
   const excludeRule = exclude.length
@@ -219,6 +243,7 @@ function describeFilters(query, locations) {
 
   const csr = (query.csr || '').split(',').filter(Boolean);
   if (csr.length) parts.push(`with a CSR focus on ${csr.join(', ')}`);
+  if (query.hasCSR === 'true') parts.push('that run CSR initiatives');
 
   const diversity = (query.diversity || '').split(',').filter(Boolean);
   if (diversity.length) parts.push(`matching: ${diversity.join(', ')}`);
@@ -356,6 +381,7 @@ export default async function searchCompanies(term, query = {}) {
     count: filtered.length,
     totalCount: filtered.length,
     estimatedTotal,
+    availableExpertise: uniqueExpertise(companies),
     hasMore,
     page,
     data: { companies: filtered },

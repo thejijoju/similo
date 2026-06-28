@@ -19,6 +19,8 @@ function MyApp({ Component, pageProps }) {
   const [companyTypeFilter, setCompanyTypeFilter] = useState([]);
   const [companyDiversityFilter, setCompanyDiversityFilter] = useState([]);
   const [companyCSRFilter, setCompanyCSRFilter] = useState([]);
+  const [csrOnly, setCsrOnly] = useState([]);
+  const [availableExpertise, setAvailableExpertise] = useState([]);
   const [companyParentOrganisatonFilter, setCompanyParentOrganisationFilter] =
     useState('');
   const [companyHQFilter, setCompanyHQFilter] = useState('');
@@ -71,6 +73,10 @@ function MyApp({ Component, pageProps }) {
         setCompanyDiversityFilter,
         companyCSRFilter,
         setCompanyCSRFilter,
+        csrOnly,
+        setCsrOnly,
+        availableExpertise,
+        setAvailableExpertise,
         companyParentOrganisatonFilter,
         setCompanyParentOrganisationFilter,
         companyHQFilter,

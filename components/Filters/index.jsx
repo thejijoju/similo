@@ -3,13 +3,11 @@ import { useRouter } from 'next/router';
 
 import classnames from 'classnames';
 import usePortal from 'react-useportal';
-import axios from 'axios';
 import amplitude from 'amplitude-js';
 
 import { SearchResultsContext, UIContext } from '@/context/index';
 import Filter from './Filter';
 import LocationFilter from './LocationFilter';
-import { API_URL } from '../../constants/index';
 
 import classes from './styles.module.scss';
 
@@ -112,52 +110,14 @@ function createSortingButtonLabel(currentStockDataKey) {
   }
 }
 
-export default function Filters({
-  expertise,
-  csrs,
-  // locations,
-  // locationCounts,
-}) {
+export default function Filters() {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
-  const [expertisesByIndustry, setExpertisesByIndustry] = useState([]);
-  const [csrsByIndustry, setCSRSByIndustry] = useState([]);
 
   const { Portal } = usePortal();
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (router.query.fromSuggestions) {
-      axios
-        .get(
-          `${API_URL}/companies/expertise?${router.query.suggestionType}=${router.query.term}`
-        )
-        .then((response) => {
-          setExpertisesByIndustry(response.data.data.expertise);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      setExpertisesByIndustry([]);
-    }
-    if (router.query.fromSuggestions) {
-      axios
-        .get(
-          `${API_URL}/companies/csrs?${router.query.suggestionType}=${router.query.term}`
-        )
-        .then((response) => {
-          setCSRSByIndustry(response.data.data.csr);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      setCSRSByIndustry([]);
-    }
-  }, [router]);
 
   const {
     companySizeFilter,
@@ -174,8 +134,9 @@ export default function Filters({
     setSortOption,
     companyDiversityFilter,
     setCompanyDiversityFilter,
-    companyCSRFilter,
-    setCompanyCSRFilter,
+    csrOnly,
+    setCsrOnly,
+    availableExpertise,
   } = useContext(SearchResultsContext);
 
   const {
@@ -202,7 +163,8 @@ export default function Filters({
       !!companyLocationFilter.length ||
       !!companyExpertiseFilter.length ||
       !!companyRevenueFilter.length ||
-      !!companyTypeFilter.length
+      !!companyTypeFilter.length ||
+      !!csrOnly.length
     );
   };
 
@@ -212,6 +174,7 @@ export default function Filters({
     setCompanyExpertiseFilter([]);
     setCompanyRevenueFilter([]);
     setCompanyTypeFilter([]);
+    setCsrOnly([]);
   };
 
   const toggleFiltersVisibility = () => {
@@ -359,20 +322,13 @@ export default function Filters({
             state={companyDiversityFilter}
             setState={setCompanyDiversityFilter}
           />
-          {csrsByIndustry.length || router.query.term ? (
+          {router.query.term ? (
             <Filter
               title="CSR"
-              values={
-                // eslint-disable-next-line no-nested-ternary
-                csrsByIndustry.length
-                  ? csrsByIndustry
-                  : router.query.term
-                  ? csrs
-                  : []
-              }
-              defaultSize={2}
-              state={companyCSRFilter}
-              setState={setCompanyCSRFilter}
+              values={['Companies that run CSR initiatives']}
+              defaultSize={1}
+              state={csrOnly}
+              setState={setCsrOnly}
             />
           ) : null}
           {/* <Filter
@@ -396,20 +352,15 @@ export default function Filters({
             setState={setCompanySizeFilter}
             state={companySizeFilter}
           />
-          <Filter
-            values={
-              // eslint-disable-next-line no-nested-ternary
-              expertisesByIndustry.length
-                ? expertisesByIndustry
-                : router.query.term
-                ? expertise
-                : []
-            }
-            defaultSize={4}
-            title="Expertise"
-            state={companyExpertiseFilter}
-            setState={setCompanyExpertiseFilter}
-          />
+          {availableExpertise.length ? (
+            <Filter
+              values={availableExpertise}
+              defaultSize={4}
+              title="Expertise"
+              state={companyExpertiseFilter}
+              setState={setCompanyExpertiseFilter}
+            />
+          ) : null}
           <Filter
             title="Revenue"
             values={REVENUE}

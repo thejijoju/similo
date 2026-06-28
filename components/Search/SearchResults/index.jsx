@@ -70,11 +70,20 @@ export default function SearchResults({
     lastSearchTerm,
     setCompanyDiversityFilter,
     setCompanyCSRFilter,
+    setCsrOnly,
+    setAvailableExpertise,
   } = useContext(SearchResultsContext);
 
   useEffect(() => {
     console.log('last search', lastSearchTerm);
   }, [lastSearchTerm]);
+
+  // Keep the Expertise filter options in sync with the current results.
+  useEffect(() => {
+    setAvailableExpertise(
+      (innerSearchResults && innerSearchResults.availableExpertise) || []
+    );
+  }, [innerSearchResults]);
 
   const {
     setIsSearchResultsMode,
@@ -251,6 +260,12 @@ export default function SearchResults({
         ...response.data.data.companies,
       ];
       updatedResults.hasMore = response.data.hasMore;
+      updatedResults.availableExpertise = Array.from(
+        new Set([
+          ...(innerSearchResults.availableExpertise || []),
+          ...((response.data && response.data.availableExpertise) || []),
+        ])
+      );
       setInnerSearchResults(updatedResults);
       setIsSearchResultsLoading(false);
     } catch (error) {
@@ -263,9 +278,13 @@ export default function SearchResults({
     console.log('GETTING SEARCH RESULTS');
 
     const companyPreviousPosition =
-      innerSearchResults?.data?.companies.findIndex(
-        (company) => company.name === router.query.term
-      );
+      innerSearchResults &&
+      innerSearchResults.data &&
+      innerSearchResults.data.companies
+        ? innerSearchResults.data.companies.findIndex(
+            (company) => company.name === router.query.term
+          )
+        : undefined;
 
     setIsSearchResultsLoading(true);
     setAddSearchResultsDirection('bottom');
@@ -357,6 +376,7 @@ export default function SearchResults({
       setCompanyLocationFilter([]);
       setCompanyDiversityFilter([]);
       setCompanyCSRFilter([]);
+      setCsrOnly([]);
     }
   }, [router.query]);
 
