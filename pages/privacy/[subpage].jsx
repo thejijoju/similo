@@ -14,13 +14,15 @@ import classes from './styles.module.scss';
 const LAST_UPDATED = 'June 28, 2026';
 
 // --- Operator details (Impressum) -------------------------------------------
-// TODO: replace the placeholders below with the real operator details.
 const OPERATOR = {
-  name: '[Full name]',
-  street: '[Street and number]',
-  city: '[Postal code, City]',
-  country: '[Country]',
-  email: '[contact email]',
+  company: 'Twiggli UG (haftungsbeschränkt)',
+  street: 'Rodenkirchenerstr. 147',
+  city: '50997 Köln',
+  country: 'Germany',
+  representative: 'Tamara Marie Jirel Kuenen',
+  registerCourt: 'Amtsgericht Köln',
+  registerNumber: 'HRB 119837',
+  email: 'twiggli.info@gmail.com',
 };
 // ----------------------------------------------------------------------------
 
@@ -125,11 +127,11 @@ const PAGES = {
     content: (
       <>
         <h1>Legal Notice (Impressum)</h1>
-        <p>Information pursuant to applicable law.</p>
+        <p>Information pursuant to § 5 DDG (German Digital Services Act).</p>
 
-        <h2>Operator</h2>
+        <h2>Service provider</h2>
         <p>
-          {OPERATOR.name}
+          {OPERATOR.company}
           <br />
           {OPERATOR.street}
           <br />
@@ -138,13 +140,27 @@ const PAGES = {
           {OPERATOR.country}
         </p>
 
+        <h2>Represented by</h2>
+        <p>{OPERATOR.representative}</p>
+
+        <h2>Register</h2>
+        <p>
+          Register court: {OPERATOR.registerCourt}
+          <br />
+          Commercial register no.: {OPERATOR.registerNumber}
+        </p>
+
         <h2>Contact</h2>
         <p>
           Email: <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>
         </p>
 
-        <h2>Responsible for content</h2>
-        <p>{OPERATOR.name}</p>
+        <h2>Responsible for content (§ 18 (2) MStV)</h2>
+        <p>
+          {OPERATOR.representative}
+          <br />
+          {OPERATOR.company}, {OPERATOR.street}, {OPERATOR.city}
+        </p>
 
         <h2>Disclaimer</h2>
         <p>
