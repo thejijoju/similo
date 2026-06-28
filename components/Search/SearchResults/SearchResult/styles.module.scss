@@ -147,6 +147,13 @@
 
           &.cardFilter {
             cursor: pointer;
+            span {
+              border-radius: 16px;
+              transition: background-color ease-in-out 0.15s;
+            }
+            &:hover span {
+              background-color: #eef6f8;
+            }
             &.active {
               span {
                 border-radius: 16px;
@@ -218,6 +225,13 @@
 
           &.cardFilter {
             cursor: pointer;
+            span {
+              border-radius: 16px;
+              transition: background-color ease-in-out 0.15s;
+            }
+            &:hover span {
+              background-color: #eef6f8;
+            }
             &.active {
               span {
                 border-radius: 16px;

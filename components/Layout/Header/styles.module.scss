@@ -24,7 +24,8 @@
 
   .searchContainer {
     position: relative;
-    width: 776px;
+    width: 676px;
+    margin-left: 100px;
     &::after {
       content: '';
       position: absolute;
