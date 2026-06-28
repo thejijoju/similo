@@ -521,6 +521,16 @@ export default function SearchResults({
           {areCompanyCardsExpanded ? 'Close all cards' : 'Open all cards'}
         </span>
       </div>
+      <div
+        style={{
+          fontSize: '11px',
+          color: '#a8a8a8',
+          padding: '2px 2px 10px',
+          letterSpacing: '0.02em',
+        }}
+      >
+        Results are AI-generated (Claude) and may be approximate.
+      </div>
       {isSearchResultsLoading && addSearchResultsDirection === 'top' && (
         <SkeletonLoader totalCount={innerSearchResults.totalCount} />
       )}
