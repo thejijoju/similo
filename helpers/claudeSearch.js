@@ -102,24 +102,7 @@ function applyFilters(companies, query) {
   return out;
 }
 
-async function generateCompanies(term, exclude) {
-  const isFirstPage = exclude.length === 0;
-
-  const positionRule = isFirstPage
-    ? `The FIRST item must be "${term}" itself. The rest must be its closest competitors or most similar companies, ordered by similarity.`
-    : `Return the NEXT most similar companies to "${term}" (further competitors and peers), ordered by similarity.`;
-
-  const excludeRule = exclude.length
-    ? `\n\nDo NOT include any of these companies, which have already been shown: ${exclude.join(
-        ', '
-      )}.`
-    : '';
-
-  const prompt = `You are a business intelligence database. Return a JSON array of exactly ${PER_PAGE} companies related to "${term}".
-${positionRule}${excludeRule}
-
-For each company, return an object with EXACTLY these fields (use null for unknown values):
-{
+const SCHEMA = `{
   "name": "official company name",
   "industry": "industry/sector",
   "expertise": "comma-separated 4-6 areas e.g. 'Fashion, Accessories, Beauty, Fragrance'",
@@ -138,21 +121,92 @@ For each company, return an object with EXACTLY these fields (use null for unkno
   "companyType": "Public or Private or Subsidiary",
   "hasFemaleCEO": false,
   "hasUnderrepresentedMinorities": false
-}
+}`;
+
+const CHUNK_SIZE = 6; // companies requested per parallel call
+
+function buildPrompt(instruction, exclude) {
+  const excludeRule = exclude.length
+    ? `\n\nDo NOT include any of these companies, which are already listed: ${exclude.join(
+        ', '
+      )}.`
+    : '';
+  return `You are a business intelligence database. Return a JSON array of real companies.
+${instruction}${excludeRule}
+
+For each company, return an object with EXACTLY these fields (use null for unknown values):
+${SCHEMA}
 
 Return ONLY a valid JSON array — no markdown, no code blocks, no explanation.`;
+}
 
+async function callClaude(prompt) {
   const message = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 8192,
+    max_tokens: 4096,
     messages: [{ role: 'user', content: prompt }],
   });
-
   const raw = message.content[0].text
     .trim()
     .replace(/^```json?\n?/, '')
     .replace(/\n?```$/, '');
   return JSON.parse(raw);
+}
+
+// Generate a page of companies via several parallel calls so the wall-clock
+// time stays close to a single small request even though we return ~15
+// detailed profiles. Results are de-duplicated by name, preserving order.
+async function generateCompanies(term, exclude) {
+  const firstPage = exclude.length === 0;
+
+  const prompts = firstPage
+    ? [
+        buildPrompt(
+          `The FIRST item must be "${term}" itself, followed by its ${CHUNK_SIZE -
+            1} closest competitors, ordered by similarity.`,
+          exclude
+        ),
+        buildPrompt(
+          `Return ${CHUNK_SIZE} competitors or peers of "${term}" in the same industry, ranked roughly 6th–11th by similarity. Do NOT include "${term}" itself.`,
+          exclude
+        ),
+        buildPrompt(
+          `Return ${CHUNK_SIZE} further competitors or peers of "${term}", ranked roughly 12th–17th by similarity. Do NOT include "${term}" itself.`,
+          exclude
+        ),
+      ]
+    : [
+        buildPrompt(
+          `Return ${CHUNK_SIZE} more competitors or peers of "${term}" not yet listed.`,
+          exclude
+        ),
+        buildPrompt(
+          `Return ${CHUNK_SIZE} more companies in the same industry as "${term}" not yet listed.`,
+          exclude
+        ),
+        buildPrompt(
+          `Return ${CHUNK_SIZE} more companies similar to "${term}" not yet listed.`,
+          exclude
+        ),
+      ];
+
+  const settled = await Promise.allSettled(prompts.map(callClaude));
+
+  const seen = new Set();
+  const out = [];
+  settled.forEach((r) => {
+    if (r.status !== 'fulfilled' || !Array.isArray(r.value)) return;
+    r.value.forEach((c) => {
+      if (!c || !c.name) return;
+      const key = c.name.trim().toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      out.push(c);
+    });
+  });
+
+  if (!out.length) throw new Error('No companies generated');
+  return out.slice(0, PER_PAGE);
 }
 
 export default async function searchCompanies(term, query = {}) {
@@ -197,9 +251,9 @@ export default async function searchCompanies(term, query = {}) {
   }
 
   const filtered = applyFilters(companies, query);
-  // There may be more to load if we got a full batch and haven't hit the cap.
+  // More may be available until we reach the cap (3 pages).
   const hasMore =
-    (page + 1) * PER_PAGE < MAX_RESULTS && companies.length >= PER_PAGE;
+    (page + 1) * PER_PAGE < MAX_RESULTS && companies.length > 0;
   return {
     status: 'success',
     count: filtered.length,
