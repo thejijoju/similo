@@ -8,6 +8,73 @@ import SearchResults from '@/components/Search/SearchResults';
 import { SearchResultsContext, UIContext } from '@/context/index';
 import classes from './styles.module.scss';
 
+const FAQ = [
+  {
+    q: 'How does Similo find similar companies?',
+    a: 'Similo uses AI to identify a company’s closest competitors and peers based on its industry, products, market and business model, then returns a ranked list of similar companies.',
+  },
+  {
+    q: 'Is Similo free to use?',
+    a: 'Yes. You can search for any company or brand and see its similar companies and competitors for free.',
+  },
+  {
+    q: 'Can I filter competitors by country, industry or size?',
+    a: 'Yes. You can refine results by location (from worldwide down to a single town), industry and expertise, company size, revenue, company type and CSR.',
+  },
+  {
+    q: 'How accurate is the company data?',
+    a: 'Company details are AI-generated and may be approximate or occasionally out of date. Use them as a fast starting point for research rather than a definitive source.',
+  },
+];
+
+const STRUCTURED_DATA = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://similo.xyz/#organization',
+      name: 'Similo',
+      url: 'https://similo.xyz/',
+      legalName: 'Twiggli UG (haftungsbeschränkt)',
+      email: 'twiggli.info@gmail.com',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Rodenkirchenerstr. 147',
+        postalCode: '50997',
+        addressLocality: 'Köln',
+        addressCountry: 'DE',
+      },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://similo.xyz/#website',
+      url: 'https://similo.xyz/',
+      name: 'Similo',
+      description:
+        'AI-powered tool to discover a company’s closest competitors and similar brands worldwide.',
+      publisher: { '@id': 'https://similo.xyz/#organization' },
+    },
+    {
+      '@type': 'WebApplication',
+      name: 'Similo',
+      url: 'https://similo.xyz/',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      description:
+        'Find similar companies and competitors. Search any company or brand and filter peers by location, industry, size, revenue and more.',
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: FAQ.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    },
+  ],
+};
+
 export default function HomePage({
   searchResults,
   expertise,
@@ -126,6 +193,11 @@ export default function HomePage({
           name="twitter:description"
           content="Discover a company's closest competitors and similar brands worldwide, powered by AI."
         />
+        {/* eslint-disable-next-line react/no-danger */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+        />
       </Head>
       <main className={classes.main}>
         <Filters
@@ -140,6 +212,51 @@ export default function HomePage({
           expertiseLinks={expertiseLinks}
         />
       </main>
+      {!router.query.term && (
+        <section className={classes.seoIntro}>
+          <h1>Find similar companies and competitors</h1>
+          <p>
+            Similo is an AI-powered tool for discovering a company’s closest
+            competitors and similar brands worldwide. Search any company or
+            brand name and instantly see a ranked list of comparable companies —
+            with industry, headquarters, size, revenue, key people and more.
+            It’s built for competitive analysis, sales prospecting and market
+            mapping.
+          </p>
+
+          <h2>How it works</h2>
+          <ol>
+            <li>Type a company or brand name into the search bar.</li>
+            <li>
+              Similo returns the company plus its most similar competitors and
+              peers.
+            </li>
+            <li>
+              Refine the results by location, industry and expertise, company
+              size, revenue, company type or CSR.
+            </li>
+          </ol>
+
+          <h2>What you can do with Similo</h2>
+          <ul>
+            <li>Discover a brand’s direct competitors in seconds.</li>
+            <li>
+              Map competitors by country — from worldwide down to a single city
+              or town.
+            </li>
+            <li>Filter peers by industry, size, revenue and company type.</li>
+            <li>Find companies that run CSR and sustainability initiatives.</li>
+          </ul>
+
+          <h2>Frequently asked questions</h2>
+          {FAQ.map((item) => (
+            <div key={item.q} className={classes.faqItem}>
+              <h3>{item.q}</h3>
+              <p>{item.a}</p>
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }
