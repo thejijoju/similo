@@ -987,18 +987,20 @@ export default function SearchResult({
                       {isFullAboutVisible
                         ? company.about
                         : company.about.substring(0, 140)}
-                      &nbsp;&nbsp;&nbsp;
-                      {!isFullAboutVisible && (
-                        <sub
-                          className={classes.moreAbout}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            event.nativeEvent.stopImmediatePropagation();
-                            setIsFullAboutVisible(true);
-                          }}
-                        >
-                          More
-                        </sub>
+                      {!isFullAboutVisible && company.about.length > 140 && (
+                        <>
+                          &nbsp;&nbsp;&nbsp;
+                          <sub
+                            className={classes.moreAbout}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              event.nativeEvent.stopImmediatePropagation();
+                              setIsFullAboutVisible(true);
+                            }}
+                          >
+                            More
+                          </sub>
+                        </>
                       )}
                     </span>
                   </div>
