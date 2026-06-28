@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const cache = new Map();
+const estimateCache = new Map();
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 const PER_PAGE = 15;
@@ -156,12 +157,10 @@ async function callClaude(prompt) {
 // Generate a page of companies via several parallel calls so the wall-clock
 // time stays close to a single small request even though we return ~15
 // detailed profiles. Results are de-duplicated by name, preserving order.
-async function generateCompanies(term, exclude, locations = []) {
+async function generateCompanies(term, exclude, constraints = []) {
   const firstPage = exclude.length === 0;
-  const locationRule = locations.length
-    ? ` Only include companies headquartered in, or with a major presence in: ${locations.join(
-        '; '
-      )}.`
+  const constraintRule = constraints.length
+    ? ` Only include companies ${constraints.join(', and ')}.`
     : '';
 
   const instructions = firstPage
@@ -179,7 +178,7 @@ async function generateCompanies(term, exclude, locations = []) {
       ];
 
   const prompts = instructions.map((ins) =>
-    buildPrompt(ins + locationRule, exclude)
+    buildPrompt(ins + constraintRule, exclude)
   );
 
   const settled = await Promise.allSettled(prompts.map(callClaude));
@@ -205,10 +204,46 @@ async function generateCompanies(term, exclude, locations = []) {
 // UI can show a "universe" total (e.g. "~300 similar companies") without us
 // actually generating them all. Runs in parallel with the page generation, so
 // it adds no real latency.
-async function estimateTotal(term, locations = []) {
+// Turn the active filters into natural-language constraints for the estimate
+// prompt, so the "universe" number reflects everything the user has selected.
+function describeFilters(query, locations) {
+  const parts = [];
+  if (locations.length) {
+    parts.push(`located in or around ${locations.join('; ')}`);
+  }
+  const types = (query.companyType || '').split(',').filter(Boolean);
+  if (types.length) parts.push(`that are ${types.join(' or ')} companies`);
+
+  const expertise = (query.expertise || '').split(',').filter(Boolean);
+  if (expertise.length) parts.push(`with expertise in ${expertise.join(', ')}`);
+
+  const csr = (query.csr || '').split(',').filter(Boolean);
+  if (csr.length) parts.push(`with a CSR focus on ${csr.join(', ')}`);
+
+  const diversity = (query.diversity || '').split(',').filter(Boolean);
+  if (diversity.length) parts.push(`matching: ${diversity.join(', ')}`);
+
+  if (query.companyHQ) parts.push(`headquartered in ${query.companyHQ}`);
+  if (query.foundationYear) parts.push(`founded in ${query.foundationYear}`);
+  if (query.parentOrganisation) {
+    parts.push(`part of ${query.parentOrganisation}`);
+  }
+
+  const size = (query.companySize || '').split(',|').filter(Boolean);
+  if (size.length) {
+    parts.push(`with an employee count in the range(s) ${size.join(', ')}`);
+  }
+  const revenue = (query.revenue || '').split(',|').filter(Boolean);
+  if (revenue.length) {
+    parts.push(`with annual revenue in the range(s) ${revenue.join(', ')}`);
+  }
+  return parts;
+}
+
+async function estimateTotal(term, constraints = []) {
   try {
-    const where = locations.length
-      ? ` located in or around ${locations.join('; ')}`
+    const where = constraints.length
+      ? ` ${constraints.join(', ')}`
       : ' worldwide';
     const prompt = `Estimate how many companies${where} are broadly similar to or competitors of "${term}" (same or adjacent industry, comparable products or market). Reply with ONLY a single integer — your best rough estimate. No words, no commas.`;
     const message = await client.messages.create({
@@ -224,6 +259,20 @@ async function estimateTotal(term, locations = []) {
   } catch (e) {
     return null;
   }
+}
+
+// Estimate cached by term + the full filter combination, so it recomputes
+// whenever any filter changes but is reused for repeated identical combos.
+async function getEstimate(term, query, locations) {
+  const constraints = describeFilters(query, locations);
+  const key = `${term.toLowerCase()}::${constraints.join('|').toLowerCase()}`;
+  const cached = estimateCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.value;
+  }
+  const value = await estimateTotal(term, constraints);
+  estimateCache.set(key, { value, timestamp: Date.now() });
+  return value;
 }
 
 export default async function searchCompanies(term, query = {}) {
@@ -249,26 +298,41 @@ export default async function searchCompanies(term, query = {}) {
     .split(',')
     .map((l) => l.replace(/\|/g, ', ').trim())
     .filter(Boolean);
+  const types = (query.companyType || '').split(',').filter(Boolean);
+
+  // Constraints that steer generation itself (so results actually match),
+  // and therefore must be part of the generation cache key.
+  const genConstraints = [];
+  if (locations.length) {
+    genConstraints.push(
+      `headquartered in or with a major presence in ${locations.join('; ')}`
+    );
+  }
+  if (types.length) {
+    genConstraints.push(`that are ${types.join(' or ')} companies`);
+  }
 
   const cacheKey = `${term.toLowerCase()}::p${page}::${exclude
     .join(',')
-    .toLowerCase()}::loc:${locations.join(';').toLowerCase()}`;
+    .toLowerCase()}::loc:${locations
+    .join(';')
+    .toLowerCase()}::type:${types.join(';').toLowerCase()}`;
   let companies;
   let estimatedTotal = null;
+
+  // The estimate depends on ALL active filters, so it runs (and is cached)
+  // independently of the generated company list. Kick it off first so it
+  // overlaps with generation. Only the first page needs it; later pages keep
+  // the page-0 estimate on the client.
+  const estimatePromise =
+    page === 0 ? getEstimate(term, query, locations) : Promise.resolve(null);
 
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     companies = cached.data;
-    estimatedTotal = cached.estimatedTotal || null;
   } else {
     const offset = page * PER_PAGE;
-    // On the first page, estimate the worldwide total in parallel (no extra
-    // latency); later pages keep the estimate from page 0 on the client.
-    const [parsed, est] = await Promise.all([
-      generateCompanies(term, exclude, locations),
-      page === 0 ? estimateTotal(term, locations) : Promise.resolve(null),
-    ]);
-    estimatedTotal = est;
+    const parsed = await generateCompanies(term, exclude, genConstraints);
     companies = parsed
       .filter((c) => c && c.name)
       .map((c, i) => ({
@@ -279,12 +343,10 @@ export default async function searchCompanies(term, query = {}) {
         stockData: null,
       }));
 
-    cache.set(cacheKey, {
-      data: companies,
-      estimatedTotal,
-      timestamp: Date.now(),
-    });
+    cache.set(cacheKey, { data: companies, timestamp: Date.now() });
   }
+
+  estimatedTotal = await estimatePromise;
 
   const filtered = applyFilters(companies, query);
   // More may be available until we reach the cap (3 pages).
