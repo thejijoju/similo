@@ -97,7 +97,35 @@ export default function HomePage({
           name="viewport"
           content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
         />
-        <title>Similo</title>
+        <title>Similo — Find Similar Companies &amp; Competitors</title>
+        <meta
+          name="description"
+          content="Similo is an AI-powered tool to instantly discover a company's closest competitors and similar brands worldwide — filter by industry, location, company size, revenue and more."
+        />
+        <link rel="canonical" href="https://similo.xyz/" />
+        <meta name="robots" content="index, follow" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Similo" />
+        <meta property="og:url" content="https://similo.xyz/" />
+        <meta
+          property="og:title"
+          content="Similo — Find Similar Companies & Competitors"
+        />
+        <meta
+          property="og:description"
+          content="Discover a company's closest competitors and similar brands worldwide, powered by AI."
+        />
+
+        <meta name="twitter:card" content="summary" />
+        <meta
+          name="twitter:title"
+          content="Similo — Find Similar Companies & Competitors"
+        />
+        <meta
+          name="twitter:description"
+          content="Discover a company's closest competitors and similar brands worldwide, powered by AI."
+        />
       </Head>
       <main className={classes.main}>
         <Filters
