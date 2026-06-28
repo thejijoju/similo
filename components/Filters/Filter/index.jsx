@@ -205,8 +205,13 @@ export default function index({
         )}
         style={{
           height: isListExpanded
-            ? Math.ceil(values.length * CHECKBOX_HEIGHT) - 11
-            : Math.ceil(defaultSize * CHECKBOX_HEIGHT) - 11,
+            ? Math.max(0, Math.ceil(values.length * CHECKBOX_HEIGHT) - 11)
+            : Math.max(
+                0,
+                Math.ceil(
+                  Math.min(defaultSize, values.length) * CHECKBOX_HEIGHT
+                ) - 11
+              ),
         }}
         ref={listRef}
       >

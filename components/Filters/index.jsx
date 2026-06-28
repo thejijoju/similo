@@ -312,15 +312,13 @@ export default function Filters() {
               {sortOptionLabel}
             </span>
           </div>
-          {availableExpertise.length ? (
-            <Filter
-              values={availableExpertise}
-              defaultSize={4}
-              title="Expertise"
-              state={companyExpertiseFilter}
-              setState={setCompanyExpertiseFilter}
-            />
-          ) : null}
+          <Filter
+            values={availableExpertise}
+            defaultSize={4}
+            title="Expertise"
+            state={companyExpertiseFilter}
+            setState={setCompanyExpertiseFilter}
+          />
           <Filter
             title="Diversity"
             values={DIVERSITY}
