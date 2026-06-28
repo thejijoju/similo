@@ -20,6 +20,18 @@ import { SearchResultsContext, UIContext } from '../../../context/index';
 
 let timer;
 
+// Format the rough worldwide estimate for display, e.g. 236 -> "~240",
+// 9500 -> "10,000+".
+function formatEstimate(n) {
+  if (!n) return null;
+  if (n >= 1000) {
+    const rounded = Math.round(n / 1000) * 1000;
+    return `${rounded.toLocaleString('en-US')}+`;
+  }
+  const rounded = Math.round(n / 10) * 10;
+  return `~${rounded}`;
+}
+
 export default function SearchResults({
   searchResults,
   csrLinks,
@@ -485,8 +497,13 @@ export default function SearchResults({
           <i>lines</i>Filter
         </button>
         <span>
-          {innerSearchResults.data.companies.filter((c) => !c.hidden).length}{' '}
-          results
+          {innerSearchResults.estimatedTotal
+            ? `${formatEstimate(
+                innerSearchResults.estimatedTotal
+              )} similar companies`
+            : `${
+                innerSearchResults.data.companies.filter((c) => !c.hidden).length
+              } results`}
         </span>
         <span
           className={classes.openAllCards}

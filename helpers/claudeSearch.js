@@ -162,8 +162,9 @@ async function generateCompanies(term, exclude) {
   const prompts = firstPage
     ? [
         buildPrompt(
-          `The FIRST item must be "${term}" itself, followed by its ${CHUNK_SIZE -
-            1} closest competitors, ordered by similarity.`,
+          `The FIRST item must be "${term}" itself, followed by its ${
+            CHUNK_SIZE - 1
+          } closest competitors, ordered by similarity.`,
           exclude
         ),
         buildPrompt(
@@ -209,6 +210,28 @@ async function generateCompanies(term, exclude) {
   return out.slice(0, PER_PAGE);
 }
 
+// Cheap, rough estimate of how many similar companies exist worldwide, so the
+// UI can show a "universe" total (e.g. "~300 similar companies") without us
+// actually generating them all. Runs in parallel with the page generation, so
+// it adds no real latency.
+async function estimateTotal(term) {
+  try {
+    const prompt = `Estimate how many companies worldwide are broadly similar to or competitors of "${term}" (same or adjacent industry, comparable products or market). Reply with ONLY a single integer — your best rough estimate. No words, no commas.`;
+    const message = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 16,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const n = parseInt(
+      (message.content[0].text || '').replace(/[^0-9]/g, ''),
+      10
+    );
+    return Number.isFinite(n) && n > 0 ? n : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 export default async function searchCompanies(term, query = {}) {
   if (!term) {
     return {
@@ -230,13 +253,21 @@ export default async function searchCompanies(term, query = {}) {
     .join(',')
     .toLowerCase()}`;
   let companies;
+  let estimatedTotal = null;
 
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     companies = cached.data;
+    estimatedTotal = cached.estimatedTotal || null;
   } else {
-    const parsed = await generateCompanies(term, exclude);
     const offset = page * PER_PAGE;
+    // On the first page, estimate the worldwide total in parallel (no extra
+    // latency); later pages keep the estimate from page 0 on the client.
+    const [parsed, est] = await Promise.all([
+      generateCompanies(term, exclude),
+      page === 0 ? estimateTotal(term) : Promise.resolve(null),
+    ]);
+    estimatedTotal = est;
     companies = parsed
       .filter((c) => c && c.name)
       .map((c, i) => ({
@@ -247,17 +278,21 @@ export default async function searchCompanies(term, query = {}) {
         stockData: null,
       }));
 
-    cache.set(cacheKey, { data: companies, timestamp: Date.now() });
+    cache.set(cacheKey, {
+      data: companies,
+      estimatedTotal,
+      timestamp: Date.now(),
+    });
   }
 
   const filtered = applyFilters(companies, query);
   // More may be available until we reach the cap (3 pages).
-  const hasMore =
-    (page + 1) * PER_PAGE < MAX_RESULTS && companies.length > 0;
+  const hasMore = (page + 1) * PER_PAGE < MAX_RESULTS && companies.length > 0;
   return {
     status: 'success',
     count: filtered.length,
     totalCount: filtered.length,
+    estimatedTotal,
     hasMore,
     page,
     data: { companies: filtered },
