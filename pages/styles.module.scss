@@ -5,41 +5,81 @@
   }
 
   .seoIntro {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 24px 24px 72px;
-    color: #3a3a3a;
-    font-size: 16px;
-    line-height: 1.6;
+    margin-top: 30vh;
+    background: #0c1c3d;
+    background-image: radial-gradient(
+      circle at 50% -10%,
+      #16306a 0%,
+      #0c1c3d 55%
+    );
+    color: #e7edff;
+    padding: 96px 24px 110px;
 
     h1 {
-      font-size: 30px;
-      line-height: 1.2;
-      margin-bottom: 16px;
-      color: #1c1c1c;
+      max-width: 720px;
+      margin: 0 auto 18px;
+      font-size: 38px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-align: center;
+      color: #ffffff;
+    }
+    > p {
+      max-width: 620px;
+      margin: 0 auto;
+      font-size: 17px;
+      line-height: 1.65;
+      text-align: center;
+      color: #aebbe0;
     }
     h2 {
-      font-size: 21px;
-      margin-top: 40px;
-      margin-bottom: 12px;
-      color: #1c1c1c;
-    }
-    h3 {
-      font-size: 17px;
-      margin-bottom: 4px;
-      color: #1c1c1c;
+      max-width: 720px;
+      margin: 60px auto 18px;
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+      color: #ffffff;
+      &::after {
+        content: '';
+        display: block;
+        width: 48px;
+        height: 3px;
+        margin: 12px auto 0;
+        background: #14a2b8;
+        border-radius: 2px;
+      }
     }
     ul,
     ol {
+      max-width: 640px;
+      margin: 0 auto;
       padding-left: 22px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #cdd6f0;
     }
     li {
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .faqItem {
-      margin-bottom: 18px;
+      max-width: 720px;
+      margin: 0 auto 12px;
+      padding: 18px 22px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      h3 {
+        margin: 0 0 6px;
+        font-size: 17px;
+        font-weight: 600;
+        color: #ffffff;
+      }
       p {
-        margin-top: 0;
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #aebbe0;
       }
     }
   }
@@ -48,9 +88,16 @@
 @media (max-width: 748px) {
   .HomePage {
     .seoIntro {
-      padding: 16px 20px 56px;
+      margin-top: 22vh;
+      padding: 64px 20px 80px;
       h1 {
-        font-size: 25px;
+        font-size: 28px;
+      }
+      > p {
+        font-size: 16px;
+      }
+      h2 {
+        font-size: 20px;
       }
     }
   }

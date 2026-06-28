@@ -130,10 +130,7 @@ export default function index({
   return (
     <div
       className={classes.Filter}
-      style={{
-        height: filterHeight,
-        borderBottom: defaultSize > values.length ? 'none' : '',
-      }}
+      style={{ height: filterHeight }}
       ref={filterRef}
     >
       <div
