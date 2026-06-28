@@ -238,6 +238,7 @@ export default function SearchResults({
         ...updatedResults.data.companies,
         ...response.data.data.companies,
       ];
+      updatedResults.hasMore = response.data.hasMore;
       setInnerSearchResults(updatedResults);
       setIsSearchResultsLoading(false);
     } catch (error) {
@@ -483,7 +484,10 @@ export default function SearchResults({
         <button type="button" onClick={() => setIsFiltersPanelVisible(true)}>
           <i>lines</i>Filter
         </button>
-        <span>{innerSearchResults.totalCount} Total results</span>
+        <span>
+          {innerSearchResults.data.companies.filter((c) => !c.hidden).length}{' '}
+          results
+        </span>
         <span
           className={classes.openAllCards}
           onClick={() => {
@@ -522,8 +526,7 @@ export default function SearchResults({
       {isSearchResultsLoading && addSearchResultsDirection !== 'top' && (
         <SkeletonLoader totalCount={9999} />
       )}
-      {COMPANIES_PER_PAGE * (currentPage + 1) <
-        +innerSearchResults.totalCount &&
+      {innerSearchResults.hasMore &&
         !isSearchResultsLoading &&
         router.query.suggestionType !== 'company' && (
           <div className={classes.displayMore}>

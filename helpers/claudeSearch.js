@@ -197,12 +197,14 @@ export default async function searchCompanies(term, query = {}) {
   }
 
   const filtered = applyFilters(companies, query);
+  // There may be more to load if we got a full batch and haven't hit the cap.
+  const hasMore =
+    (page + 1) * PER_PAGE < MAX_RESULTS && companies.length >= PER_PAGE;
   return {
     status: 'success',
     count: filtered.length,
-    // Report a larger total so the "Display more results" button stays
-    // available until MAX_RESULTS companies have been loaded.
-    totalCount: MAX_RESULTS,
+    totalCount: filtered.length,
+    hasMore,
     page,
     data: { companies: filtered },
   };
