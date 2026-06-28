@@ -314,7 +314,7 @@ export default function Filters() {
           </div>
           <Filter
             values={availableExpertise}
-            defaultSize={100}
+            defaultSize={10}
             openWhenValues
             title="Expertise"
             state={companyExpertiseFilter}
