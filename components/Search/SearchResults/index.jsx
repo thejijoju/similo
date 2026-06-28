@@ -70,18 +70,21 @@ export default function SearchResults({
     lastSearchTerm,
     setCompanyDiversityFilter,
     setCompanyCSRFilter,
-    setCsrOnly,
     setAvailableExpertise,
+    setAvailableCSR,
   } = useContext(SearchResultsContext);
 
   useEffect(() => {
     console.log('last search', lastSearchTerm);
   }, [lastSearchTerm]);
 
-  // Keep the Expertise filter options in sync with the current results.
+  // Keep the Expertise and CSR filter options in sync with the current results.
   useEffect(() => {
     setAvailableExpertise(
       (innerSearchResults && innerSearchResults.availableExpertise) || []
+    );
+    setAvailableCSR(
+      (innerSearchResults && innerSearchResults.availableCSR) || []
     );
   }, [innerSearchResults]);
 
@@ -266,6 +269,12 @@ export default function SearchResults({
           ...((response.data && response.data.availableExpertise) || []),
         ])
       );
+      updatedResults.availableCSR = Array.from(
+        new Set([
+          ...(innerSearchResults.availableCSR || []),
+          ...((response.data && response.data.availableCSR) || []),
+        ])
+      );
       setInnerSearchResults(updatedResults);
       setIsSearchResultsLoading(false);
     } catch (error) {
@@ -376,7 +385,6 @@ export default function SearchResults({
       setCompanyLocationFilter([]);
       setCompanyDiversityFilter([]);
       setCompanyCSRFilter([]);
-      setCsrOnly([]);
     }
   }, [router.query]);
 

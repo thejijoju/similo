@@ -134,11 +134,11 @@ const CHUNK_SIZE = 6; // companies requested per parallel call
 // Unique expertise tags across a set of companies (case-insensitive, first
 // casing wins). Computed from the unfiltered set so the Expertise filter
 // options don't shrink when the user selects one.
-function uniqueExpertise(companies) {
+function uniqueTags(companies, field) {
   const seen = new Set();
   const tags = [];
   companies.forEach((c) => {
-    (c.expertise || '').split(',').forEach((t) => {
+    (c[field] || '').split(',').forEach((t) => {
       const tag = t.trim();
       if (!tag) return;
       const key = tag.toLowerCase();
@@ -381,7 +381,8 @@ export default async function searchCompanies(term, query = {}) {
     count: filtered.length,
     totalCount: filtered.length,
     estimatedTotal,
-    availableExpertise: uniqueExpertise(companies),
+    availableExpertise: uniqueTags(companies, 'expertise'),
+    availableCSR: uniqueTags(companies, 'csr'),
     hasMore,
     page,
     data: { companies: filtered },

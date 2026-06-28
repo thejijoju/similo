@@ -15,8 +15,8 @@
     cursor: pointer;
     h2 {
       margin: 0;
-      font-size: 18px;
-      line-height: 21px;
+      font-size: 19px;
+      line-height: 22px;
       letter-spacing: 0.3px;
       color: #383834;
     }
@@ -25,7 +25,10 @@
       width: 13px;
       height: 9px;
       font-size: 0;
-      background-image: url(../../../public/images/grayArrow.svg);
+      background-image: url(../../../public/images/angleDown.svg);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
       cursor: pointer;
       transition: all ease-in-out 0.2s;
       &.rotate {
@@ -86,8 +89,8 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 24px;
-    font-size: 14px;
-    line-height: 16px;
+    font-size: 15px;
+    line-height: 17px;
     color: #605f5c;
     text-transform: capitalize;
     overflow: hidden;
@@ -190,7 +193,10 @@
       height: 10px;
       margin-left: 10px;
       font-size: 0;
-      background-image: url(../../../public/images/grayArrow.svg);
+      background-image: url(../../../public/images/angleDown.svg);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
       transform: rotate(180deg);
       transition: all ease-in-out 0.2s;
       &.rotate {
@@ -207,8 +213,8 @@
     .header {
       padding-right: 21px;
       h2 {
-        font-size: 16px;
-        line-height: 19px;
+        font-size: 17px;
+        line-height: 20px;
         letter-spacing: 0.571429px;
         color: #605f5c;
         height: 21px;
@@ -216,7 +222,9 @@
       i.closeFilterIcon {
         width: 18px;
         height: 7px;
-        background-image: url(../../../public/images/arrowDownThick.svg);
+        background-image: url(../../../public/images/angleDown.svg);
+        background-size: contain;
+        background-repeat: no-repeat;
         background-position: center;
         transform: rotate(180deg);
         &.rotate {

@@ -1,5 +1,4 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/router';
 
 import classnames from 'classnames';
 import usePortal from 'react-useportal';
@@ -117,8 +116,6 @@ export default function Filters() {
 
   const { Portal } = usePortal();
 
-  const router = useRouter();
-
   const {
     companySizeFilter,
     setCompanySizeFilter,
@@ -134,9 +131,10 @@ export default function Filters() {
     setSortOption,
     companyDiversityFilter,
     setCompanyDiversityFilter,
-    csrOnly,
-    setCsrOnly,
+    companyCSRFilter,
+    setCompanyCSRFilter,
     availableExpertise,
+    availableCSR,
   } = useContext(SearchResultsContext);
 
   const {
@@ -164,7 +162,7 @@ export default function Filters() {
       !!companyExpertiseFilter.length ||
       !!companyRevenueFilter.length ||
       !!companyTypeFilter.length ||
-      !!csrOnly.length
+      !!companyCSRFilter.length
     );
   };
 
@@ -174,7 +172,7 @@ export default function Filters() {
     setCompanyExpertiseFilter([]);
     setCompanyRevenueFilter([]);
     setCompanyTypeFilter([]);
-    setCsrOnly([]);
+    setCompanyCSRFilter([]);
   };
 
   const toggleFiltersVisibility = () => {
@@ -314,44 +312,6 @@ export default function Filters() {
               {sortOptionLabel}
             </span>
           </div>
-          <Filter
-            title="Diversity"
-            values={DIVERSITY}
-            defaultSize={2}
-            tooltipDetails={DIVERSITY_DETAILS}
-            state={companyDiversityFilter}
-            setState={setCompanyDiversityFilter}
-          />
-          {router.query.term ? (
-            <Filter
-              title="CSR"
-              values={['Companies that run CSR initiatives']}
-              defaultSize={1}
-              state={csrOnly}
-              setState={setCsrOnly}
-            />
-          ) : null}
-          {/* <Filter
-            title="Location"
-            values={LOCATIONS}
-            defaultSize={5}
-            search
-            state={companyLocationFilter}
-            setState={setCompanyLocationFilter}
-          /> */}
-          <LocationFilter
-            companyLocationFilter={companyLocationFilter}
-            setCompanyLocationFilter={setCompanyLocationFilter}
-            // locations={locations}
-            // locationCounts={locationCounts}
-          />
-          <Filter
-            values={COMPANY_SIZES}
-            defaultSize={4}
-            title="Company size"
-            setState={setCompanySizeFilter}
-            state={companySizeFilter}
-          />
           {availableExpertise.length ? (
             <Filter
               values={availableExpertise}
@@ -361,6 +321,34 @@ export default function Filters() {
               setState={setCompanyExpertiseFilter}
             />
           ) : null}
+          <Filter
+            title="Diversity"
+            values={DIVERSITY}
+            defaultSize={2}
+            tooltipDetails={DIVERSITY_DETAILS}
+            state={companyDiversityFilter}
+            setState={setCompanyDiversityFilter}
+          />
+          {availableCSR.length ? (
+            <Filter
+              title="CSR"
+              values={availableCSR}
+              defaultSize={4}
+              state={companyCSRFilter}
+              setState={setCompanyCSRFilter}
+            />
+          ) : null}
+          <LocationFilter
+            companyLocationFilter={companyLocationFilter}
+            setCompanyLocationFilter={setCompanyLocationFilter}
+          />
+          <Filter
+            values={COMPANY_SIZES}
+            defaultSize={4}
+            title="Company size"
+            setState={setCompanySizeFilter}
+            state={companySizeFilter}
+          />
           <Filter
             title="Revenue"
             values={REVENUE}
