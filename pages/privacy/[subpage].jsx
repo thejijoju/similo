@@ -7,40 +7,205 @@ import Head from 'next/head';
 
 import { FaCalendar } from 'react-icons/fa';
 import classnames from 'classnames';
-import axios from 'axios';
 import amplitude from 'amplitude-js';
 
 import classes from './styles.module.scss';
-import { API_URL } from '../../constants';
 
-const createDateString = (date) => {
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  if (!date) {
-    return '';
-  }
-  const dateObj = new Date(date);
+const LAST_UPDATED = 'June 28, 2026';
 
-  return `${
-    monthNames[dateObj.getMonth()]
-  } ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+// --- Operator details (Impressum) -------------------------------------------
+// TODO: replace the placeholders below with the real operator details.
+const OPERATOR = {
+  name: '[Full name]',
+  street: '[Street and number]',
+  city: '[Postal code, City]',
+  country: '[Country]',
+  email: '[contact email]',
+};
+// ----------------------------------------------------------------------------
+
+const PAGES = {
+  policy: {
+    title: 'Privacy Policy',
+    content: (
+      <>
+        <h1>Privacy Policy</h1>
+        <p>
+          This Privacy Policy explains what personal data Similo (“we”, “us”)
+          processes when you use this website, and your rights regarding that
+          data. The data controller is the operator named in our{' '}
+          <Link href="/privacy/notice">
+            <a>Legal Notice</a>
+          </Link>
+          .
+        </p>
+
+        <h2>1. Data we process</h2>
+        <ul>
+          <li>
+            <strong>Search queries.</strong> The company or brand name you
+            search for is sent to our AI provider to generate results. Please do
+            not include personal or confidential information in your searches.
+          </li>
+          <li>
+            <strong>Technical data &amp; IP address.</strong> Like any website,
+            our hosting infrastructure processes connection data (including your
+            IP address) to deliver the site and to protect it from abuse
+            (rate-limiting and bot prevention).
+          </li>
+          <li>
+            <strong>Usage analytics.</strong> We use analytics to understand how
+            the site is used (e.g. searches performed, pages viewed) in an
+            aggregated form.
+          </li>
+        </ul>
+
+        <h2>2. Service providers</h2>
+        <p>
+          We rely on the following processors, some located outside the EU
+          (including the United States), with appropriate safeguards in place:
+        </p>
+        <ul>
+          <li>
+            <strong>Vercel</strong> — website hosting and delivery.
+          </li>
+          <li>
+            <strong>Anthropic</strong> — AI generation of search results
+            (receives your search query).
+          </li>
+          <li>
+            <strong>Amplitude</strong> — product usage analytics.
+          </li>
+          <li>
+            <strong>Logo.dev and Google</strong> — company logos and favicons
+            are loaded from these services based on company domains.
+          </li>
+        </ul>
+
+        <h2>3. Legal basis</h2>
+        <p>
+          We process this data on the basis of our legitimate interest in
+          operating, securing and improving the service (Art. 6(1)(f) GDPR).
+        </p>
+
+        <h2>4. Retention</h2>
+        <p>
+          Technical and security data is kept only as long as necessary for the
+          purposes above. Analytics data is retained in aggregated form. Search
+          results may be cached temporarily to improve performance.
+        </p>
+
+        <h2>5. Your rights</h2>
+        <p>
+          Subject to applicable law, you have the right to access, rectify or
+          erase your personal data, to restrict or object to its processing, and
+          to data portability. You may also lodge a complaint with a supervisory
+          authority. To exercise these rights, contact us at{' '}
+          <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>.
+        </p>
+
+        <h2>6. Cookies &amp; local storage</h2>
+        <p>
+          We use only the storage necessary to operate the site and to collect
+          the aggregated analytics described above. We do not use advertising
+          cookies.
+        </p>
+
+        <h2>7. Contact</h2>
+        <p>
+          For any privacy question, contact us at{' '}
+          <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>.
+        </p>
+      </>
+    ),
+  },
+
+  notice: {
+    title: 'Legal Notice',
+    content: (
+      <>
+        <h1>Legal Notice (Impressum)</h1>
+        <p>Information pursuant to applicable law.</p>
+
+        <h2>Operator</h2>
+        <p>
+          {OPERATOR.name}
+          <br />
+          {OPERATOR.street}
+          <br />
+          {OPERATOR.city}
+          <br />
+          {OPERATOR.country}
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          Email: <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>
+        </p>
+
+        <h2>Responsible for content</h2>
+        <p>{OPERATOR.name}</p>
+
+        <h2>Disclaimer</h2>
+        <p>
+          Similo presents company information that is generated by AI and may be
+          incomplete, outdated or inaccurate. It is provided for general
+          informational purposes only and does not constitute professional,
+          financial or legal advice. We accept no liability for decisions made
+          on the basis of this information.
+        </p>
+
+        <h2>EU dispute resolution</h2>
+        <p>
+          The European Commission provides a platform for online dispute
+          resolution:{' '}
+          <a
+            href="https://ec.europa.eu/consumers/odr"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://ec.europa.eu/consumers/odr
+          </a>
+          . We are neither obliged nor willing to participate in dispute
+          resolution proceedings before a consumer arbitration board.
+        </p>
+      </>
+    ),
+  },
+
+  methods: {
+    title: 'Methods',
+    content: (
+      <>
+        <h1>Referencing, dereferencing and classification methods</h1>
+        <p>
+          Similo helps you discover companies and brands that are similar to a
+          given one. The results, and the company details shown (industry,
+          location, size, revenue, etc.), are generated by an AI model and are
+          therefore estimates that may be approximate or occasionally incorrect.
+        </p>
+        <h2>How results are produced</h2>
+        <p>
+          When you search, the company name (and any active filters) is sent to
+          our AI provider, which returns the company and a ranked set of similar
+          companies. We do not maintain a manually curated database of
+          companies.
+        </p>
+        <h2>Corrections &amp; removal</h2>
+        <p>
+          If you represent a company and would like information corrected or
+          removed from being shown, contact us at{' '}
+          <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>.
+        </p>
+      </>
+    ),
+  },
 };
 
-export default function PrivacyPage({ pageContent, updatedAt }) {
+export default function PrivacyPage() {
   const router = useRouter();
   const { subpage } = router.query;
+  const page = PAGES[subpage] || PAGES.policy;
 
   useEffect(() => {
     if (router.isReady) {
@@ -55,7 +220,8 @@ export default function PrivacyPage({ pageContent, updatedAt }) {
           name="viewport"
           content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
         />
-        <title>Similo Privacy</title>
+        <title>{`Similo — ${page.title}`}</title>
+        <meta name="robots" content="index, follow" />
       </Head>
       <main className={classes.PrivacyPage}>
         <div className={classes.sideBar}>
@@ -79,28 +245,13 @@ export default function PrivacyPage({ pageContent, updatedAt }) {
           </ul>
         </div>
         <div className={classes.content}>
-          <div dangerouslySetInnerHTML={{ __html: pageContent }} />
+          {page.content}
           <div className={classes.updatedAt}>
             <FaCalendar style={{ marginRight: 6 }} /> Last update:{' '}
-            {createDateString(updatedAt)}
+            {LAST_UPDATED}
           </div>
         </div>
       </main>
     </>
   );
-}
-
-export async function getServerSideProps({ params }) {
-  const response = await axios.get(`${API_URL}/admin/pages/${params.subpage}`);
-
-  return {
-    props: {
-      pageContent: response.data.data.page
-        ? response.data.data.page.content
-        : '',
-      updatedAt: response.data.data.page
-        ? response.data.data.page.updatedAt
-        : '',
-    },
-  };
 }

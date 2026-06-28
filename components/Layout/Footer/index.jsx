@@ -19,7 +19,7 @@ export default function Footer() {
           <a>Privacy</a>
         </Link>
         <Link href="/privacy/notice">
-          <a>About Similo</a>
+          <a>Legal Notice</a>
         </Link>
       </div>
     </footer>
