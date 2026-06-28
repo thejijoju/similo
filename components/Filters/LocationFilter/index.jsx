@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import axios from 'axios';
 import amplitude from 'amplitude-js';
@@ -9,74 +9,9 @@ import { API_URL } from '../../../constants';
 
 let timer;
 
-// eslint-disable-next-line consistent-return
-function createLocationSuggestion(location, locationValue) {
-  if (location.country.toLowerCase().includes(locationValue.toLowerCase())) {
-    return [
-      { jsx: <b>{location.country}</b>, textContent: location.country },
-      {
-        jsx: (
-          <span>
-            {location.region}, <b>{location.country}</b>
-          </span>
-        ),
-        textContent: `${location.region}|${location.country}`,
-      },
-      {
-        jsx: (
-          <span>
-            {location.city}, {location.region}, <b>{location.country}</b>
-          </span>
-        ),
-        textContent: `${location.city}|${location.region}|${location.country}`,
-      },
-    ];
-  }
-  if (location.region.toLowerCase().includes(locationValue.toLowerCase())) {
-    return [
-      {
-        jsx: (
-          <span>
-            <b>{location.region}</b>, {location.country}
-          </span>
-        ),
-        textContent: `${location.region}|${location.country}`,
-      },
-      {
-        jsx: (
-          <span>
-            {location.city}, <b>{location.region}</b>, {location.country}
-          </span>
-        ),
-        textContent: `${location.city}|${location.region}|${location.country}`,
-      },
-    ];
-  }
-  if (location.city.toLowerCase().includes(locationValue.toLowerCase())) {
-    return [
-      {
-        jsx: (
-          <span>
-            <b>{location.city}</b>, {location.country}
-          </span>
-        ),
-        textContent: `${location.city}|${location.country}`,
-      },
-    ];
-  }
-}
-
-/* function createLocationText(location) {
-  const locationTextArray = location.split(',');
-  const locationText = `${locationTextArray[0]}, ${locationTextArray[2]}`;
-  return locationText;
-} */
-
 export default function LocationFilter({
   companyLocationFilter,
   setCompanyLocationFilter,
-  //  locations,
-  //  locationCounts,
 }) {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
@@ -91,37 +26,50 @@ export default function LocationFilter({
     timer = setTimeout(async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/companies/locations?suggestLocation=${locationValue}`
+          `${API_URL}/companies/locations?suggestLocation=${encodeURIComponent(
+            locationValue
+          )}`
         );
-        if (!response.data.data.locations.length) {
-          setLocationSuggestions(['not found']);
-        } else {
-          setLocationSuggestions(
-            createLocationSuggestion(
-              response.data.data.locations[0],
-              locationValue
-            )
-          );
-        }
+        const locs =
+          (response.data &&
+            response.data.data &&
+            response.data.data.locations) ||
+          [];
+        setLocationSuggestions(locs.length ? locs : ['not found']);
       } catch (error) {
         console.log(error);
+        setLocationSuggestions(['not found']);
       }
-    }, 1000);
+    }, 500);
   };
-
-  useEffect(() => {
-    console.log(locationSuggestions);
-  }, [locationSuggestions]);
 
   const removeFilter = (filter) => {
     setTimeout(() => {
       setSelectedFilter(null);
     }, 100);
-    setCompanyLocationFilter((prevFilters) => {
-      const newFilters = prevFilters.filter((fltr) => fltr !== filter);
-      return newFilters;
-    });
+    setCompanyLocationFilter((prevFilters) =>
+      prevFilters.filter((fltr) => fltr !== filter)
+    );
   };
+
+  const addLocation = (location) => {
+    if (location === 'not found') {
+      setLocationSuggestions([]);
+      return;
+    }
+    amplitude.getInstance().logEvent('Search Filter', {
+      type: 'Location',
+      value: location.value,
+    });
+    setCompanyLocationFilter((prevState) =>
+      prevState.includes(location.value)
+        ? prevState
+        : [...prevState, location.value]
+    );
+    setLocationSuggestions([]);
+    setLocationValue('');
+  };
+
   return (
     <div className={classes.LocationFilter}>
       <div className={classes.header}>
@@ -144,38 +92,15 @@ export default function LocationFilter({
       <div className={classes.inputContainer}>
         {locationSuggestions.length ? (
           <div className={classes.searchSuggestions}>
-            {locationSuggestions.map((location) => {
-              return (
-                <span
-                  className={classes.suggestion}
-                  onClick={() => {
-                    if (location === 'not found') {
-                      setLocationSuggestions([]);
-                      return;
-                    }
-                    if (companyLocationFilter.includes(location.textContent)) {
-                      return;
-                    }
-
-                    amplitude.getInstance().logEvent('Search Filter', {
-                      type: 'Location',
-                      value: location.textContent,
-                    });
-                    setCompanyLocationFilter((prevState) => {
-                      if (prevState.includes(location.country)) {
-                        return prevState;
-                      }
-                      return [...prevState, location.textContent];
-                    });
-                    setLocationSuggestions([]);
-                    setLocationValue('');
-                  }}
-                  key={location.id}
-                >
-                  {location.jsx || location}
-                </span>
-              );
-            })}
+            {locationSuggestions.map((location) => (
+              <span
+                className={classes.suggestion}
+                onClick={() => addLocation(location)}
+                key={location.value || location}
+              >
+                {location.label || location}
+              </span>
+            ))}
           </div>
         ) : null}
 
@@ -187,32 +112,6 @@ export default function LocationFilter({
           onKeyUp={getLocationSuggestions}
         />
       </div>
-      {/* <div className={classes.filters}>
-        {locations.map((location) => {
-          return (
-            <div
-              className={classes.filter}
-              key={location}
-              onClick={() => {
-                if (
-                  companyLocationFilter.includes(location.replace(/, /g, '|'))
-                ) {
-                  return;
-                }
-                setCompanyLocationFilter((prevFilters) => {
-                  const newFilters = [
-                    ...prevFilters,
-                    location.replace(/, /g, '|'),
-                  ];
-                  return newFilters;
-                });
-              }}
-            >
-              {createLocationText(location)} ({locationCounts[location]})
-            </div>
-          );
-        })}
-      </div> */}
     </div>
   );
 }

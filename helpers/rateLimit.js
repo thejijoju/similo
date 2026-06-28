@@ -91,3 +91,16 @@ export default async function checkRateLimit(req) {
 
   return { allowed: true };
 }
+
+// Lightweight guard for cheap helper endpoints (e.g. location suggestions):
+// block bots but do not consume the daily search quota.
+export function blockBots(req) {
+  if (isBot(req)) {
+    return {
+      allowed: false,
+      status: 403,
+      message: 'Automated access is not allowed.',
+    };
+  }
+  return { allowed: true };
+}

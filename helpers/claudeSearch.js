@@ -156,40 +156,31 @@ async function callClaude(prompt) {
 // Generate a page of companies via several parallel calls so the wall-clock
 // time stays close to a single small request even though we return ~15
 // detailed profiles. Results are de-duplicated by name, preserving order.
-async function generateCompanies(term, exclude) {
+async function generateCompanies(term, exclude, locations = []) {
   const firstPage = exclude.length === 0;
+  const locationRule = locations.length
+    ? ` Only include companies headquartered in, or with a major presence in: ${locations.join(
+        '; '
+      )}.`
+    : '';
 
-  const prompts = firstPage
+  const instructions = firstPage
     ? [
-        buildPrompt(
-          `The FIRST item must be "${term}" itself, followed by its ${
-            CHUNK_SIZE - 1
-          } closest competitors, ordered by similarity.`,
-          exclude
-        ),
-        buildPrompt(
-          `Return ${CHUNK_SIZE} competitors or peers of "${term}" in the same industry, ranked roughly 6th–11th by similarity. Do NOT include "${term}" itself.`,
-          exclude
-        ),
-        buildPrompt(
-          `Return ${CHUNK_SIZE} further competitors or peers of "${term}", ranked roughly 12th–17th by similarity. Do NOT include "${term}" itself.`,
-          exclude
-        ),
+        `The FIRST item must be "${term}" itself, followed by its ${
+          CHUNK_SIZE - 1
+        } closest competitors, ordered by similarity.`,
+        `Return ${CHUNK_SIZE} competitors or peers of "${term}" in the same industry, ranked roughly 6th–11th by similarity. Do NOT include "${term}" itself.`,
+        `Return ${CHUNK_SIZE} further competitors or peers of "${term}", ranked roughly 12th–17th by similarity. Do NOT include "${term}" itself.`,
       ]
     : [
-        buildPrompt(
-          `Return ${CHUNK_SIZE} more competitors or peers of "${term}" not yet listed.`,
-          exclude
-        ),
-        buildPrompt(
-          `Return ${CHUNK_SIZE} more companies in the same industry as "${term}" not yet listed.`,
-          exclude
-        ),
-        buildPrompt(
-          `Return ${CHUNK_SIZE} more companies similar to "${term}" not yet listed.`,
-          exclude
-        ),
+        `Return ${CHUNK_SIZE} more competitors or peers of "${term}" not yet listed.`,
+        `Return ${CHUNK_SIZE} more companies in the same industry as "${term}" not yet listed.`,
+        `Return ${CHUNK_SIZE} more companies similar to "${term}" not yet listed.`,
       ];
+
+  const prompts = instructions.map((ins) =>
+    buildPrompt(ins + locationRule, exclude)
+  );
 
   const settled = await Promise.allSettled(prompts.map(callClaude));
 
@@ -214,9 +205,12 @@ async function generateCompanies(term, exclude) {
 // UI can show a "universe" total (e.g. "~300 similar companies") without us
 // actually generating them all. Runs in parallel with the page generation, so
 // it adds no real latency.
-async function estimateTotal(term) {
+async function estimateTotal(term, locations = []) {
   try {
-    const prompt = `Estimate how many companies worldwide are broadly similar to or competitors of "${term}" (same or adjacent industry, comparable products or market). Reply with ONLY a single integer — your best rough estimate. No words, no commas.`;
+    const where = locations.length
+      ? ` located in or around ${locations.join('; ')}`
+      : ' worldwide';
+    const prompt = `Estimate how many companies${where} are broadly similar to or competitors of "${term}" (same or adjacent industry, comparable products or market). Reply with ONLY a single integer — your best rough estimate. No words, no commas.`;
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 16,
@@ -249,9 +243,16 @@ export default async function searchCompanies(term, query = {}) {
     .map((s) => s.trim())
     .filter(Boolean);
 
+  // Location filter values arrive pipe-separated per location and comma-
+  // separated between locations, e.g. "Paris|France,Europe".
+  const locations = (query.locations || '')
+    .split(',')
+    .map((l) => l.replace(/\|/g, ', ').trim())
+    .filter(Boolean);
+
   const cacheKey = `${term.toLowerCase()}::p${page}::${exclude
     .join(',')
-    .toLowerCase()}`;
+    .toLowerCase()}::loc:${locations.join(';').toLowerCase()}`;
   let companies;
   let estimatedTotal = null;
 
@@ -264,8 +265,8 @@ export default async function searchCompanies(term, query = {}) {
     // On the first page, estimate the worldwide total in parallel (no extra
     // latency); later pages keep the estimate from page 0 on the client.
     const [parsed, est] = await Promise.all([
-      generateCompanies(term, exclude),
-      page === 0 ? estimateTotal(term) : Promise.resolve(null),
+      generateCompanies(term, exclude, locations),
+      page === 0 ? estimateTotal(term, locations) : Promise.resolve(null),
     ]);
     estimatedTotal = est;
     companies = parsed
