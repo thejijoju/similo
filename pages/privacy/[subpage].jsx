@@ -15,14 +15,11 @@ const LAST_UPDATED = 'June 28, 2026';
 
 // --- Operator details (Impressum) -------------------------------------------
 const OPERATOR = {
-  company: 'Twiggli UG (haftungsbeschränkt)',
+  name: 'Jirel Marie Tamara Kuenen',
   street: 'Rodenkirchenerstr. 147',
   city: '50997 Köln',
   country: 'Germany',
-  representative: 'Tamara Marie Jirel Kuenen',
-  registerCourt: 'Amtsgericht Köln',
-  registerNumber: 'HRB 119837',
-  email: 'twiggli.info@gmail.com',
+  email: 'jirel.kuenen@gmail.com',
 };
 // ----------------------------------------------------------------------------
 
@@ -129,25 +126,15 @@ const PAGES = {
         <h1>Legal Notice (Impressum)</h1>
         <p>Information pursuant to § 5 DDG (German Digital Services Act).</p>
 
-        <h2>Service provider</h2>
+        <h2>Operator</h2>
         <p>
-          {OPERATOR.company}
+          {OPERATOR.name}
           <br />
           {OPERATOR.street}
           <br />
           {OPERATOR.city}
           <br />
           {OPERATOR.country}
-        </p>
-
-        <h2>Represented by</h2>
-        <p>{OPERATOR.representative}</p>
-
-        <h2>Register</h2>
-        <p>
-          Register court: {OPERATOR.registerCourt}
-          <br />
-          Commercial register no.: {OPERATOR.registerNumber}
         </p>
 
         <h2>Contact</h2>
@@ -157,9 +144,9 @@ const PAGES = {
 
         <h2>Responsible for content (§ 18 (2) MStV)</h2>
         <p>
-          {OPERATOR.representative}
+          {OPERATOR.name}
           <br />
-          {OPERATOR.company}, {OPERATOR.street}, {OPERATOR.city}
+          {OPERATOR.street}, {OPERATOR.city}
         </p>
 
         <h2>Disclaimer</h2>

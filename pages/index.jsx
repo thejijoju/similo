@@ -35,15 +35,7 @@ const STRUCTURED_DATA = {
       '@id': 'https://similo.xyz/#organization',
       name: 'Similo',
       url: 'https://similo.xyz/',
-      legalName: 'Twiggli UG (haftungsbeschränkt)',
-      email: 'twiggli.info@gmail.com',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Rodenkirchenerstr. 147',
-        postalCode: '50997',
-        addressLocality: 'Köln',
-        addressCountry: 'DE',
-      },
+      email: 'jirel.kuenen@gmail.com',
     },
     {
       '@type': 'WebSite',
