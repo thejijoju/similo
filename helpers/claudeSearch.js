@@ -131,6 +131,26 @@ const SCHEMA = `{
 
 const CHUNK_SIZE = 6; // companies requested per parallel call
 
+// Turn the literal string "null" / "n/a" / empty into a real null value.
+function cleanValue(v) {
+  if (v === null || v === undefined) return null;
+  if (typeof v !== 'string') return v;
+  const t = v.trim();
+  if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'n/a') return null;
+  return t;
+}
+
+// Clean a comma-separated list (e.g. keyPeople), dropping any "null" entries.
+function cleanList(v) {
+  const cleaned = cleanValue(v);
+  if (!cleaned) return null;
+  const parts = cleaned
+    .split(',')
+    .map((p) => p.trim())
+    .filter((p) => p && p.toLowerCase() !== 'null');
+  return parts.length ? parts.join(', ') : null;
+}
+
 // Unique expertise tags across a set of companies (case-insensitive, first
 // casing wins). Computed from the unfiltered set so the Expertise filter
 // options don't shrink when the user selects one.
@@ -373,6 +393,12 @@ export default async function searchCompanies(term, query = {}) {
       .filter((c) => c && c.name)
       .map((c, i) => ({
         ...c,
+        keyPeople: cleanList(c.keyPeople),
+        subsidiaries: cleanList(c.subsidiaries),
+        founder: cleanValue(c.founder),
+        parentCompany: cleanValue(c.parentCompany),
+        csr: cleanValue(c.csr),
+        about: cleanValue(c.about),
         id: offset + i + 1,
         companyId: offset + i + 1,
         hidden: false,
