@@ -455,7 +455,10 @@ export default function Filters() {
       </div>
       {isFiltersPanelVisible && (
         <Portal>
-          <div className={classes.overlay} />
+          <div
+            className={classes.overlay}
+            onClick={() => setIsFiltersPanelVisible(false)}
+          />
         </Portal>
       )}
     </div>
