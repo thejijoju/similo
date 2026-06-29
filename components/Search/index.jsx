@@ -33,6 +33,7 @@ export default function Search({
     companyLocationFilter,
     companyCSRFilter,
     customFilter,
+    isSearchResultsLoading,
     companyParentOrganisatonFilter,
     companyHQFilter,
     companyFoundationYearFilter,
@@ -52,6 +53,26 @@ export default function Search({
   const { setIsSearchMode } = useContext(UIContext);
 
   const searchBarRef = useRef();
+  const wasLoadingRef = useRef(false);
+  const [progressState, setProgressState] = useState('idle');
+
+  // Drive the subtle progress line on the bottom of the search box:
+  // fills toward ~90% while loading, snaps to 100% and fades when results
+  // arrive.
+  useEffect(() => {
+    if (isSearchResultsLoading) {
+      wasLoadingRef.current = true;
+      setProgressState('loading');
+      return undefined;
+    }
+    if (wasLoadingRef.current) {
+      wasLoadingRef.current = false;
+      setProgressState('done');
+      const t = setTimeout(() => setProgressState('idle'), 600);
+      return () => clearTimeout(t);
+    }
+    return undefined;
+  }, [isSearchResultsLoading]);
 
   const router = useRouter();
 
@@ -258,6 +279,13 @@ export default function Search({
       >
         Close
       </i>
+      <span
+        className={classnames(
+          classes.progressBar,
+          progressState === 'loading' && classes.loading,
+          progressState === 'done' && classes.done
+        )}
+      />
     </form>
   );
 }
