@@ -13,6 +13,8 @@ import amplitude from 'amplitude-js';
 
 import { COMPANIES_PER_PAGE, API_URL } from 'constants/index';
 import SkeletonLoader from '@/components/SkeletonLoader';
+import useOnClickOutside from '@/helpers/useOnClickOutside';
+import { exportCSV, exportJSON, exportPDF } from '@/helpers/exportResults';
 import SearchResult from './SearchResult';
 
 import classes from './styles.module.scss';
@@ -40,6 +42,10 @@ export default function SearchResults({
   const [innerSearchResults, setInnerSearchResults] = useState({
     ...searchResults,
   });
+
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef();
+  useOnClickOutside(exportRef, () => setExportOpen(false));
 
   const [isAllowedToLoadPreviousPage, setIsAllowedToLoadPreviousPage] =
     useState(false);
@@ -530,7 +536,8 @@ export default function SearchResults({
                 innerSearchResults.estimatedTotal
               )} similar companies`
             : `${
-                innerSearchResults.data.companies.filter((c) => !c.hidden).length
+                innerSearchResults.data.companies.filter((c) => !c.hidden)
+                  .length
               } results`}
         </span>
         <span
@@ -539,7 +546,8 @@ export default function SearchResults({
             setAreCompanyCardsExpanded((prevState) => {
               if (prevState === false || prevState === 'notExpanded') {
                 return true;
-              } else if (prevState === true || prevState === 'expanded') {
+              }
+              if (prevState === true || prevState === 'expanded') {
                 return false;
               }
             });
@@ -548,6 +556,70 @@ export default function SearchResults({
           <i>dot</i>
           {areCompanyCardsExpanded ? 'Close all cards' : 'Open all cards'}
         </span>
+        <div className={classes.exportWrap} ref={exportRef}>
+          <button
+            type="button"
+            className={classes.exportButton}
+            onClick={() => setExportOpen((prev) => !prev)}
+          >
+            Export <span className={classes.exportCaret}>▾</span>
+          </button>
+          {exportOpen && (
+            <div className={classes.exportMenu}>
+              <span
+                onClick={() => {
+                  exportPDF(
+                    innerSearchResults.data.companies,
+                    (router.query.customFields || '')
+                      .split('|')
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                    router.query.term
+                      ? decodeURIComponent(router.query.term)
+                      : ''
+                  );
+                  setExportOpen(false);
+                }}
+              >
+                PDF
+              </span>
+              <span
+                onClick={() => {
+                  exportCSV(
+                    innerSearchResults.data.companies,
+                    (router.query.customFields || '')
+                      .split('|')
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                    router.query.term
+                      ? decodeURIComponent(router.query.term)
+                      : ''
+                  );
+                  setExportOpen(false);
+                }}
+              >
+                CSV
+              </span>
+              <span
+                onClick={() => {
+                  exportJSON(
+                    innerSearchResults.data.companies,
+                    (router.query.customFields || '')
+                      .split('|')
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                    router.query.term
+                      ? decodeURIComponent(router.query.term)
+                      : ''
+                  );
+                  setExportOpen(false);
+                }}
+              >
+                JSON
+              </span>
+            </div>
+          )}
+        </div>
       </div>
       <div
         style={{

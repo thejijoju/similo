@@ -32,6 +32,60 @@
         border-radius: 50%;
       }
     }
+    .exportWrap {
+      position: relative;
+      display: inline-block;
+      margin-left: 21px;
+      .exportButton {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        font-size: 12px;
+        line-height: 14px;
+        letter-spacing: normal;
+        color: #7a7c7f;
+        background: none;
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        i {
+          display: none;
+        }
+      }
+      .exportCaret {
+        font-size: 10px;
+      }
+      .exportMenu {
+        position: absolute;
+        top: 24px;
+        right: 0;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        min-width: 124px;
+        background: #ffffff;
+        border: 1px solid #e2e6e9;
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+        span {
+          margin: 0 !important;
+          padding: 10px 14px;
+          font-size: 13px;
+          color: #2b2f33;
+          cursor: pointer;
+          &:hover {
+            background: #f1f7f8;
+            color: #0f7c91;
+          }
+        }
+      }
+    }
   }
   .displayMore {
     display: flex;
@@ -81,6 +135,17 @@
         }
         &.openAllCards {
           //display: none;
+        }
+      }
+      .exportWrap {
+        margin-left: 0;
+        .exportButton {
+          font-size: 13px;
+          color: #14a2b8;
+        }
+        .exportMenu {
+          right: 0;
+          top: 28px;
         }
       }
       button {
