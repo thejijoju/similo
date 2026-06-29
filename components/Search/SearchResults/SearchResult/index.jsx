@@ -1083,7 +1083,7 @@ export default function SearchResult({
                 )}
                 {company.custom &&
                   Object.keys(company.custom).map((key) => (
-                    <div className={classes.infoBlock} key={key}>
+                    <div className={classes.customField} key={key}>
                       <span className={classes.title}>{key}</span>
                       <span className={classes.content}>
                         {company.custom[key]}

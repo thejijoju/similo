@@ -267,9 +267,34 @@
         .content {
           position: static;
           font-size: 14px;
+          word-break: break-word;
+          overflow-wrap: anywhere;
           //min-width: 75%;
           /* min-width: calc(50% + 67px + var(--keyPeopleOffset));
           margin-left: -67px; */
+        }
+      }
+      .customField {
+        width: 100%;
+        display: flex;
+        margin-bottom: 11px;
+        .title {
+          min-width: 25%;
+          max-width: 25%;
+          font-size: 15px;
+          font-weight: bold;
+          line-height: 18px;
+          letter-spacing: 0.3px;
+          color: #090909;
+        }
+        .content {
+          width: 75%;
+          font-size: 15px;
+          line-height: 18px;
+          letter-spacing: 0.3px;
+          color: #090909;
+          word-break: break-word;
+          overflow-wrap: anywhere;
         }
       }
     }
