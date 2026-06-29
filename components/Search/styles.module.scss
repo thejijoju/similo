@@ -6,11 +6,11 @@
   .progressBar {
     position: absolute;
     left: 24px;
-    bottom: 1px;
+    bottom: 0;
     width: calc(100% - 48px);
-    height: 2.5px;
-    border-radius: 2px;
-    background: linear-gradient(90deg, #14a2b8, #40bdd1);
+    height: 1px;
+    border-radius: 1px;
+    background: #9b97f2;
     transform: scaleX(0);
     transform-origin: left center;
     opacity: 0;
