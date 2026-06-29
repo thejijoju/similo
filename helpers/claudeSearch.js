@@ -151,6 +151,18 @@ function cleanList(v) {
   return parts.length ? parts.join(', ') : null;
 }
 
+// Clean the user-defined "custom" object: drop "null"/empty values, keep the
+// rest as { fieldName: value }.
+function cleanCustom(obj) {
+  if (!obj || typeof obj !== 'object') return null;
+  const out = {};
+  Object.keys(obj).forEach((k) => {
+    const v = cleanValue(obj[k]);
+    if (v) out[k] = v;
+  });
+  return Object.keys(out).length ? out : null;
+}
+
 // Unique expertise tags across a set of companies (case-insensitive, first
 // casing wins). Computed from the unfiltered set so the Expertise filter
 // options don't shrink when the user selects one.
@@ -170,17 +182,22 @@ function uniqueTags(companies, field) {
   return tags;
 }
 
-function buildPrompt(instruction, exclude) {
+function buildPrompt(instruction, exclude, customFields = []) {
   const excludeRule = exclude.length
     ? `\n\nDo NOT include any of these companies, which are already listed: ${exclude.join(
         ', '
       )}.`
     : '';
+  const customRule = customFields.length
+    ? `\n\nAlso include in EACH company object a "custom" object with exactly these keys (concise string values, or null if genuinely unknown): ${customFields
+        .map((f) => `"${f}"`)
+        .join(', ')}.`
+    : '';
   return `You are a business intelligence database. Return a JSON array of real companies.
 ${instruction}${excludeRule}
 
 For each company, return an object with EXACTLY these fields (use null for unknown values):
-${SCHEMA}
+${SCHEMA}${customRule}
 
 Return ONLY a valid JSON array — no markdown, no code blocks, no explanation.`;
 }
@@ -201,7 +218,7 @@ async function callClaude(prompt) {
 // Generate a page of companies via several parallel calls so the wall-clock
 // time stays close to a single small request even though we return ~15
 // detailed profiles. Results are de-duplicated by name, preserving order.
-async function generateCompanies(term, exclude, constraints = []) {
+async function generateCompanies(term, exclude, constraints = [], customFields = []) {
   const firstPage = exclude.length === 0;
   const constraintRule = constraints.length
     ? ` Only include companies ${constraints.join(', and ')}.`
@@ -222,7 +239,7 @@ async function generateCompanies(term, exclude, constraints = []) {
       ];
 
   const prompts = instructions.map((ins) =>
-    buildPrompt(ins + constraintRule, exclude)
+    buildPrompt(ins + constraintRule, exclude, customFields)
   );
 
   const settled = await Promise.allSettled(prompts.map(callClaude));
@@ -358,6 +375,12 @@ export default async function searchCompanies(term, query = {}) {
     .filter(Boolean);
   const types = (query.companyType || '').split(',').filter(Boolean);
   const custom = (query.custom || '').trim().slice(0, 200);
+  // User-defined extra fields to display per company (max 3).
+  const customFields = (query.customFields || '')
+    .split('|')
+    .map((f) => f.trim().slice(0, 40))
+    .filter(Boolean)
+    .slice(0, 3);
 
   // Constraints that steer generation itself (so results actually match),
   // and therefore must be part of the generation cache key.
@@ -380,7 +403,9 @@ export default async function searchCompanies(term, query = {}) {
     .join(';')
     .toLowerCase()}::type:${types
     .join(';')
-    .toLowerCase()}::custom:${custom.toLowerCase()}`;
+    .toLowerCase()}::custom:${custom.toLowerCase()}::fields:${customFields
+    .join('|')
+    .toLowerCase()}`;
   let companies;
   let estimatedTotal = null;
 
@@ -396,7 +421,12 @@ export default async function searchCompanies(term, query = {}) {
     companies = cached.data;
   } else {
     const offset = page * PER_PAGE;
-    const parsed = await generateCompanies(term, exclude, genConstraints);
+    const parsed = await generateCompanies(
+      term,
+      exclude,
+      genConstraints,
+      customFields
+    );
     companies = parsed
       .filter((c) => c && c.name)
       .map((c, i) => ({
@@ -407,6 +437,7 @@ export default async function searchCompanies(term, query = {}) {
         parentCompany: cleanValue(c.parentCompany),
         csr: cleanValue(c.csr),
         about: cleanValue(c.about),
+        custom: cleanCustom(c.custom),
         id: offset + i + 1,
         companyId: offset + i + 1,
         hidden: false,

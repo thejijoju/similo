@@ -114,6 +114,7 @@ export default function Filters() {
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
   const [customInput, setCustomInput] = useState('');
+  const [customFieldInput, setCustomFieldInput] = useState('');
 
   const { Portal } = usePortal();
 
@@ -138,11 +139,29 @@ export default function Filters() {
     availableCSR,
     customFilter,
     setCustomFilter,
+    customFields,
+    setCustomFields,
   } = useContext(SearchResultsContext);
 
   useEffect(() => {
     setCustomInput(customFilter || '');
   }, [customFilter]);
+
+  const addCustomField = () => {
+    const field = customFieldInput.trim();
+    if (!field) return;
+    if (customFields.length >= 3) return;
+    if (customFields.some((f) => f.toLowerCase() === field.toLowerCase())) {
+      setCustomFieldInput('');
+      return;
+    }
+    setCustomFields([...customFields, field]);
+    setCustomFieldInput('');
+  };
+
+  const removeCustomField = (field) => {
+    setCustomFields(customFields.filter((f) => f !== field));
+  };
 
   const {
     isFiltersPanelVisible,
@@ -170,7 +189,8 @@ export default function Filters() {
       !!companyRevenueFilter.length ||
       !!companyTypeFilter.length ||
       !!companyCSRFilter.length ||
-      !!(customFilter && customFilter.length)
+      !!(customFilter && customFilter.length) ||
+      !!customFields.length
     );
   };
 
@@ -182,6 +202,7 @@ export default function Filters() {
     setCompanyTypeFilter([]);
     setCompanyCSRFilter([]);
     setCustomFilter('');
+    setCustomFields([]);
   };
 
   const toggleFiltersVisibility = () => {
@@ -350,6 +371,35 @@ export default function Filters() {
                 <i>×</i>
               </div>
             ) : null}
+          </div>
+          <div className={classes.customFilter}>
+            <h2>Custom fields</h2>
+            <p className={classes.customHint}>
+              Add up to 3 extra fields to show on every card (press Enter).
+            </p>
+            <input
+              type="text"
+              maxLength={40}
+              placeholder="e.g. Funding stage"
+              value={customFieldInput}
+              disabled={customFields.length >= 3}
+              onChange={(event) => setCustomFieldInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  addCustomField();
+                }
+              }}
+            />
+            {customFields.map((field) => (
+              <div
+                className={classes.customActive}
+                key={field}
+                onClick={() => removeCustomField(field)}
+              >
+                <span>{field}</span>
+                <i>×</i>
+              </div>
+            ))}
           </div>
           <Filter
             values={availableExpertise}

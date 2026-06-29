@@ -1081,6 +1081,15 @@ export default function SearchResult({
                     </span>
                   </div>
                 )}
+                {company.custom &&
+                  Object.keys(company.custom).map((key) => (
+                    <div className={classes.infoBlock} key={key}>
+                      <span className={classes.title}>{key}</span>
+                      <span className={classes.content}>
+                        {company.custom[key]}
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
           )}

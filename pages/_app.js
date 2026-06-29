@@ -22,6 +22,7 @@ function MyApp({ Component, pageProps }) {
   const [availableExpertise, setAvailableExpertise] = useState([]);
   const [availableCSR, setAvailableCSR] = useState([]);
   const [customFilter, setCustomFilter] = useState('');
+  const [customFields, setCustomFields] = useState([]);
   const [companyParentOrganisatonFilter, setCompanyParentOrganisationFilter] =
     useState('');
   const [companyHQFilter, setCompanyHQFilter] = useState('');
@@ -80,6 +81,8 @@ function MyApp({ Component, pageProps }) {
         setAvailableCSR,
         customFilter,
         setCustomFilter,
+        customFields,
+        setCustomFields,
         companyParentOrganisatonFilter,
         setCompanyParentOrganisationFilter,
         companyHQFilter,

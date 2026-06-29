@@ -90,6 +90,7 @@ export default function HomePage({
     setCompanyHQFilter,
     setCompanyFoundationYearFilter,
     setCustomFilter,
+    setCustomFields,
   } = useContext(SearchResultsContext);
 
   const { isFiltersPanelVisible } = useContext(UIContext);
@@ -150,6 +151,9 @@ export default function HomePage({
     setCompanyFoundationYearFilter(companyFoundationYearFilter);
 
     setCustomFilter(router.query.custom || '');
+    setCustomFields(
+      router.query.customFields ? router.query.customFields.split('|') : []
+    );
   }, []);
 
   return (
