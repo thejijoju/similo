@@ -8,7 +8,6 @@ import React, {
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
-import arrayMove from 'array-move';
 import amplitude from 'amplitude-js';
 
 import { COMPANIES_PER_PAGE, API_URL } from 'constants/index';
@@ -309,94 +308,102 @@ export default function SearchResults({
     }
   };
 
+  const errorResult = (error) => ({
+    status: 'fail',
+    count: 0,
+    totalCount: 0,
+    page: 0,
+    data: { companies: [] },
+    error:
+      (error.response && error.response.data && error.response.data.message) ||
+      'Something went wrong. Please try again later.',
+  });
+
   const getSearchResults = async () => {
-    console.log('GETTING SEARCH RESULTS');
-
-    const companyPreviousPosition =
-      innerSearchResults &&
-      innerSearchResults.data &&
-      innerSearchResults.data.companies
-        ? innerSearchResults.data.companies.findIndex(
-            (company) => company.name === router.query.term
-          )
-        : undefined;
-
     setIsSearchResultsLoading(true);
     setAddSearchResultsDirection('bottom');
     setCurrentPage(0);
-    const url = router.query.fromSuggestions
-      ? `${API_URL}/companies/search/searchFromSuggestions`
-      : `${API_URL}/companies/search`;
-    try {
-      const response = await axios.get(url, {
-        params: {
-          ...router.query,
-          page:
-            router.query.suggestionType === 'company' ? undefined : currentPage,
-        },
-      });
+    setCurrentTopPage(0);
+    setCurrentBottomPage(0);
 
-      if (
-        companyPreviousPosition !== -1 &&
-        companyPreviousPosition !== undefined
-      ) {
-        const companyCurrentPosition = response.data.data.companies.findIndex(
-          (company) => company.name === router.query.term
+    // The suggestion flow uses a different endpoint without batching.
+    if (router.query.fromSuggestions) {
+      try {
+        const response = await axios.get(
+          `${API_URL}/companies/search/searchFromSuggestions`,
+          { params: { ...router.query, page: 0 } }
         );
-
-        if (companyCurrentPosition === -1) {
-          setInnerSearchResults(response.data);
-        } else {
-          console.log('REBUILDING');
-          console.log('LENGTH', response.data.data.companies.length);
-          if (response.data.data.companies.length < 10) {
-            const count = 10 - response.data.data.companies.length;
-            for (let i = 0; i < count; i++) {
-              response.data.data.companies.push({
-                ...response.data.data.companies[0],
-                id: Math.random(),
-                hidden: true,
-                name: 'Noname',
-              });
-            }
-          }
-
-          arrayMove.mutate(
-            response.data.data.companies,
-            companyCurrentPosition,
-            companyPreviousPosition
-          );
-          response.data.data.companies.forEach((company, i) => {
-            if (company.hidden && i < companyPreviousPosition) {
-              response.data.data.companies.splice(i, 1);
-              response.data.data.companies.unshift(company);
-            }
-          });
-          setInnerSearchResults(response.data);
-        }
-      } else {
         setInnerSearchResults(response.data);
+      } catch (error) {
+        console.log(error);
+        setInnerSearchResults(errorResult(error));
       }
-
-      setCurrentTopPage(response.data.page);
-      setCurrentBottomPage(response.data.page);
       setIsSearchResultsLoading(false);
+      return;
+    }
+
+    // Progressive loading: fetch the fast first batch and the rest in
+    // parallel; render the first batch the moment it lands.
+    const url = `${API_URL}/companies/search`;
+    const baseParams = { ...router.query, page: 0 };
+    const firstReq = axios.get(url, {
+      params: { ...baseParams, batch: 'first' },
+    });
+    const restReq = axios.get(url, {
+      params: { ...baseParams, batch: 'rest' },
+    });
+
+    let firstData = null;
+    try {
+      const first = await firstReq;
+      firstData = first.data;
+      setInnerSearchResults(first.data);
     } catch (error) {
       console.log(error);
-      setIsSearchResultsLoading(false);
-      setInnerSearchResults({
-        status: 'fail',
-        count: 0,
-        totalCount: 0,
-        page: 0,
-        data: { companies: [] },
-        error:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          'Something went wrong. Please try again later.',
-      });
     }
+
+    try {
+      const rest = await restReq;
+      const baseCompanies =
+        (firstData && firstData.data && firstData.data.companies) || [];
+      const seen = new Set(
+        baseCompanies.map((c) => (c.name || '').toLowerCase())
+      );
+      const merged = (rest.data.data.companies || []).filter(
+        (c) => c && c.name && !seen.has(c.name.toLowerCase())
+      );
+      const base = firstData || rest.data;
+      const companies = [...baseCompanies, ...merged];
+      setInnerSearchResults({
+        ...base,
+        hasMore: rest.data.hasMore,
+        estimatedTotal: firstData
+          ? firstData.estimatedTotal
+          : rest.data.estimatedTotal,
+        count: companies.length,
+        totalCount: companies.length,
+        availableExpertise: Array.from(
+          new Set([
+            ...((firstData && firstData.availableExpertise) || []),
+            ...(rest.data.availableExpertise || []),
+          ])
+        ),
+        availableCSR: Array.from(
+          new Set([
+            ...((firstData && firstData.availableCSR) || []),
+            ...(rest.data.availableCSR || []),
+          ])
+        ),
+        data: { companies },
+      });
+    } catch (error) {
+      console.log(error);
+      if (!firstData) {
+        setInnerSearchResults(errorResult(error));
+      }
+    }
+
+    setIsSearchResultsLoading(false);
   };
 
   useEffect(() => {

@@ -218,7 +218,13 @@ async function callClaude(prompt) {
 // Generate a page of companies via several parallel calls so the wall-clock
 // time stays close to a single small request even though we return ~15
 // detailed profiles. Results are de-duplicated by name, preserving order.
-async function generateCompanies(term, exclude, constraints = [], customFields = []) {
+async function generateCompanies(
+  term,
+  exclude,
+  constraints = [],
+  customFields = [],
+  batch = ''
+) {
   const firstPage = exclude.length === 0;
   const constraintRule = constraints.length
     ? ` Only include companies ${constraints.join(', and ')}.`
@@ -238,7 +244,19 @@ async function generateCompanies(term, exclude, constraints = [], customFields =
         `Return ${CHUNK_SIZE} more companies similar to "${term}" not yet listed.`,
       ];
 
-  const prompts = instructions.map((ins) =>
+  // Progressive batches: 'first' = just the lead chunk (fast); 'rest' = the
+  // remaining chunks; default = all of them.
+  let chosen = instructions;
+  let limit = PER_PAGE;
+  if (batch === 'first') {
+    chosen = [instructions[0]];
+    limit = CHUNK_SIZE;
+  } else if (batch === 'rest') {
+    chosen = instructions.slice(1);
+    limit = PER_PAGE - CHUNK_SIZE;
+  }
+
+  const prompts = chosen.map((ins) =>
     buildPrompt(ins + constraintRule, exclude, customFields)
   );
 
@@ -269,7 +287,7 @@ async function generateCompanies(term, exclude, constraints = [], customFields =
   });
 
   if (!out.length) throw new Error('No companies generated');
-  return out.slice(0, PER_PAGE);
+  return out.slice(0, limit);
 }
 
 // Cheap, rough estimate of how many similar companies exist worldwide, so the
@@ -382,6 +400,11 @@ export default async function searchCompanies(term, query = {}) {
     .filter(Boolean)
     .slice(0, 3);
 
+  // Progressive loading: 'first' returns the company + ~5 closest fast (one
+  // call); 'rest' returns the remaining peers. Undefined = full page.
+  const batch =
+    query.batch === 'first' || query.batch === 'rest' ? query.batch : '';
+
   // Constraints that steer generation itself (so results actually match),
   // and therefore must be part of the generation cache key.
   const genConstraints = [];
@@ -405,7 +428,7 @@ export default async function searchCompanies(term, query = {}) {
     .join(';')
     .toLowerCase()}::custom:${custom.toLowerCase()}::fields:${customFields
     .join('|')
-    .toLowerCase()}`;
+    .toLowerCase()}::batch:${batch}`;
   let companies;
   let estimatedTotal = null;
 
@@ -414,18 +437,22 @@ export default async function searchCompanies(term, query = {}) {
   // overlaps with generation. Only the first page needs it; later pages keep
   // the page-0 estimate on the client.
   const estimatePromise =
-    page === 0 ? getEstimate(term, query, locations) : Promise.resolve(null);
+    page === 0 && batch !== 'rest'
+      ? getEstimate(term, query, locations)
+      : Promise.resolve(null);
 
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     companies = cached.data;
   } else {
-    const offset = page * PER_PAGE;
+    // 'rest' is numbered after the first batch so ids stay unique.
+    const offset = page * PER_PAGE + (batch === 'rest' ? CHUNK_SIZE : 0);
     const parsed = await generateCompanies(
       term,
       exclude,
       genConstraints,
-      customFields
+      customFields,
+      batch
     );
     companies = parsed
       .filter((c) => c && c.name)
