@@ -15,17 +15,16 @@
     transform-origin: left center;
     opacity: 0;
     pointer-events: none;
-    transition: transform 4.5s cubic-bezier(0.1, 0.7, 0.2, 1),
-      opacity 0.4s ease;
+    transition: transform 4s linear, opacity 0.4s ease;
   }
   .progressBar.loading {
     opacity: 1;
-    transform: scaleX(0.9);
+    transform: scaleX(0.95);
   }
   .progressBar.done {
     opacity: 1;
     transform: scaleX(1);
-    transition: transform 0.2s ease, opacity 0.5s ease;
+    transition: transform 0.3s linear, opacity 0.5s ease;
   }
 
   .searchBar {
