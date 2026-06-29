@@ -23,8 +23,8 @@ function setBorderAndShadowColor(id) {
   switch (true) {
     case id === 0 || id % 6 === 0:
       return {
-        border: '1px solid rgba(193, 80, 80, 0.2)',
-        boxShadow: 'inset 0 2px 12px rgba(193, 80, 80, 0.06)',
+        border: '1px solid rgba(235, 145, 70, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(235, 145, 70, 0.06)',
       };
     case id === 1 || id % 6 === 1:
       return {
@@ -48,13 +48,13 @@ function setBorderAndShadowColor(id) {
       };
     case id === 5 || id % 6 === 5:
       return {
-        border: '1px solid rgba(193, 80, 80, 0.2)',
-        boxShadow: 'inset 0 2px 12px rgba(193, 80, 80, 0.06)',
+        border: '1px solid rgba(229, 122, 178, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(229, 122, 178, 0.06)',
       };
     default:
       return {
-        border: '1px solid rgba(193, 80, 80, 0.2)',
-        boxShadow: 'inset 0 2px 12px rgba(193, 80, 80, 0.06)',
+        border: '1px solid rgba(235, 145, 70, 0.2)',
+        boxShadow: 'inset 0 2px 12px rgba(235, 145, 70, 0.06)',
       };
   }
 }

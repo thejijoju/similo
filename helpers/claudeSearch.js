@@ -207,15 +207,26 @@ async function generateCompanies(term, exclude, constraints = []) {
 
   const settled = await Promise.allSettled(prompts.map(callClaude));
 
-  const seen = new Set();
+  const seenNames = new Set();
+  const seenDomains = new Set();
   const out = [];
   settled.forEach((r) => {
     if (r.status !== 'fulfilled' || !Array.isArray(r.value)) return;
     r.value.forEach((c) => {
       if (!c || !c.name) return;
-      const key = c.name.trim().toLowerCase();
-      if (seen.has(key)) return;
-      seen.add(key);
+      const nameKey = c.name.trim().toLowerCase();
+      // Normalise the website so "The Financial Times" and "Financial Times"
+      // (both ft.com) collapse to a single entry.
+      const domain = (c.websiteUrl || '')
+        .toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
+        .replace(/\/.*$/, '')
+        .trim();
+      if (seenNames.has(nameKey)) return;
+      if (domain && seenDomains.has(domain)) return;
+      seenNames.add(nameKey);
+      if (domain) seenDomains.add(domain);
       out.push(c);
     });
   });

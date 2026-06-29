@@ -136,8 +136,8 @@ export default function Header() {
         </div>
       </div>
       <div className={classes.description}>
-        <p>The european company directory.</p>
-        <p>150.000 + companies</p>
+        <p>Find similar companies &amp; competitors.</p>
+        <p>AI-powered company discovery.</p>
       </div>
       <div className={classes.secondDescription}>
         <p>Made by people. For people.</p>
