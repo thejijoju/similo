@@ -535,8 +535,15 @@ export default function SearchResult({
     // too-short height and clips that line.
     const measure = () => {
       if (companyCardRef.current && tagsRef.current && !isCompanyCardExpanded) {
-        companyCardInitialHeight.current = companyCardRef.current.offsetHeight;
-        setCompanyCardHeight(companyCardRef.current.offsetHeight);
+        // Measure with height:auto so a previously-clipped (fixed) height
+        // doesn't hide the true content height; then lock it in.
+        const el = companyCardRef.current;
+        const prev = el.style.height;
+        el.style.height = 'auto';
+        const h = el.offsetHeight;
+        el.style.height = prev;
+        companyCardInitialHeight.current = h;
+        setCompanyCardHeight(h);
       }
     };
     measure();
