@@ -728,6 +728,16 @@ export default function SearchResult({
     } else if (additionalDetailsRef.current && visibleDetailsPage === 1) {
       detailsRef.current.style.height = '';
     }
+    // Re-fit the outer card to the currently visible details page so a taller
+    // page (e.g. with custom fields) isn't clipped.
+    if (
+      isCompanyCardExpanded &&
+      typeof window !== 'undefined' &&
+      window.innerWidth > 1200 &&
+      companyCardRef.current
+    ) {
+      setCompanyCardHeight(companyCardRef.current.scrollHeight + 43);
+    }
   }, [visibleDetailsPage, isFullAboutVisible, isCompanyCardExpanded]);
 
   return (
