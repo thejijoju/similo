@@ -530,10 +530,29 @@ export default function SearchResult({
   }, [globalStockDataKey]);
 
   useEffect(() => {
-    if (companyCardRef.current && tagsRef.current) {
-      companyCardInitialHeight.current = companyCardRef.current.offsetHeight;
-      setCompanyCardHeight(companyCardRef.current.offsetHeight);
+    // Re-measure the collapsed height after fonts/layout settle, otherwise a
+    // card whose tags wrap to a second line once the web font loads keeps a
+    // too-short height and clips that line.
+    const measure = () => {
+      if (companyCardRef.current && tagsRef.current && !isCompanyCardExpanded) {
+        companyCardInitialHeight.current = companyCardRef.current.offsetHeight;
+        setCompanyCardHeight(companyCardRef.current.offsetHeight);
+      }
+    };
+    measure();
+    if (
+      typeof document !== 'undefined' &&
+      document.fonts &&
+      document.fonts.ready
+    ) {
+      document.fonts.ready.then(measure);
     }
+    const t1 = setTimeout(measure, 200);
+    const t2 = setTimeout(measure, 600);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
 
   useEffect(() => {
