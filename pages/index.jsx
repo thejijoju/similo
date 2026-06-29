@@ -89,6 +89,7 @@ export default function HomePage({
     setCompanyParentOrganisationFilter,
     setCompanyHQFilter,
     setCompanyFoundationYearFilter,
+    setCustomFilter,
   } = useContext(SearchResultsContext);
 
   const { isFiltersPanelVisible } = useContext(UIContext);
@@ -147,6 +148,8 @@ export default function HomePage({
 
     const companyFoundationYearFilter = router.query.foundationYear;
     setCompanyFoundationYearFilter(companyFoundationYearFilter);
+
+    setCustomFilter(router.query.custom || '');
   }, []);
 
   return (

@@ -113,6 +113,7 @@ export default function Filters() {
   const [areFiltersVisible, setAreFiltersVisible] = useState(true);
   const [filtersContainerHeight, setFiltersContainerHeight] = useState('unset');
   const [areSortOptionsExpanded, setAreSortOptionsExpanded] = useState(false);
+  const [customInput, setCustomInput] = useState('');
 
   const { Portal } = usePortal();
 
@@ -135,7 +136,13 @@ export default function Filters() {
     setCompanyCSRFilter,
     availableExpertise,
     availableCSR,
+    customFilter,
+    setCustomFilter,
   } = useContext(SearchResultsContext);
+
+  useEffect(() => {
+    setCustomInput(customFilter || '');
+  }, [customFilter]);
 
   const {
     isFiltersPanelVisible,
@@ -162,7 +169,8 @@ export default function Filters() {
       !!companyExpertiseFilter.length ||
       !!companyRevenueFilter.length ||
       !!companyTypeFilter.length ||
-      !!companyCSRFilter.length
+      !!companyCSRFilter.length ||
+      !!(customFilter && customFilter.length)
     );
   };
 
@@ -173,6 +181,7 @@ export default function Filters() {
     setCompanyRevenueFilter([]);
     setCompanyTypeFilter([]);
     setCompanyCSRFilter([]);
+    setCustomFilter('');
   };
 
   const toggleFiltersVisibility = () => {
@@ -311,6 +320,36 @@ export default function Filters() {
             >
               {sortOptionLabel}
             </span>
+          </div>
+          <div className={classes.customFilter}>
+            <h2>Custom filter</h2>
+            <p className={classes.customHint}>
+              Type any criteria in your own words, then press Enter.
+            </p>
+            <input
+              type="text"
+              maxLength={200}
+              placeholder="e.g. uses Russian as a working language"
+              value={customInput}
+              onChange={(event) => setCustomInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  setCustomFilter(customInput.trim());
+                }
+              }}
+            />
+            {customFilter ? (
+              <div
+                className={classes.customActive}
+                onClick={() => {
+                  setCustomFilter('');
+                  setCustomInput('');
+                }}
+              >
+                <span>{customFilter}</span>
+                <i>×</i>
+              </div>
+            ) : null}
           </div>
           <Filter
             values={availableExpertise}

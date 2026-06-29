@@ -21,6 +21,7 @@ function MyApp({ Component, pageProps }) {
   const [companyCSRFilter, setCompanyCSRFilter] = useState([]);
   const [availableExpertise, setAvailableExpertise] = useState([]);
   const [availableCSR, setAvailableCSR] = useState([]);
+  const [customFilter, setCustomFilter] = useState('');
   const [companyParentOrganisatonFilter, setCompanyParentOrganisationFilter] =
     useState('');
   const [companyHQFilter, setCompanyHQFilter] = useState('');
@@ -77,6 +78,8 @@ function MyApp({ Component, pageProps }) {
         setAvailableExpertise,
         availableCSR,
         setAvailableCSR,
+        customFilter,
+        setCustomFilter,
         companyParentOrganisatonFilter,
         setCompanyParentOrganisationFilter,
         companyHQFilter,

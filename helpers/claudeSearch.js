@@ -266,6 +266,8 @@ function describeFilters(query, locations) {
   if (locations.length) {
     parts.push(`located in or around ${locations.join('; ')}`);
   }
+  const custom = (query.custom || '').trim();
+  if (custom) parts.push(`matching this requirement: "${custom}"`);
   const types = (query.companyType || '').split(',').filter(Boolean);
   if (types.length) parts.push(`that are ${types.join(' or ')} companies`);
 
@@ -355,6 +357,7 @@ export default async function searchCompanies(term, query = {}) {
     .map((l) => l.replace(/\|/g, ', ').trim())
     .filter(Boolean);
   const types = (query.companyType || '').split(',').filter(Boolean);
+  const custom = (query.custom || '').trim().slice(0, 200);
 
   // Constraints that steer generation itself (so results actually match),
   // and therefore must be part of the generation cache key.
@@ -367,12 +370,17 @@ export default async function searchCompanies(term, query = {}) {
   if (types.length) {
     genConstraints.push(`that are ${types.join(' or ')} companies`);
   }
+  if (custom) {
+    genConstraints.push(`matching this specific requirement: "${custom}"`);
+  }
 
   const cacheKey = `${term.toLowerCase()}::p${page}::${exclude
     .join(',')
     .toLowerCase()}::loc:${locations
     .join(';')
-    .toLowerCase()}::type:${types.join(';').toLowerCase()}`;
+    .toLowerCase()}::type:${types
+    .join(';')
+    .toLowerCase()}::custom:${custom.toLowerCase()}`;
   let companies;
   let estimatedTotal = null;
 
