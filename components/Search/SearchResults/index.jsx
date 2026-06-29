@@ -44,8 +44,28 @@ export default function SearchResults({
   });
 
   const [exportOpen, setExportOpen] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const exportRef = useRef();
   useOnClickOutside(exportRef, () => setExportOpen(false));
+
+  const copyShareLink = () => {
+    const url = window.location.href;
+    const done = () => {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(done);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done();
+    }
+  };
 
   const [isAllowedToLoadPreviousPage, setIsAllowedToLoadPreviousPage] =
     useState(false);
@@ -566,6 +586,12 @@ export default function SearchResults({
           </button>
           {exportOpen && (
             <div className={classes.exportMenu}>
+              <span
+                className={classes.exportShare}
+                onClick={() => copyShareLink()}
+              >
+                {linkCopied ? 'Link copied!' : 'Copy link'}
+              </span>
               <span
                 onClick={() => {
                   exportPDF(
